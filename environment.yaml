@@ -1,0 +1,38 @@
+---
+- hosts: mgmt01.onkeldom.local
+  pre_tasks:
+    - name: create resolv-file for dnsmasq
+      copy:
+        content: |
+          search onkeldom.local
+          nameserver 1.1.1.1
+          nameserver 1.0.0.1
+          nameserver 2606:4700:4700::1111
+          nameserver 2606:4700:4700::1001
+        dest: /etc/resolv.dnsmasq
+  vars:
+    username: onkeldom
+    password: $6$WUNwf99UiAbu$tMimiNuoO9rAovRgGM9RwsUSZwnU6AF.f87EXuqt26t.XWl8ddMcE5oyCobv2bVKseCjHB6iWtjD8jFsv7rxl.
+    public_key: ~/.ssh/id_rsa.pub
+    dnsmasq_dnsmasq_conf:
+      - |
+        port=53
+        listen-address={{ ansible_lo['ipv4']['address'] }}
+        bind-interfaces
+    dnsmasq_dnsmasq_d_files_present:
+      cache:
+        - |
+          domain-needed
+          bogus-priv
+          no-hosts
+          dns-forward-max=150
+          cache-size=1000
+          neg-ttl=3600
+          resolv-file=/etc/resolv.dnsmasq
+  roles:
+  - common
+  - ufw
+  - ssh
+  - user
+  - vmware 
+  - dnsmasq

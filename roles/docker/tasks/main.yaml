@@ -1,0 +1,24 @@
+---
+- name: "Add Docker GPG key"
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+- name: "Add Docker repository"
+  apt_repository:
+    repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
+    state: present
+    filename: docker
+- name: "Install misc packages"
+  apt:
+    name: ['aptitude', 'apt-transport-https', 'ca-certificates', 'curl', 'software-properties-common']
+    update_cache: yes
+- name: "Install 'docker-ce'"
+  apt:
+    name: "docker-ce"
+    update_cache: yes
+- name: "Adding users (for use without sudo)"
+  user:
+    name: "{{ username }}"
+    append: yes
+    groups: docker
+    state: present

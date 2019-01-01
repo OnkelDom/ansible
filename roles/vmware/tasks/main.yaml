@@ -1,0 +1,31 @@
+---
+- name: installing open-vm-tools on debian based systems
+  apt:
+    name: open-vm-tools
+    state: present
+  when:
+  - ansible_os_family == "Debian"
+  - ansible_virtualization_type == "VMware"
+- name: start and enable open-vm-tools on debian based systems
+  systemd:
+    name: open-vm-tools
+    state: started
+    enabled: yes
+  when:
+  - ansible_os_family == "Debian"
+  - ansible_virtualization_type == "VMware"
+- name: installing open-vm-tools on redhat based systems
+  yum:
+    name: open-vm-tools
+    state: present
+  when:
+    - ansible_os_family == "RedHat"
+    - ansible_virtualization_type == "VMware"
+- name: start and enable open-vm-tools on redhat based systems
+  systemd:
+    name: vmtoolsd
+    state: started
+    enabled: yes
+  when:
+    - ansible_os_family == "RedHat"
+    - ansible_virtualization_type == "VMware"
