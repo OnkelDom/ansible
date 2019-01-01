@@ -1,2 +1,6 @@
+ubuntu01.onkeldom.local
+debian01.onkeldom.local
+centos01.onkeldom.local
+
 [mgmt]
-mgmt01.onkeldom.local 
+gmt01.onkeldom.local 

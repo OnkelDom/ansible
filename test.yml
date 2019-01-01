@@ -1,0 +1,7 @@
+---
+- hosts:
+  - ubuntu01.onkeldom.local
+  - centos01.onkeldom.local
+  - debian01.onkeldom.local
+  roles:
+  - vmware
