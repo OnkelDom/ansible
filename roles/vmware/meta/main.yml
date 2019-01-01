@@ -1,0 +1,19 @@
+# meta file for dnsmasq
+---
+galaxy_info:
+  author: Dominik Lenhardt
+  company: OnkelDom
+  description: open-vm-tools
+  license: MIT
+  min_ansible_version: 2.5.0.0
+  platforms:
+    - name: Ubuntu
+      release: any
+    - name: Debian
+      release: any
+    - name: EL
+      release: 7
+  galaxy_tags:
+    - system
+    - vmware
+dependencies: []
