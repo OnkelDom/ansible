@@ -1,0 +1,14 @@
+---
+- name: restart chronyd
+  tags: chrony
+  become: true
+  service:
+    name: chronyd
+    state: restarted
+
+- name: restart firewalld
+  tags: firewall
+  become: true
+  service:
+    name: firewalld
+    state: restarted

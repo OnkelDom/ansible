@@ -1,0 +1,48 @@
+---
+- name: install openssh
+  tags: openssh
+  become: true
+  package:
+    name: ['openssh', 'openssh-server', 'openssh-clients']
+    state: present
+  register: openssh_install
+
+- name: write openssh-client config
+  tags: openssh
+  become: true
+  template:
+    src: ssh_config.j2
+    dest: /etc/ssh/ssh_config
+    owner: root
+    group: root
+    mode: 0644
+  when: openssh_install is success
+
+- name: write openssh-server config
+  tags: openssh
+  become: true
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: root
+    mode: "{{ item.mode }}"
+  notify: restart sshd
+  with_items:
+  - { src: sshd_config.j2, dest: /etc/ssh/sshd_config, mode: '0600' }
+  - { src: sshd.sysconfig.j2, dest: /etc/sysconfig/sshd, mode: '0640' }
+  when: openssh_install is success
+
+- name: start and enable sshd service
+  tags: openssh
+  become: true
+  service:
+    name: sshd
+    state: started
+    enabled: yes
+  when: openssh_install is success
+
+- firewalld:
+    service: ssh
+    permanent: yes
+    state: enabled

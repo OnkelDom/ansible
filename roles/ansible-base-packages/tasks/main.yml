@@ -1,0 +1,7 @@
+---
+- name: install base packages
+  tags: packages_install
+  become: true
+  package:
+    state: present
+    name: ['python', 'vim', 'tmux', 'wget', 'epel-release', 'whois', 'net-tools', 'bind-utils']

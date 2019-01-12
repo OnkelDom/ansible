@@ -1,0 +1,33 @@
+---
+- name: check exist of wheel group
+  tags: ansible-user
+  group:
+    name: wheel
+    state: present
+
+- name: set sudo without password
+  tags: ansible-user
+  lineinfile:
+    dest: /etc/sudoers
+    state: present
+    regexp: "^%wheel"
+    line: "%wheel ALL=(ALL:ALL) NOPASSWD: ALL"
+    validate: "/usr/sbin/visudo -cf %s"
+
+- name: create ansible deploy user
+  tags: ansible-user
+  user:
+    name: "{{ username }}"
+    groups: wheel
+    password: "{{ password }}"
+    shell: /bin/bash
+    update_password: always
+    state: present
+
+- name: add ansible deply user authorized key
+  tags: ansible-user
+  authorized_key:
+    exclusive: true
+    state: present
+    user: "{{ username }}"
+    key: "{{ public_key }}"

@@ -1,0 +1,21 @@
+# {{ ansible_managed }}
+{% if openssh_server|length > 0 %}
+
+{%   for option, value in openssh_server.items()|sort %}
+{%     if value is sameas true %}
+{{ option }} yes
+{%     elif value is sameas false %}
+{{ option }} no
+{%     elif value is string %}
+{{ option }} {{ value|string }}
+{%     elif value is number %}
+{{ option }} {{ value|int }}
+{%     elif value is iterable %}
+{%       for v in value %}
+{{ option }} {{ v }}
+{%       endfor %}
+{%     else %}
+{{ option }} {{ value }}
+{%     endif %}
+{%   endfor %}
+{% endif %}

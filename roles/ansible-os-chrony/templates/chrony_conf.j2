@@ -1,0 +1,13 @@
+# {{ ansible_managed }}
+
+{% for command, value in chrony_config.items()|sort %}
+{%   if value is sameas true %}
+{{ command }}
+{%   elif value is string or value is number %}
+{{ command }} {{ value }}
+{%   else %}
+{%     for v in value %}
+{{ command }} {{ v }}
+{%     endfor %}
+{%   endif %}
+{% endfor %}

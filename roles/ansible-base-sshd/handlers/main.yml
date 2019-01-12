@@ -1,0 +1,14 @@
+---
+- name: restart sshd
+  tags: openssh
+  become: true
+  service:
+    name: sshd
+    state: restarted
+
+- name: restart firewalld
+  tags: firewall
+  become: true
+  service:
+    name: firewalld
+    state: restarted

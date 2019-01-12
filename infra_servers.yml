@@ -1,0 +1,15 @@
+---
+- hosts: all
+  roles:
+  - ansible-base-deployuser
+  - ansible-base-packages
+  - ansible-base-vmtools
+  - ansible-base-sshd
+  - ansible-base-motd
+  - ansible-base-timezone
+  - ansible-os-chrony
+  # - ansible-os-update
+  vars:
+    username: adeployer
+    password: $6$zsoMDZneqQ.5qlCz$9ST.28ywuNKUFcOqTQiOa..QzHV2wDHvsAd9f1G2kb/kQIPyVzP5WoGkfb6PaY4pi5YOojQOXU0IURCu5MTfj0
+    public_key: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDaeqeAL2iGrPmlEwXMn1TwdJdmayB7KUGup4pXaPbl4FJPkn85nTlIaXpAAPhm92gzJ9o6PlwYZtCqPJV9s0mzXGpv5Juxv0bXHgsZ444yxFNSSyKg4JC2i1U2c70OpgZ9Q7yfJ4/As2D9qOfrrydYcyh3TKdYu2JMnduhzH6GtbMWivSXwHKQi3B+gE0v0DNNxDmqrialIVWAxjXH0Pn/LykXmsyDk98dvTWpkhAs17ws65H+VL6lSfsQ0ZuNyEVYi3g5qW9RIA0TgrBfW7//XDqdPWcepif+aagfmPBDxGa8YUKdExQi+zB/Ghweh4SBXq4qH+xLseJTRQCqTA2h adeployer@onkeldom.

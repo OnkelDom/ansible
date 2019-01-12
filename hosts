@@ -1,6 +1,2 @@
-ubuntu01.onkeldom.local
-debian01.onkeldom.local
-centos01.onkeldom.local
-
-[mgmt]
-gmt01.onkeldom.local 
+[nextcloud]
+nextcloud01.onkeldom.local ansible_user=adeployer ansible_ssh_private_key_file=~/.ssh/id_rsa_adeployer
