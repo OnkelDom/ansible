@@ -32,7 +32,8 @@
     enabled: yes
   when: chrony_install is success
 
-- firewalld:
+- name: configure firewalld for ntp/chrony
+  firewalld:
     service: ntp
     permanent: yes
     state: enabled

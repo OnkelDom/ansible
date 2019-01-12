@@ -42,7 +42,8 @@
     enabled: yes
   when: openssh_install is success
 
-- firewalld:
+- name: configure firewalld for sshd
+  firewalld:
     service: ssh
     permanent: yes
     state: enabled

@@ -9,3 +9,12 @@
       - 10.0.0.0/8
       - 172.16.0.0/12
       - 192.168.0.0/16
+- name: add user onkeldom
+  user:
+    name: onkeldom
+    comment: Dominik Lenhardt
+    groups: wheel
+    shell: /bin/bash
+    create_home: true
+    ssh_key_file: ~/home/onkeldom/.ssh/id_rsa
+    ssh_public_key: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCk64m3DILTQrITQRXvVORhMINEqGxvORVEfn+lpJNqAGeOiITPs/+INoqPQpEKjOiC8jyPxh0UAxfvtbY8Kfx0apXvbZ7PDixc2p/YsfRYv1ArAPuT9W+HebIOX4iG76jumNOCjeB6MYUnZqDLYlE2lMLMo9d12VaAayIo0Mlh1LngkbIKsLL2zkb57nZNoAznO4y35Gz8HFTCmCYvP8PjHKTaUO9zWV/JxTr8ujuQeqlUAipFkqePHqvq+f/I8VD4DxnjVV0+R/QUmmd9AsHeZrJr+jnKIM49zJyWdPKwkC0m9mB9EdJgueTyXTG/Wc2hlnxR5BKU+8vzIFIlHlT/ onkeldom'
