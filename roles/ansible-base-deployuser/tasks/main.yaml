@@ -17,10 +17,11 @@
 - name: create ansible deploy user
   tags: ansible-user
   user:
-    name: "{{ username }}"
+    name: "{{ ansible_user_username }}"
     groups: wheel
-    password: "{{ password }}"
+    password: "{{ ansible_user_password }}"
     shell: /bin/bash
+    comment: Ansible User
     update_password: always
     state: present
 
@@ -29,5 +30,5 @@
   authorized_key:
     exclusive: true
     state: present
-    user: "{{ username }}"
-    key: "{{ public_key }}"
+    user: "{{ ansible_user_username }}"
+    key: "{{ ansible_user_key }}"
