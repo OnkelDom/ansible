@@ -1,0 +1,12 @@
+---
+resolv_nameservers:
+  - 1.0.0.1
+  - 2606:4700:4700::1001
+  - 1.1.1.1
+  - 2606:4700:4700::1111
+resolv_domain: "{{ ansible_domain }}"
+resolv_search: []
+resolv_sortlist: []
+resolv_options:
+  - timeout:2
+  - rotate

@@ -7,8 +7,13 @@
   - ansible-base-sshd
   - ansible-base-motd
   - ansible-base-timezone
-  - ansible-os-chrony
-  - ansible-os-update
+  - ansible-base-resolv
+  - managed_hosts
+  - managed_hostname
+  #- ansible-os-chrony
+  #- ansible-os-update
+  vars:
+    ansible_domain: onkeldom.local
   tasks:
   - name: adduser onkeldom
     user:
