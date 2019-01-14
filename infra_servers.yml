@@ -7,9 +7,10 @@
   - ansible-base-sshd
   - ansible-base-motd
   - ansible-base-timezone
-  - ansible-base-resolv
+  - managed_resolvconf
   - managed_hosts
   - managed_hostname
+  - managed_services
   #- ansible-os-chrony
   #- ansible-os-update
   vars:

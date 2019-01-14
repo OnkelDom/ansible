@@ -1,0 +1,7 @@
+---
+managed_services:
+  enabled: true
+  active:
+    - chronyd
+  disabled:
+    - NetworkManager
