@@ -1,0 +1,32 @@
+---
+- name: configure /etc/sudoers for passwordless sudo
+  tags: ansible_passwordless
+  become: true
+  lineinfile:
+    dest: /etc/sudoers
+    state: present
+    regexp: "^%wheel"
+    line: "%wheel ALL=(ALL:ALL) NOPASSWD: ALL"
+    validate: "/usr/sbin/visudo -cf %s"
+  when: managed_deployuser.enabled|default(false)|bool == true
+
+- name: create deployuser
+  tags: ansible_deployuser
+  user:
+    name: "{{ managed_deployuser.name }}"
+    groups: wheel
+    password: "{{ managed_deployuser.pass }}"
+    shell: /bin/bash
+    comment: "{{ managed_deployuser.comment }}"
+    update_password: always
+    state: present
+  when: managed_deployuser.enabled|default(false)|bool == true
+
+- name: add authorized key for deployuser
+  tags: ansible_authorized_key
+  authorized_key:
+    exclusive: true
+    state: present
+    user: "{{ managed_deployuser.name }}"
+    key: "{{ managed_deployuser.key }}"
+  when: managed_deployuser.enabled|default(false)|bool == true

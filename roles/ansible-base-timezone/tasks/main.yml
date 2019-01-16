@@ -1,4 +1,0 @@
----
-- name: set timezone to Europe/Berlin
-  timezone:
-    name: Europe/Berlin

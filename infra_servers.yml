@@ -1,20 +1,24 @@
 ---
+- hosts: srv03.onkeldom.eu
+  vars:
+    ansible_domain: onkeldom.eu
+- hosts: nextcloud01.onkeldom.local
+  vars:
+    ansible_domain: onkeldom.local
 - hosts: all
   roles:
-  - ansible-base-deployuser
-  - ansible-base-packages
-  - ansible-base-vmtools
-  - ansible-base-sshd
-  - ansible-base-motd
-  - ansible-base-timezone
+  - managed_deployuser
+  - managed_sshd
+  - managed_packages
+  - managed_vmtools
+  - managed_motd
+  - managed_timezone
   - managed_resolvconf
   - managed_hosts
   - managed_hostname
   - managed_services
-  #- ansible-os-chrony
-  #- ansible-os-update
-  vars:
-    ansible_domain: onkeldom.local
+  - managed_prompt
+  - managed_chrony
   tasks:
   - name: adduser onkeldom
     user:
@@ -30,9 +34,3 @@
       state: present
       exclusive: true
       key: "{{ lookup('file', '/home/onkeldom/.ssh/id_rsa.pub') }}"
-  - name: copy bash promt
-    copy:
-      src: files/bash_prompt.sh
-      dest: /etc/profile.d/prompt.sh
-      mode: 0644
-      owner: root

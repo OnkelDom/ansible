@@ -2,12 +2,12 @@
 
 127.0.0.1      localhost localhost.localdomain localhost4 localhost4.localdomain4
 ::1            localhost6 localhost6.localdomain6 localhost6
-{% if managed_hosts and managed_hosts.ipv4 is defined %}
+{% if managed_hosts.ipv4 is defined %}
 {% set space = 16 - managed_hosts.ipv4 | length %}
 {{ managed_hosts.ipv4 }}{% for i in range(1, space,1) %} {% endfor %}{{ managed_hosts.hostname }}.{{ managed_hosts.domain }} {{ managed_hosts.hostname }}{% if managed_hosts.alias is defined %}{% for alias in managed_hosts.alias %} {{ alias }}{% endfor %}{% endif %}
 {% endif %}
 
-{% if managed_hosts and managed_hosts.ipv6 is defined %}
+{% if managed_hosts.ipv6 is defined %}
 {% set space = 39 - managed_hosts.ipv6 | length %}
 {{ managed_hosts.ipv6 }}{% for i in range(1, space,1) %} {% endfor %}{{ managed_hosts.hostname }}.{{ managed_hosts.domain }} {{ managed_hosts.hostname }}{% if managed_hosts.alias is defined %}{% for alias in managed_hosts.alias %} {{ alias }}{% endfor %}{% endif %}
 {% endif %}

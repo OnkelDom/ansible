@@ -1,6 +1,4 @@
 ---
-# Role: managed_hosts
-# Default Values
 managed_hosts:
   enabled: true
   backup: false

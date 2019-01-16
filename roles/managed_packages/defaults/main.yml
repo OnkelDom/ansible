@@ -1,0 +1,18 @@
+---
+managed_packages:
+  enabled: true
+  install:
+    - python
+    - vim
+    - htop
+    - tmux
+    - wget
+    - epel-release
+    - whois
+    - net-tools
+    - bind-utils
+    - bash-completion
+    - bash-completion-extras
+    - telnet
+  remove:
+    - NetworkManager

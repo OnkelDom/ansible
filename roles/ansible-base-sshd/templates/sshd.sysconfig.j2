@@ -1,4 +1,0 @@
-# {{ ansible_managed }}
-
-AUTOCREATE_SERVER_KEYS="{{ openssh_server_autocreate_server_keys|join(' ') }}"
-SSH_USE_STRONG_RNG={{ '1' if openssh_server_ssh_use_strong_rng|bool else '0' }}
