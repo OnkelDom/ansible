@@ -14,5 +14,24 @@ managed_packages:
     - bash-completion
     - bash-completion-extras
     - telnet
+    - net-snmp-utils
+    - net-tools
+    - ipmitool
+    - nfs-utils
+    - bzip2
+    - cifs-utils
+    - dstat
+    - iotop
+    - expect
+    - dos2unix
+    - nmap
+    - swaks
+    - p7zip
+    - strace
+    - tcpdump
+    - rsync
+    - xclip
+    - unzip
+    - tree
   remove:
     - NetworkManager
