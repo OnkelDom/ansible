@@ -1,10 +1,12 @@
 ---
 - hosts: srv03.onkeldom.eu
   vars:
-    ansible_domain: onkeldom.eu
+    managed_hostname:
+      entry: onkeldom.eu
 - hosts: nextcloud01.onkeldom.local
   vars:
-    ansible_domain: onkeldom.local
+    managed_hostname:
+      entry: onkeldom.local
 - hosts: all
   roles:
   - managed_deployuser
