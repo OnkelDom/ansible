@@ -27,7 +27,9 @@
     state={{ item.state | default ("enabled") }}
   with_items: "{{ managed_firewall.services }}"
   notify: reload firewalld
-  when: managed_firewall.enabled|default(false)|bool == true
+  when:
+  - managed_firewall.enabled|default(false)|bool == true
+  - managed_firewall.services is defined and managed_firewall.services | length > 0
 
 - name: add firewall ports
   firewalld:
@@ -37,4 +39,6 @@
     state={{ item.state | default ("enabled") }}
   with_items: "{{ managed_firewall.ports }}"
   notify: reload firewalld
-  when: managed_firewall.enabled|default(false)|bool == true
+  when:
+  - managed_firewall.enabled|default(false)|bool == true
+  - managed_firewall.ports is defined and managed_firewall.ports | length > 0

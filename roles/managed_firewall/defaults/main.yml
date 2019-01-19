@@ -6,9 +6,3 @@ managed_firewall:
     zone: public
     permanent: true
     state: enabled
-  ports: [{}]
-  #- name: plex
-  #  port: 32400/tcp
-  #  zone: public
-  #  permanent: True
-  #  state: enabled
