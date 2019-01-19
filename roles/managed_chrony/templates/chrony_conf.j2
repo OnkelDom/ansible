@@ -2,7 +2,6 @@
 
 {% for command, value in managed_chrony.client.items()|sort %}
 {%   if value is sameas true %}
-# Client configuration
 {{ command }}
 {%   elif value is string or value is number %}
 {{ command }} {{ value }}
@@ -12,10 +11,8 @@
 {%     endfor %}
 {%   endif %}
 {% endfor %}
-
 {% for command, value in managed_chrony.server.items()|sort %}
 {%   if value is sameas true %}
-# Server configuration
 {{ command }}
 {%   elif value is string or value is number %}
 {{ command }} {{ value }}
