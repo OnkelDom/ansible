@@ -49,10 +49,10 @@
       groups: wheel
       shell: /bin/bash
       create_home: true
-      ssh_key_file: "{{ lookup('file', '/home/onkeldom/.ssh/id_rsa') }}"
+      ssh_key_file: "{{ lookup('file', '~/.ssh/id_rsa') }}"
   - name: add authorized_key for onkeldom
     authorized_key:
       user: onkeldom
       state: present
       exclusive: true
-      key: "{{ lookup('file', '/home/onkeldom/.ssh/id_rsa.pub') }}"
+      key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"

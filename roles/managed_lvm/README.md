@@ -3,15 +3,15 @@
 Ansible Role to Manage LV's
 
 You can look at the default file. In this i enable the role by default. You can set
-```
+```yaml
 managed_lvm:
   enabled: false
 ```
-to quick disable thos role without comment it out.
+to quick disable these role without comment it out. Otherwise you can define you defaults in defaults/main.yml.
 
 Example Playbook
-```
-- name: "LVM for Webservers"
+```yaml
+- name: "configure lvm"
   hosts:
   - web01
   - web02
@@ -66,4 +66,12 @@ Example Playbook
             mount_passno: "2"
             mount_opts: "defaults"
             fstype: "xfs"
+```
+
+Example Playbook #2
+```yaml
+- hosts: all
+  roles:
+  # Paramters defined in defaults/main.yml
+  - managed_lvm
 ```
