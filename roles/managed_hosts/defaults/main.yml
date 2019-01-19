@@ -4,8 +4,8 @@ managed_hosts:
   backup: false
   hostname: "{{ ansible_hostname }}"
   domain: "{{ ansible_domain }}"
-  ipv4: "{{ ansible_default_ipv4.address }}"
-  ipv6: "{{ ansible_default_ipv6.address }}"
+  ipv4: "{{ ansible_default_ipv4.address  }}"
+  #ipv6: "{{ ansible_default_ipv6.address }}"
   alias: []
 
 # Define Entys

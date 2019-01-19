@@ -4,7 +4,7 @@
   - mgmt02.onkeldom.local
   vars:
   roles:
-  - roles: managed_chrony
+  - role: managed_chrony
     managed_chrony:
       server:
         allow:

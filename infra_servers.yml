@@ -1,12 +1,32 @@
 ---
 - hosts: srv03.onkeldom.eu
-  vars:
-    managed_hostname:
-      entry: onkeldom.eu
-- hosts: nextcloud01.onkeldom.local
-  vars:
-    managed_hostname:
-      entry: onkeldom.local
+  roles:
+    - role: managed_hostname
+      managed_hostname:
+        enabled: true
+        fqdn: srv03.onkeldom.eu
+- hosts:
+  - node01.onkeldom.local
+  roles:
+    - role: managed_hostname
+      managed_hostname:
+        enabled: true
+        fqdn: "node01.onkeldom.local"
+- hosts:
+  - mgmt01.onkeldom.local
+  roles:
+    - role: managed_hostname
+      managed_hostname:
+        enabled: true
+        fqdn: "mgmt01.onkeldom.local"
+- hosts:
+  - mgmt02.onkeldom.local
+  roles:
+    - role: managed_hostname
+      managed_hostname:
+        enabled: true
+        fqdn: "mgmt02.onkeldom.local"
+
 - hosts: all
   roles:
   - managed_deployuser
@@ -17,7 +37,7 @@
   - managed_timezone
   - managed_resolvconf
   - managed_hosts
-  - managed_hostname
+#  - managed_hostname
   - managed_services
   - managed_prompt
   - managed_chrony

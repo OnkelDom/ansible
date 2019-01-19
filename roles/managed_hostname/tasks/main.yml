@@ -3,5 +3,5 @@
   tags: hostname
   become: true
   hostname:
-    name: "{{ managed_hostname.entry }}"
+    name: "{{ managed_hostname.fqdn }}"
   when: managed_hostname.enabled|default(false)|bool == true

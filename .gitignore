@@ -1,3 +1,2 @@
 *.retry
-*infra_
-infra_srv03.onkeldom.eu.yml
+infra_*
