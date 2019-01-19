@@ -1,7 +1,0 @@
----
-- name: Perform yum update of all packages
-  tags: system_update
-  become: true
-  package:
-    name: '*'
-    state: latest

@@ -16,3 +16,5 @@ managed_hosts:
 If the enabled: false is set. The role is disabled. On alle the tasks inside the role, there is a check as when for this paramter.
 
 You can read the README for every role in this folder.
+
+### CHANGE SSH PASSWORD AND DISABLE LOGIN WITH PASSWORD IF YOUR KEY IS DEPLOYED

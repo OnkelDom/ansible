@@ -1,16 +1,19 @@
-# Ansible Playbooks
+# My Ansible Environment
 
-Ziel dieses Repositories ist es folgende Moeglichkeiten abzubilden:
+This is my Ansible Project and my goal is that can deploy and manage a complete company environment with it included all basic services.
 
-1. Bereitstellung einer Basis Infrastruktur fuer Privatpersonen und Kleinunternehmer
+The roles with prefix "managed_" are system base configurations and or basics services like sshd, chrony or firewall.
 
-2. Bereitstellung diverser Applikationen mit uebergreifenden Variablen und einheitlichem Playbookdesign
+# Currently my project is ONLY FOR CENTOS 7+
 
-Eine ausfuehrliche Beschreibung und Dokumentation der Rollen folgt nocht.
+When i finished this for CentOS 7+, i implement it for debian like systems too.
 
-Weitere geplante Rollen:
+For the individual role readme please go to the role folder
+
+Next roles:
 ```
- - managed_lvm
+# Base configurations:
+ - managed_firewall
  - managed_repos
  - managed_cron
  - managed_kernel_params
@@ -23,33 +26,55 @@ Weitere geplante Rollen:
  - managed_downloads
  - managed_sysctl
  - managed_security_limits
- - dnsmasq (cache, resolver, dhcp, pxe, tftp)
- - openssh_ca
- - elastic_stack
- - nfs
- - easy hhtp server for pxe (lighthttpd or caddy)
- - openvpn
- - openldap
- - oauth2
- - samba5dc
- - mailserver (postfix, dovecot, opendkim, opendmarc, rspamd)
- - firewalld
- - nginx
- - letsencrypt
- - caddy
- - nextcloud
- - wordpress
- - plex
- - rclone
- - jdownloader
- - sonarr
- - gitlab
- - fail2ban
- - unbound
- - bind
- - powerdns
- - zabbix (web,server,proxy,java-gateway)
- - mysql
- - postgresql
- - mongodb
+# applications:
+- dnsmasq
+  - cache
+  - resolver
+  - dhcp
+  - pxe
+  - tftp
+- dns
+  - bind
+  - unbound
+  - powerdns
+- dhcpd
+- elastic
+  - logstast
+  - elasticsearch
+  - kibana
+- mail
+  - postfix
+  - dovecot
+  - opendkim
+  - opendmarc
+  - rspamd
+- nfs
+- webservers
+  - lighthttpd
+  - caddy
+  - nginx
+  - apache
+- openvpn
+- openldap
+- openssh_ca
+- oauth2
+- samba5dc
+- letsencrypt
+- nextcloud
+- wordpress
+- plex
+- rclone
+- jdownloader
+- sonarr
+- gitlab
+- fail2ban
+- zabbix
+   - webfrontend
+   - server
+   - proxy
+   - java-gateway
+ - database
+   - mysql
+   - postgresql
+   - mongodb
 ```

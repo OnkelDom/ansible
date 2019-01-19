@@ -1,3 +1,4 @@
 *.retry
 srv_*
 hostlist
+ansible.log
