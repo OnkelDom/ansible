@@ -1,2 +1,3 @@
 *.retry
-infra_*
+srv_*
+hostlist

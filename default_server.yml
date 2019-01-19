@@ -1,0 +1,35 @@
+---
+- hosts: all
+  roles:
+  - managed_deployuser
+  - role: managed_lvm
+    managed_lvm:
+      enabled: false
+  - managed_sshd
+  - managed_packages
+  - managed_vmtools
+  - managed_timezone
+  - managed_resolvconf
+  - managed_hostname
+  - managed_hosts
+  - managed_chrony
+  - managed_services
+  - managed_motd
+  - managed_prompt
+  - os_update
+  tasks:
+  # Add custom User (yourself)
+  - name: adduser onkeldom
+    user:
+      name: onkeldom
+      comment: Dominik Lenhardt
+      groups: wheel
+      shell: /bin/bash
+      create_home: true
+      ssh_key_file: "{{ lookup('file', '~/.ssh/id_rsa') }}"
+  - name: add authorized_key for onkeldom
+    authorized_key:
+      user: onkeldom
+      state: present
+      exclusive: true
+      key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
