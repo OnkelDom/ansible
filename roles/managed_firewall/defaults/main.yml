@@ -1,0 +1,14 @@
+---
+managed_firewall:
+  enabled: true
+  services:
+  - name: ssh
+    zone: public
+    permanent: true
+    state: enabled
+  ports: [{}]
+  #- name: plex
+  #  port: 32400/tcp
+  #  zone: public
+  #  permanent: True
+  #  state: enabled

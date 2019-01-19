@@ -43,3 +43,35 @@ Example Playbook #2
   # Paramters defined in defaults/main.yml
   - managed_chrony
 ```
+
+If you want to use chrony as ntp server, you can configure the firewall rules.
+```yaml
+- hosts:
+  - ntp01
+  - ntp02
+  roles:
+  - role: "managed_chrony"
+    managed_chrony:
+      enabled: true
+      client:
+        driftfile: /var/lib/chrony/drift
+        logdir: /var/log/chrony
+        makestep: '1.0 3'
+        rtcsync: true
+        server:
+        - 0.centos.pool.ntp.org iburst
+        - 1.centos.pool.ntp.org iburst
+        - 2.centos.pool.ntp.org iburst
+        - 3.centos.pool.ntp.org iburst
+      server:  
+        allow:
+        - 192.168.0.0/24
+  - role: "managed_firewall"
+    managed_firewall:
+      enabled: true
+      services:
+      - name: ntp
+        zone: public
+        permanent: true
+        state: enabled
+```

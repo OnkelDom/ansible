@@ -10,22 +10,24 @@ When i finished this for CentOS 7+, i implement it for debian like systems too.
 
 For the individual role readme please go to the role folder
 
+I use the following Ansible modules for managed usecases:
+
+Cron: [Cron with Ansible](https://docs.ansible.com/ansible/latest/modules/cron_module.html)
+Repos: [Yum Repos with Ansible](https://docs.ansible.com/ansible/latest/modules/yum_repository_module.html)
+Mounts: [Mounts with Ansible](https://docs.ansible.com/ansible/latest/modules/mount_module.html)
+Download: [Downloads with Ansible](https://docs.ansible.com/ansible/latest/modules/get_url_module.html)
+Limits: [Limits with Ansible](https://docs.ansible.com/ansible/latest/modules/pam_limits_module.html)
+Modprobe: [Modprobe with Ansible](https://docs.ansible.com/ansible/latest/modules/modprobe_module.html)
+Kernel Blacklist: [Kernel Blacklist with Ansible](https://docs.ansible.com/ansible/latest/modules/kernel_blacklist_module.html)
+
 Next roles:
 ```
 # Base configurations:
- - managed_firewall
- - managed_repos
- - managed_cron
- - managed_kernel_params
  - managed_logrotate
  - managed_rsyslog
  - managed_auditbeat
  - managed_filebeat
  - managed_metricbeat
- - managed_mounts
- - managed_downloads
- - managed_sysctl
- - managed_security_limits
 # applications:
 - dnsmasq
   - cache
@@ -39,7 +41,7 @@ Next roles:
   - powerdns
 - dhcpd
 - elastic
-  - logstast
+  - logstash
   - elasticsearch
   - kibana
 - mail
@@ -48,6 +50,7 @@ Next roles:
   - opendkim
   - opendmarc
   - rspamd
+- clamav
 - nfs
 - webservers
   - lighthttpd
@@ -69,12 +72,12 @@ Next roles:
 - gitlab
 - fail2ban
 - zabbix
-   - webfrontend
-   - server
-   - proxy
-   - java-gateway
- - database
-   - mysql
-   - postgresql
-   - mongodb
+  - webfrontend
+  - server
+  - proxy
+  - java-gateway
+- database
+  - mysql
+  - postgresql
+  - mongodb
 ```

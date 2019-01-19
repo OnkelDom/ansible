@@ -9,7 +9,6 @@ managed_packages:
     - wget
     - epel-release
     - whois
-    - net-tools
     - bind-utils
     - bash-completion
     - bash-completion-extras

@@ -1,0 +1,40 @@
+---
+- name: install firewalld
+  tags: firewalld
+  become: true
+  package:
+    name: firewalld
+    state: present
+  register: firewalld_install
+  when: managed_firewall.enabled|default(false)|bool == true
+
+- name: start and enable firewalld
+  tags: firewalld
+  become: true
+  service:
+    name: firewalld
+    state: started
+    enabled: yes
+  when:
+  - firewalld_install is success
+  - managed_firewall.enabled|default(false)|bool == true
+
+- name: add firewall services
+  firewalld:
+    service={{ item.name }}
+    zone={{ item.zone | default ("public") }}
+    permanent={{ item.permanent | default (True) }}
+    state={{ item.state | default ("enabled") }}
+  with_items: "{{ managed_firewall.services }}"
+  notify: reload firewalld
+  when: managed_firewall.enabled|default(false)|bool == true
+
+- name: add firewall ports
+  firewalld:
+    port={{ item.port }}
+    zone={{ item.zone | default ("public") }}
+    permanent={{ item.permanent | default (True) }}
+    state={{ item.state | default ("enabled") }}
+  with_items: "{{ managed_firewall.ports }}"
+  notify: reload firewalld
+  when: managed_firewall.enabled|default(false)|bool == true
