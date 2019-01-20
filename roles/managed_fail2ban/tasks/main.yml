@@ -1,0 +1,33 @@
+---
+- name: install fail2ban
+  tags: fail2ban
+  become: true
+  package:
+    name: fail2ban
+    state: present
+  register: fail2ban_install
+  when: managed_fail2ban.enabled|default(false)|bool == true
+
+- name: configure fail2ban and jails
+  tags: fail2ban
+  become: true
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: root
+    mode: "{{ item.mode }}"
+  when: fail2ban_install is success and managed_fail2ban.enabled|default(false)|bool == true
+  with_items:
+    - { src: fail2ban_conf.j2, dest: /etc/fail2ban/fail2ban.conf, mode: '0644' }
+    - { src: jail_conf.j2, dest: /etc/fail2ban/jail.conf, mode: '0644' }
+  notify: restart fail2ban
+
+- name: start and enable fail2ban service
+  tags: fail2ban
+  become: true
+  service:
+    name: fail2ban
+    state: started
+    enabled: yes
+  when: fail2ban_install is success and managed_fail2ban.enabled|default(false)|bool == true

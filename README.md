@@ -23,6 +23,7 @@ Kernel Blacklist: [Kernel Blacklist with Ansible](https://docs.ansible.com/ansib
 Next roles:
 ```
 # Base configurations:
+ - managed_fail2ban
  - managed_logrotate
  - managed_rsyslog
  - managed_auditbeat
@@ -70,7 +71,6 @@ Next roles:
 - jdownloader
 - sonarr
 - gitlab
-- fail2ban
 - zabbix
   - webfrontend
   - server

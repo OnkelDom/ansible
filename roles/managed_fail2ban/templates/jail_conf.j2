@@ -1,0 +1,30 @@
+# {{ ansible_managed }}
+
+[INCLUDES]
+before = paths-fedora.conf
+
+[DEFAULT]
+{% for command, value in managed_fail2ban.jail.config.items()|sort %}
+{%   if value is sameas true %}
+{{ command }}
+{%   elif value is string or value is number %}
+{{ command }} = {{ value }}
+{%   else %}
+{%     for v in value %}
+{{ command }} = {{ v }}
+{%     endfor %}
+{%   endif %}
+{% endfor %}
+
+# JAILS
+{% for command, value in managed_fail2ban.jail.services.items()|sort %}
+{%   if value is sameas true %}
+[{{ command }}]
+{%   elif value is string or value is number %}
+{{ command }} = {{ value }}
+{%   else %}
+{%     for v in value %}
+{{ command }} = {{ v }}
+{%     endfor %}
+{%   endif %}
+{% endfor %}
