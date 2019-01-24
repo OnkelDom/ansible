@@ -4,12 +4,14 @@ Ansible Role to manage the timezone
 
 You can look at the default file. In this i enable the role by default. You can set
 ```yaml
-managed_timezone:
+managed_sshd:
   enabled: false
 ```
 to quick disable these role without comment it out. Otherwise you can define you defaults in defaults/main.yml.
 
-You can define any paramter for the chrony config. I use an default template without hardcoded params.
+You can define your SSH Client, Server and sysconfig Params.
+
+Please disable password login after deploying of your userkeys.
 
 Example Playbook #1
 ```yaml

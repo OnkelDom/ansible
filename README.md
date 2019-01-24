@@ -31,7 +31,11 @@ Next roles:
  - managed_auditbeat
  - managed_filebeat
  - managed_metricbeat
+ - managed_users
+ - managed_keys
+ - managed_proxy https://github.com/shelleg/ansible-role-proxy-client
 # applications:
+- slapd
 - dnsmasq
   - cache
   - resolver
@@ -43,6 +47,7 @@ Next roles:
   - unbound
   - powerdns
 - dhcpd
+- squid
 - elastic
   - logstash
   - elasticsearch
@@ -54,32 +59,39 @@ Next roles:
   - opendmarc
   - rspamd
 - clamav
-- nfs
+- nfs https://github.com/shelleg/ansible-role-nfs
 - webservers
   - lighthttpd
   - caddy
-  - nginx
+  - nginx https://github.com/shelleg/ansible-role-nginx
   - apache
 - openvpn
 - openldap
+- ldapadmin https://github.com/shelleg/ansible-role-php-ldapadmin
 - openssh_ca
 - oauth2
 - samba5dc
 - letsencrypt
 - nextcloud
 - wordpress
+- haproxy
+- keepalived
 - plex
 - rclone
 - jdownloader
 - sonarr
 - gitlab
+- jenkins https://github.com/shelleg/ansible-role-jenkins
+- grafana https://github.com/shelleg/ansible-role-grafana
 - zabbix
   - webfrontend
   - server
   - proxy
   - java-gateway
 - database
-  - mysql
+  - mysql https://github.com/shelleg/ansible-role-mysql
   - postgresql
   - mongodb
+- atlassian
+ - jira https://github.com/shelleg/ansible-role-jira https://github.com/shelleg/ansible-playbook-jira
 ```

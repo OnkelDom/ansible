@@ -1,0 +1,30 @@
+---
+- name: install ssmtp
+  tags: ssmtp
+  become: true
+  package:
+    name: ssmtp
+    state: present
+  register: ssmtp_install
+  when: managed_ssmtp.enabled|default(false)|bool == true
+
+- name: configure /etc/ssmtp/ssmtp.conf
+  tags: ssmtp
+  become: true
+  template:
+    src: ssmtp_conf.j2
+    dest: /etc/ssmtp/ssmtp.conf
+    owner: root
+    group: root
+    mode: 0644
+  when: ssmtp_install is success and managed_ssmtp.enabled|default(false)|bool == true
+  notify: restart ssmtp
+
+- name: start and enable ssmtp service
+  tags: ssmtp
+  become: true
+  service:
+    name: ssmtp
+    state: started
+    enabled: yes
+  when: ssmtp_install is success and managed_ssmtp.enabled|default(false)|bool == true
