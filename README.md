@@ -23,9 +23,7 @@ Kernel Blacklist: [Kernel Blacklist with Ansible](https://docs.ansible.com/ansib
 Next roles:
 ```
 # Base configurations:
- - managed_ssmtp
  - managed_interfaces
- - managed_fail2ban
  - managed_logrotate
  - managed_rsyslog
  - managed_auditbeat
