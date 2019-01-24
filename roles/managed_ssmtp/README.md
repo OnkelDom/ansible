@@ -18,17 +18,24 @@ Example Playbook #1
     - role: "managed_ssmtp"
       managed_ssmtp:
         enabled: true
-        Debug: NO
-        root: admin@{{ ansible_domain }}
-        mailhub: mail.{{ ansible_domain }}:465
-        # rewriteDomain: [a different domain here, if needed ]
-        hostname: {{ ansible_fqdn }}
-        FromLineOverride: NO
-        AuthUser: systemmails
-        AuthPass: systemmails
-        UseTLS: YES
-        UseTLSCert: NO
-        TLSCert: /etc/ssl/certs/ssmtp.pem
+        config:
+          Debug: "NO"
+          root: admin@{{ ansible_domain }}
+          mailhub: mail.{{ ansible_domain }}:465
+          # rewriteDomain: [a different domain here, if needed ]
+          hostname: "{{ ansible_fqdn }}"
+          FromLineOverride: NO
+          AuthUser: systemmails
+          AuthPass: systemmails
+          AuthMethod: LOGIN
+          UseTLS: "YES"
+          UseSTARTTLS: "YES"
+          UseTLSCert: "NO"
+          TLSCert: /etc/ssl/certs/ssmtp.pem
+        aliases:
+        - name: onkeldom
+          mail: onkeldom@gmail.com
+          hub: smtp.gmail.com:587
 ```
 
 Example Playbook #2

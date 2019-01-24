@@ -2,14 +2,20 @@
 managed_ssmtp:
   enabled: true
   config:
-    Debug: NO
+    Debug: "NO"
     root: admin@{{ ansible_domain }}
     mailhub: mail.{{ ansible_domain }}:465
     # rewriteDomain: [a different domain here, if needed ]
     hostname: "{{ ansible_fqdn }}"
-    FromLineOverride: NO
+    FromLineOverride: "YES"
     AuthUser: systemmails
     AuthPass: systemmails
-    UseTLS: YES
-    UseTLSCert: NO
-    TLSCert: /etc/ssl/certs/ssmtp.pem
+    AuthMethod: LOGIN
+    UseTLS: "YES"
+    UseSTARTTLS: "YES"
+    UseTLSCert: "NO"
+    TLSCert: /etc/pki/ca-trust/extracted/pem/tls-ca-bundle
+  aliases:
+  - name: onkeldom
+    mail: onkeldom@gmail.com
+    hub: smtp.gmail.com:587

@@ -18,13 +18,14 @@
     group: root
     mode: 0644
   when: ssmtp_install is success and managed_ssmtp.enabled|default(false)|bool == true
-  notify: restart ssmtp
 
-- name: start and enable ssmtp service
+- name: configure /etc/ssmtp/revaliases
   tags: ssmtp
   become: true
-  service:
-    name: ssmtp
-    state: started
-    enabled: yes
+  template:
+    src: revaliases.j2
+    dest: /etc/ssmtp/revaliases
+    owner: root
+    group: root
+    mode: 0644
   when: ssmtp_install is success and managed_ssmtp.enabled|default(false)|bool == true
