@@ -23,15 +23,14 @@ Kernel Blacklist: [Kernel Blacklist with Ansible](https://docs.ansible.com/ansib
 Next roles:
 ```
 # Base configurations:
- - managed_interfaces
- - managed_logrotate
- - managed_rsyslog
- - managed_auditbeat
- - managed_filebeat
- - managed_metricbeat
- - managed_users
- - managed_keys
- - managed_proxy https://github.com/shelleg/ansible-role-proxy-client
+ - managed_interfaces # feature work for more complexed configs
+ - managed_logrotate  # feature work for more complexed logs and items
+ - managed_rsyslog    # feature work for ssl support and encrypted transfers
+ - managed_auditbeat  # feature work for full elk stack
+ - managed_filebeat   # feature work for full elk stack
+ - managed_metricbeat # feature work for full elk stack
+ - managed_users      # currently not needed
+ - managed_keys       # currently not needed
 # applications:
 - slapd
 - dnsmasq

@@ -1,4 +1,6 @@
 - name: "configure /etc/profile.d/proxy.sh"
+  tags: proxy
+  become: true
   template:
     src: "proxy.sh.j2"
     dest: "/etc/profile.d/proxy.sh"
@@ -8,6 +10,8 @@
   when: managed_proxy.enabled|default(false)|bool == true
 
 - name: "configure /etc/yum.conf proxy server"
+  tags: proxy
+  become: true
   lineinfile:
     dest: /etc/yum.conf
     state: present
@@ -18,6 +22,8 @@
   when: managed_proxy.enabled|default(false)|bool == true
 
 - name: "configure /etc/yum.conf proxy user"
+  tags: proxy
+  become: true
   lineinfile:
     dest: /etc/yum.conf
     state: present
@@ -28,6 +34,8 @@
   when: managed_proxy.enabled|default(false)|bool == true and managed_proxy.config.user is defined
 
 - name: "configure /etc/yum.conf proxy pass"
+  tags: proxy
+  become: true
   lineinfile:
     dest: /etc/yum.conf
     state: present
