@@ -1,0 +1,38 @@
+- name: "configure /etc/profile.d/proxy.sh"
+  template:
+    src: "proxy.sh.j2"
+    dest: "/etc/profile.d/proxy.sh"
+    owner: root
+    group: root
+    mode: 0755
+  when: managed_proxy.enabled|default(false)|bool == true
+
+- name: "configure /etc/yum.conf proxy server"
+  lineinfile:
+    dest: /etc/yum.conf
+    state: present
+    regexp: "^proxy="
+    insertafter: "^distroverpkg="
+    line: "proxy={{ managed_proxy.config.protocol }}://{{ managed_proxy.config.url }}:{{ managed_proxy.config.port }}"
+#    ignore_errors: yes
+  when: managed_proxy.enabled|default(false)|bool == true
+
+- name: "configure /etc/yum.conf proxy user"
+  lineinfile:
+    dest: /etc/yum.conf
+    state: present
+    regexp: "^proxy_username="
+    insertafter: "^proxy="
+    line: "proxy_username={{ managed_proxy.config.user }}"
+#    ignore_errors: yes
+  when: managed_proxy.enabled|default(false)|bool == true and managed_proxy.config.user is defined
+
+- name: "configure /etc/yum.conf proxy pass"
+  lineinfile:
+    dest: /etc/yum.conf
+    state: present
+    regexp: "^proxy_password="
+    insertafter: "^proxy_username="
+    line: "proxy_password={{ managed_proxy.config.pass }}"
+#    ignore_errors: yes
+  when: managed_proxy.enabled|default(false)|bool == true and managed_proxy.config.pass is defined
