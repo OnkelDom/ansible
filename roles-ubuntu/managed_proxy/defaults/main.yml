@@ -1,0 +1,10 @@
+---
+managed_proxy:
+  enabled: false
+  config:
+    protocol: http
+    url: "proxy.{{ ansible_domain }}"
+    port: 3128
+    # user: "nobody"
+    # pass: "testnoby"
+    noproxy: "127.0.0.0/8,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,169.254.0.0/16,*.{{ ansible_domain }}"

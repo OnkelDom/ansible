@@ -1,0 +1,7 @@
+---
+managed_ansibleuser:
+  enabled: true
+  comment: Ansible User
+  name: svc_ansible
+  pass: $6$rqSmL0GVYyM0hYq3$po557vKRt8SSEBbJa7rUrLLtgScsZefuceMlhW5HpTHoASxXOKchhpzteQ7jbiW6nHPzz7ehrHhhGCsioaioY1
+  key: "{{ lookup('file', '~/.ssh/id_rsa_ansible.pub') }}"

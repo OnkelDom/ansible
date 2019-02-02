@@ -1,0 +1,19 @@
+---
+- name: install ssmtp
+  package:
+    name: ssmtp
+    state: present
+  register: ssmtp_install
+  when: managed_ssmtp.enabled|default(false)|bool == true
+
+- name: configure /etc/ssmtp/ssmtp.conf & /etc/ssmtp/revaliases
+  template:
+    src: ssmtp_conf.j2
+    dest: /etc/ssmtp/ssmtp.conf
+    owner: root
+    group: root
+    mode: 0644
+  with_items:
+  - { src: ssmtp_conf.j2, dest: /etc/ssmtp/ssmtp.conf }
+  - { src: revaliases.j2, dest: /etc/ssmtp/revaliases }
+  when: ssmtp_install is success and managed_ssmtp.enabled|default(false)|bool == true

@@ -1,0 +1,6 @@
+# {{ ansible_managed }}
+
+root:{{ managed_ssmtp.config.root }}:{{ managed_ssmtp.config.mailhub }}
+{% if managed_ssmtp.aliases is defined %}
+{% for key in managed_ssmtp.aliases %}{{ key.name }}:{{ key.mail }}:{{ key.hub }}{% endfor %}
+{% endif %}

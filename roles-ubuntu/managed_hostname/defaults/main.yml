@@ -1,0 +1,4 @@
+---
+managed_hostname:
+  enabled: true
+  fqdn: "{{ ansible_fqdn }}"

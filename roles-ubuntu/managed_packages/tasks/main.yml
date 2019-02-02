@@ -1,0 +1,12 @@
+---
+- name: install packages
+  package:
+    name: "{{ managed_packages.install }}"
+    state: present
+  when: managed_packages.enabled|default(false)|bool == true
+
+- name: remove packages
+  package:
+    name: "{{ managed_packages.remove }}"
+    state: absent
+  when: managed_packages.enabled|default(false)|bool == true

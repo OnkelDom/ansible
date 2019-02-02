@@ -1,0 +1,28 @@
+---
+- name: install openssh-server, openssh-client - ubuntu
+  package:
+    name: ['openssh-server', 'openssh-client']
+    state: present
+  register: openssh_install
+  when: managed_sshd.enabled|default(false)|bool == true
+
+- name: configure /etc/ssh/ssh_config & /etc/sshd/sshd_config
+  template:
+    src: sshd_config.j2
+    dest: /etc/ssh/sshd_config
+    owner: root
+    group: root
+    mode: 0640
+  with_items:
+  - { src: ssh_config.j2, dest: /etc/ssh/ssh_config }
+  - { src: sshd_config.j2, dest: /etc/ssh/sshd_config }
+  when: openssh_install is success and managed_sshd.enabled|default(false)|bool == true
+  notify:
+  - restart sshd
+
+- name: start and enable sshd service
+  service:
+    name: sshd
+    state: started
+    enabled: yes
+  when: openssh_install is success and managed_sshd.enabled|default(false)|bool == true

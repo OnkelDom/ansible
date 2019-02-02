@@ -1,0 +1,24 @@
+---
+- name: install ntp
+  package:
+    name: ntp
+    state: present
+  register: ntp_install
+  when: managed_ntp.enabled|default(false)|bool == true
+
+- name: configure /etc/ntp.conf
+  template:
+    src: ntp_conf.j2
+    dest: /etc/ntp.conf
+    owner: root
+    group: root
+    mode: 0644
+  when: ntp_install is success and managed_ntp.enabled|default(false)|bool == true
+  notify: restart ntp
+
+- name: start and enable ntp service
+  service:
+    name: ntp
+    state: started
+    enabled: yes
+  when: ntp_install is success and managed_ntp.enabled|default(false)|bool == true

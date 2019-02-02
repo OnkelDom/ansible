@@ -1,0 +1,32 @@
+# {{ ansible_managed }}
+
+[INCLUDES]
+before = paths-{% if ansible_os_family == "RedHat" %}fedora{% endif %}{% if ansible_os_family == "Debian" %}debian{% endif %}.conf
+
+[DEFAULT]
+{% for key, value in managed_fail2ban.jail_config.items()|sort %}
+{%   if value is sameas true %}
+{{ key }}
+{%   elif value is string or value is number %}
+{{ key }} = {{ value }}
+{%   else %}
+{%     for v in value %}
+{{ key }} = {{ v }}
+{%     endfor %}
+{%   endif %}
+{% endfor %}
+
+# JAILS
+{% for key, value in managed_fail2ban.jail_services.items()|sort %}
+{%   if value is sameas true %}
+[{{ key }}]
+{%   elif value is string or value is number %}
+[{{ key }}]
+{{ value }}
+{%   else %}
+{%     for v in value %}
+[{{ key }}]
+{{ v }}
+{%     endfor %}
+{%   endif %}
+{% endfor %}

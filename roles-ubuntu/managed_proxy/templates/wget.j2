@@ -1,0 +1,9 @@
+# {{ ansible_managed }}
+
+passive_ftp = on
+
+https_proxy = {{ managed_proxy.config.protocol }}://{% if managed_proxy.config.user is defined %}{{ managed_proxy.config.user }}{% if managed_proxy.config.pass is defined %}:{{ managed_proxy.config.pass }}{% endif %}@{% endif %}{{ managed_proxy.config.url }}:{{ managed_proxy.config.port }}
+http_proxy = {{ managed_proxy.config.protocol }}://{% if managed_proxy.config.user is defined %}{{ managed_proxy.config.user }}{% if managed_proxy.config.pass is defined %}:{{ managed_proxy.config.pass }}{% endif %}@{% endif %}{{ managed_proxy.config.url }}:{{ managed_proxy.config.port }}
+ftp_proxy = {{ managed_proxy.config.protocol }}://{% if managed_proxy.config.user is defined %}{{ managed_proxy.config.user }}{% if managed_proxy.config.pass is defined %}:{{ managed_proxy.config.pass }}{% endif %}@{% endif %}{{ managed_proxy.config.url }}:{{ managed_proxy.config.port }}
+
+use_proxy = on

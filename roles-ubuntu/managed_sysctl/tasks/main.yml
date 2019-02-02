@@ -1,0 +1,25 @@
+---
+- name: add sysctl entrys
+  sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    state: present
+    reload: no
+    ignoreerrors: yes
+  with_items: "{{ managed_sysctl.add }}"
+  when: managed_sysctl.enabled|default(false)|bool == true and managed_sysctl.add is defined
+
+- name: remove sysctl entrys
+  tags: remove_sysctl
+  become: true
+  sysctl:
+    name: "{{ item.name }}"
+    state: absent
+    reload: no
+    ignoreerrors: yes
+  with_items: "{{ managed_sysctl.remove }}"
+  when: managed_sysctl.enabled|default(false)|bool == true and managed_sysctl.remove is defined
+
+- name: reload sysctl
+  command: /bin/true
+  notify: reload sysctl.conf

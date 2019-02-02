@@ -1,0 +1,5 @@
+---
+- name: configure timezone
+  timezone:
+    name: "{{ managed_timezone.timezone }}"
+  when: managed_timezone.enabled|default(false)|bool == true

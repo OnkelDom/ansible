@@ -1,0 +1,9 @@
+---
+managed_services:
+  enabled: true
+  active:
+    - ntp
+    - sshd
+    - fail2ban
+    - ufw
+  disabled:

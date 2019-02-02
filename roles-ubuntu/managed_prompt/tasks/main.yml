@@ -1,0 +1,16 @@
+---
+- name: configure /etc/profile.d/colorprompt.sh
+  template:
+    src: prompt.j2
+    dest: /etc/profile.d/colorprompt.sh
+    owner: root
+    group: root
+    mode: 0644
+  when: managed_prompt.enabled|default(false)|bool == true
+
+- name: change PS1 in /etc/bash.bashrc
+  replace:
+    path: /etc/bash.bashrc
+    regexp: '^PS1='
+    replace: "  PS1='{{ managed_prompt.prompt }}'"
+    backup: yes

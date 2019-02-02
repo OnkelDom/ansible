@@ -1,12 +1,12 @@
 # My Ansible Environment
 
-This is my Ansible Project and my goal is that can deploy and manage a complete company environment with it included all basic services.
+This is my Ansible Project and my goal is that i can deploy and manage a complete company environment with it included all basic services.
 
 The roles with prefix "managed_" are system base configurations and or basics services like sshd, chrony or firewall.
 
 # Currently my project is ONLY FOR CENTOS 7+
 
-When i finished this for CentOS 7+, i implement it for debian like systems too.
+Currently i write this for Ubuntu 18.04 and CentOS 7.6. Any role is on development.
 
 For the individual role readme please go to the role folder
 
