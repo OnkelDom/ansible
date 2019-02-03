@@ -1,0 +1,3 @@
+---
+- name: reload netplan
+  command: /usr/sbin/netplan apply

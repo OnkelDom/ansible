@@ -1,5 +1,5 @@
 ---
-- name: install openssh-server, openssh-client - ubuntu
+- name: install openssh-server, openssh-client
   package:
     name: ['openssh-server', 'openssh-client']
     state: present

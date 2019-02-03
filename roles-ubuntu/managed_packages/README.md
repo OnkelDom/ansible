@@ -25,11 +25,10 @@ Example Playbook #1
           - htop
           - tmux
           - wget
-          - epel-release
+          - zsh
           - bash-completion
-          - bash-completion-extras
         remove:
-          - NetworkManager
+          - not-named
 ```
 
 Example Playbook #2

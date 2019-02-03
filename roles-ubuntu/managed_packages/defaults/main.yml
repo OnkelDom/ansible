@@ -3,6 +3,7 @@ managed_packages:
   enabled: true
   install:
   - python
+  - python-yaml
   - vim
   - htop
   - tmux
@@ -27,7 +28,6 @@ managed_packages:
   - lsof
   - tig
   - expect
-  - python-yaml
   - ruby
   - ncdu
   - pwgen

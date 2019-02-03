@@ -1,37 +1,53 @@
-# My Ansible Environment
+# Meine Ansible Landschaft
 
-This is my Ansible Project and my goal is that i can deploy and manage a complete company environment with it included all basic services.
+Bis vor kurzem habe ich alle meine Server mit Shell-Scripten und teils git administriert. Da aber aufgrund der vielzahl an Servern und masse an Applikationen das ganze doch sehr viel Zeit in Anspruch nimmt, habe ich mich fuer Ansible entschieden.
 
-The roles with prefix "managed_" are system base configurations and or basics services like sshd, chrony or firewall.
+Mit dem Hintergrund das mir die Community dabei viel geholfen hat, gebe ich meine Art der Umsetzung von Ansible fuer alle zur freien Verfuegung.
 
-# Currently my project is ONLY FOR CENTOS 7+
+Ich habe meine Landschaft in 3 Kategorien eingeteilt:
+* managed_ = Grundlegende Serverkonfiguration die ich zusammen "standard_server" nenne.
+* app_     = Einzelne Applikationen (z.B. Plex)
+* bundle_  = Mehrerer zussamenlaufende Applikationen (z.B. Webserver incl. caddy,php-fpm,nextcloud,mariadb usw)
 
-Currently i write this for Ubuntu 18.04 and CentOS 7.6. Any role is on development.
+Ich hatte mich zuerst an CentOS versucht. Da hier aber die meisten Pakete zu alt sind, bin ich mitlerweile auf Ubuntu umgestiegen. Da ich aber die schon geleistete Arbeit nicht wegwerfen wollte, habe "erstmal" ywei Ordner gemacht. Irgendwann werde ich die Rolen zusammenfuehren.
 
-For the individual role readme please go to the role folder
+State:
+* Ubuntu 18.04 LTS up2date
+* CentOS 7.6 last edit at 18.01.2019
 
-I use the following Ansible modules for managed usecases:
+Damit jeder verstehen kann, wie meine Rollen funktionieren, habe ich zu jeder Rolle eine eigene README-Datei geschrieben.
 
-Cron: [Cron with Ansible](https://docs.ansible.com/ansible/latest/modules/cron_module.html)
-Repos: [Yum Repos with Ansible](https://docs.ansible.com/ansible/latest/modules/yum_repository_module.html)
-Mounts: [Mounts with Ansible](https://docs.ansible.com/ansible/latest/modules/mount_module.html)
-Download: [Downloads with Ansible](https://docs.ansible.com/ansible/latest/modules/get_url_module.html)
-Limits: [Limits with Ansible](https://docs.ansible.com/ansible/latest/modules/pam_limits_module.html)
-Modprobe: [Modprobe with Ansible](https://docs.ansible.com/ansible/latest/modules/modprobe_module.html)
-Kernel Blacklist: [Kernel Blacklist with Ansible](https://docs.ansible.com/ansible/latest/modules/kernel_blacklist_module.html)
+Fuer folgende Rollen nutze ich die Standard Ansible Module:
+* [Cron with Ansible](https://docs.ansible.com/ansible/latest/modules/cron_module.html)
+* [Yum Repos with Ansible](https://docs.ansible.com/ansible/latest/modules/yum_repository_module.html)
+* [Mounts with Ansible](https://docs.ansible.com/ansible/latest/modules/mount_module.html)
+* [Downloads with Ansible](https://docs.ansible.com/ansible/latest/modules/get_url_module.html)
+* [Limits with Ansible](https://docs.ansible.com/ansible/latest/modules/pam_limits_module.html)
+* [Modprobe with Ansible](https://docs.ansible.com/ansible/latest/modules/modprobe_module.html)
+* [Kernel Blacklist with Ansible](https://docs.ansible.com/ansible/latest/modules/kernel_blacklist_module.html)
 
-Next roles:
-```
-# Base configurations:
- - managed_interfaces # feature work for more complexed configs
- - managed_logrotate  # feature work for more complexed logs and items
- - managed_rsyslog    # feature work for ssl support and encrypted transfers
- - managed_auditbeat  # feature work for full elk stack
- - managed_filebeat   # feature work for full elk stack
- - managed_metricbeat # feature work for full elk stack
- - managed_users      # currently not needed
- - managed_keys       # currently not needed
-# applications:
+Folgende Rollen (stand 02.02.2019) erstelle ich noch:
+```yaml
+# My Infra - basics:
+  - managed_logrotate  # feature work for more complexed logs and items
+  - managed_rsyslog    # feature work for ssl support and encrypted transfers
+  - managed_auditbeat  # feature work for full elk stack
+  - managed_filebeat   # feature work for full elk stack
+  - managed_metricbeat # feature work for full elk stack
+  - managed_webcontent # Build Website with Jekyll https://jekyllrb.com/ and git
+# My Infra - bundles:
+  - bundle_webserver   # caddy, php, php-fpm, mariadb, nextcloud
+  - bundle_mediaserver # rclone, plexdrive, plex, sonarr
+  - bundle_mailserver  # postfix, dovecot, opendkim, opendmarc, rspamd, clamav
+  - bundle_mgmt        # dnsmasq (dns,dhcp,pxe,tftp), lighthttpd, samba5dc, git-server
+  - bundle_auth        # openldap, slapd, oauth2
+  - bundle_lb          # keepalived, haproxy, squid, ntp
+  - bundle_ns          # bind, unbound or/and powerdns
+  - bundle_syslog      # elastic, logstash, kibana, zabbix, grafana
+# My Infra - applications
+  - app_jdownloader2
+  
+# Interessts:
 - slapd
 - dnsmasq
   - cache
@@ -55,7 +71,7 @@ Next roles:
   - opendkim
   - opendmarc
   - rspamd
-- clamav
+  - clamav
 - nfs https://github.com/shelleg/ansible-role-nfs
 - webservers
   - lighthttpd

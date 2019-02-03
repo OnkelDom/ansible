@@ -45,10 +45,9 @@ Example Playbook #1
         PermitRootLogin: false
         Port: 22
         Protocol: 2
-        Subsystem: 'sftp /usr/libexec/openssh/sftp-server'
+        Subsystem: 'sftp /usr/lib/sftp-server'
         SyslogFacility: AUTHPRIV
         UsePAM: true
-        UsePrivilegeSeparation: sandbox
         X11Forwarding: true
         PrintMotd: yes
       sysconfig:

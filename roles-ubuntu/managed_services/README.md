@@ -20,9 +20,11 @@ Example Playbook #1
       managed_services:
         enabled: true
         active:
-          - chronyd
+          - ntp
+          - sshd
+          - fail2ban
+          - ufw
         disabled:
-          - NetworkManager
 ```
 
 Example Playbook #2

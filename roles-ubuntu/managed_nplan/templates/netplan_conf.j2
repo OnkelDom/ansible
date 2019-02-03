@@ -1,0 +1,26 @@
+---
+# {{ ansible_managed }}
+
+network:
+  version: {{ managed_nplan['network']['version']|default('2') }}
+  renderer: {{ managed_nplan['network']['renderer']|default('networkd') }}
+{% if managed_nplan['network']['ethernets'] is defined %}
+  ethernets:
+  {{ managed_nplan['network']['ethernets']|to_nice_yaml|indent(4, true) }}
+{% endif %}
+{% if managed_nplan['network']['wifis'] is defined %}
+  wifis:
+{{ managed_nplan['network']['wifis']|to_nice_yaml|indent(4, true) }}
+{% endif %}
+{% if managed_nplan['network']['bonds'] is defined %}
+  bonds:
+{{ managed_nplan['network']['bonds']|to_nice_yaml|indent(4, true) }}
+{% endif %}
+{% if managed_nplan['network']['bridges'] is defined %}
+  bridges:
+{{ managed_nplan['network']['bridges']|to_nice_yaml|indent(4, true) }}
+{% endif %}
+{% if managed_nplan['network']['vlans'] is defined %}
+  vlans:
+{{ managed_nplan['network']['vlans']|to_nice_yaml|indent(4, true) }}
+{% endif %}

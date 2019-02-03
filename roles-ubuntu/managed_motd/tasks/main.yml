@@ -20,14 +20,14 @@
 #    ignore_errors: true
   when: managed_motd.enabled|default(false)|bool == true
 
-- name: configure /etc/update-motd.d/05-ansible
-  template:
-    src: motd.j2
-    dest: /etc/update-motd.d/05-ansible
-    owner: root
-    group: root
-    mode: 0755
-  when: managed_motd.enabled|default(false)|bool == true
+#- name: configure /etc/update-motd.d/05-ansible
+#  template:
+#    src: motd.j2
+#    dest: /etc/update-motd.d/05-ansible
+#    owner: root
+#    group: root
+#    mode: 0755
+#  when: managed_motd.enabled|default(false)|bool == true
 
 - name: install motd landscape and update-notifier
   package:

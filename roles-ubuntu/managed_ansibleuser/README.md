@@ -1,6 +1,6 @@
 # Managed Ansibleuser
 
-Ansible Role to manage configure sudo without password and create a deployuser with public key.
+Ansible Role to manage sudo without password and create a deployuser with public key.
 
 You can look at the default file. In this i enable the role by default. You can set
 ```yaml
@@ -16,22 +16,22 @@ mkpasswd --method=sha-512
 
 Create silent a ssh-key:
 ```
-ssh-keygen -f id_rsa_deployuser -b 2048 -t rsa -q
+ssh-keygen -f id_rsa_ansible -b 2048 -t rsa -q
 ```
 
 Example Playbook #1
 ```yaml
-- name: "configure deployuser"
+- name: "configure ansible user"
   hosts: all
   roles:
-    - role: "managed_deployuser"
-      managed_deployuser:
+    - role: "managed_ansibleuser"
+      managed_ansibleuser:
         enabled: true
         comment: Ansible User
-        # adeployer:adeployer
-        name: adeployer
-        pass: $6$zsoMDZneqQ.5qlCz$9ST.28ywuNKUFcOqTQiOa..QzHV2wDHvsAd9f1G2kb/kQIPyVzP5WoGkfb6PaY4pi5YOojQOXU0IURCu5MTfj0
-        key: "{{ lookup('file', '~/.ssh/id_rsa_deployuser.pub') }}"
+        # svc_ansible:svc_ansible
+        name: svc_ansible
+        pass: $6$rqSmL0GVYyM0hYq3$po557vKRt8SSEBbJa7rUrLLtgScsZefuceMlhW5HpTHoASxXOKchhpzteQ7jbiW6nHPzz7ehrHhhGCsioaioY1
+        key: "{{ lookup('file', '~/.ssh/id_rsa_ansible.pub') }}"
 
 ```
 
@@ -40,5 +40,5 @@ Example Playbook #2
 - hosts: all
   roles:
   # Paramters defined in defaults/main.yml
-  - managed_hosts
+  - managed_ansibleuser
 ```

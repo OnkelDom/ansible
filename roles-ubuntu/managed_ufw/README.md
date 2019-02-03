@@ -1,10 +1,10 @@
-# Managed Firewall
+# Managed UFW
 
-Ansible Role to manage firewalld
+Ansible role to manage basic firewall settings for all servers.
 
 You can look at the default file. In this i enable the role by default. You can set
 ```yaml
-managed_firewall:
+managed_ufw:
   enabled: false
 ```
 to quick disable these role without comment it out. Otherwise you can define you defaults in defaults/main.yml.
@@ -18,26 +18,7 @@ Example Playbook #1
 - name: "configure firewall"
   hosts: all
   roles:
-    - role: "managed_firewall"
-      managed_firewall:
+    - role: "managed_ufw"
+      managed_ufw:
         enabled: true
-        services:
-        - name: ssh
-          zone: public
-          permanent: true
-          state: enabled
-        ports: [{}]
-        #- name: plex
-        #  port: 32400/tcp
-        #  zone: public
-        #  permanent: True
-        #  state: enabled
-```
-
-Example Playbook #2
-```yaml
-- hosts: all
-  roles:
-  # Paramters defined in defaults/main.yml
-  - managed_firewall
 ```
