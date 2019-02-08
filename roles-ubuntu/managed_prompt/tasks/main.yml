@@ -1,16 +1,19 @@
 ---
-- name: configure /etc/profile.d/colorprompt.sh
-  template:
-    src: prompt.j2
-    dest: /etc/profile.d/colorprompt.sh
-    owner: root
-    group: root
-    mode: 0644
+- name: install powerline & fonts-powerline
+  package:
+    name: ['powerline', 'fonts-powerline']
+  register: powerline_install
   when: managed_prompt.enabled|default(false)|bool == true
 
-- name: change PS1 in /etc/bash.bashrc
-  replace:
+- name: configure /etc/bash.bashrc
+  blackinline:
     path: /etc/bash.bashrc
-    regexp: '^PS1='
-    replace: "  PS1='{{ managed_prompt.prompt }}'"
-    backup: yes
+    insertafter: EOF
+    content: |
+      if [ -f ` which powerline-daemon` ]; then
+        powerline-daemon -q
+        POWERLINE_BASH_CONTINUATION=1
+        POWERLINE_BASH_SELECT=1
+        . /usr/share/powerline/bindings/bash/powerline.sh
+      fi
+  when: powerline_install is success and managed_prompt.enabled|default(false)|bool == true

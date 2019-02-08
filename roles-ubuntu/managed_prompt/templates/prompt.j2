@@ -1,5 +1,0 @@
-# {{ ansible_managed }}
-
-{% if managed_prompt and managed_prompt.enabled is defined %}
-export PS1="{{ managed_prompt.prompt }}"
-{% endif %}

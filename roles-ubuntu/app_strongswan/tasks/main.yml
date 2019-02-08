@@ -1,0 +1,37 @@
+---
+- name: install strongswan
+  package:
+    name: ['strongswan', 'strongswan-pki']
+    state: present
+  register: strongswan_install
+  when: app_strongswan.enabled|default(false)|bool == true
+
+- name: create pki folders
+  file:
+    path: "/etc/pki/{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0700
+    recurse: yes
+  with_items:
+  - cacerts
+  - certs
+  - private
+  when: strongswan_install is success and app_strongswan.enabled|default(false)|bool == true
+
+- name: create ca key
+  command: 
+  args: ipsec pki --gen --type rsa --size 4096 --outform pem > private/ca-key.pem
+    chdir: /etc/pki
+    executable: /bin/bash
+  when: strongswan_install is success and app_strongswan.enabled|default(false)|bool == true
+
+- name: create root ca
+  command: 
+  args: "ipsec pki --self --ca --lifetime {{ app_strongswan.config.root_ca_lifetime }} --in private/ca-key.pem --type rsa --dn 'CN={{ app_strongswan.config.root_ca_cn }}' --outform pem > cacerts/ca-cert.pem"
+    chdir: /etc/pki
+    executable: /bin/bash
+  when: strongswan_install is success and app_strongswan.enabled|default(false)|bool == true
+
+

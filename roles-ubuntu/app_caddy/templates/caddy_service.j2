@@ -1,0 +1,61 @@
+[Unit]
+Description=Caddy HTTP/2 web server
+Documentation=https://caddyserver.com/docs
+After=network-online.target
+Wants=network-online.target systemd-networkd-wait-online.service
+
+[Service]
+Restart={{ app_caddy.systemd.restart|default('on-abnormal') }}
+
+; User and group the process will run as.
+User={{ app_caddy.config.user|default('www-data') }}
+Group={{ app_caddy.config.user|default('www-data') }}
+
+; Letsencrypt-issued certificates will be written to this directory.
+Environment=CADDYPATH={{ app_caddy.config.certs_dir|default('/etc/ssl/caddy') }}
+
+; Always set "-root" to something safe in case it gets forgotten in the Caddyfile.
+ExecStart={{ app_caddy.config.bin_dir|default('/usr/local/bin') }}/caddy -http2={{ app_caddy.config.http2_enabled|default('true') }} -log {{ app_caddy.config.logfile|default('stdout') }} -agree=true -conf={{ app_caddy.config.conf_dir|default('/etc/caddy') }}Caddyfile -root=/var/tmp
+ExecReload=/bin/kill -USR1 $MAINPID
+
+StartLimitInterval={{ app_caddy.systemd.restart_startlimitinterval|default('86400') }}
+StartLimitBurst= {{ app_caddy.systemd.restart_startlimitburst|default('5') }}
+
+; Use graceful shutdown with a reasonable timeout
+KillMode=mixed
+KillSignal=SIGQUIT
+TimeoutStopSec=5s
+
+; Limit the number of file descriptors; see `man systemd.exec` for more limit settings.
+LimitNOFILE=1048576
+; Unmodified caddy is not expected to use more than that.
+LimitNPROC={{ app_caddy.systemd.nproc_limit|default('128') }}
+
+; Use private /tmp and /var/tmp, which are discarded after caddy stops.
+PrivateTmp={{ app_caddy.systemd.private_tmp|default('true') }}
+; Use a minimal /dev (May bring additional security if switched to 'true', but it may not work on Raspberry Pi's or other devices, so it has been disabled in this dist.)
+PrivateDevices={{ app_caddy.systemd.private_devices|default('false') }}
+; Hide /home, /root, and /run/user. Nobody will steal your SSH-keys.
+ProtectHome={{ app_caddy.systemd.protect_home|default('true') }}
+; Make /usr, /boot, /etc and possibly some more folders read-only.
+ProtectSystem={{ app_caddy.systemd.protect_system|default('full') }}
+; … except /etc/ssl/caddy, because we want Letsencrypt-certificates there.
+;   This merely retains r/w access rights, it does not add any new. Must still be writable on the host!
+ReadWriteDirectories={{ app_caddy.config.certs_dir|default('/etc/ssl/caddy') }}
+
+; The following additional security directives only work with systemd v229 or later.
+; They further restrict privileges that can be gained by caddy. Uncomment if you like.
+; Note that you may have to add capabilities required by any plugins in use.
+{% if c{{ app_caddy.systemd.capabilities|default('false') }} %}
+CapabilityBoundingSet={{ app_caddy.systemd.protect_system|default('CAP_NET_BIND_SERVICE') }}
+AmbientCapabilities={{ app_caddy.systemd.protect_system|default('CAP_NET_BIND_SERVICE') }}
+NoNewPrivileges=true
+{% elif %}
+; CapabilityBoundingSet={{ app_caddy.systemd.protect_system|default('CAP_NET_BIND_SERVICE') }}
+; AmbientCapabilities={{ app_caddy.systemd.protect_system|default('CAP_NET_BIND_SERVICE') }}
+; NoNewPrivileges=true
+{% endif %}
+
+
+[Install]
+WantedBy=multi-user.target

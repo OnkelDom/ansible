@@ -1,0 +1,59 @@
+---
+app_caddy:
+  enabled: true
+  config:
+    license: personal
+    license_account_id:
+    license_api_key:
+    telemetry: off
+    update: yes
+    user: www-data
+    bin_dir: /usr/local/bin
+    conf_dir: /etc/caddy
+    log_dir: /var/log/caddy
+    log_file: stdout
+    certs_dir: /etc/ssl/caddy
+    import: conf.d/*.conf
+    http2_enabled: "true"
+  pgp:
+  systemd:
+    network_dependency: True
+    capabilities_enabled: true
+    capabilities: "CAP_NET_BIND_SERVICE"
+    restart: "on-failure" # alway, on-success, on-failure, on-abnormal, on-abort, on-watchdog
+    restart_startlimitinterval: "86400"
+    restart_startlimitburst: "5"
+    private_tmp: "true"
+    private_devices: "true"
+    # Disable this because the git module writes to ~/.ssh
+    protect_home: "true"
+    protect_system: "full"
+    nproc_limit: 0
+    setcap: yes
+  plugins:
+  - dyndns
+  - http.authz
+  - http.cache
+  - http.cgi
+  - http.cors
+  - http.filebrowser
+  - http.forwardproxy
+  - http.git
+  - http.ipfilter
+  - http.jwt
+  - http.locale
+  - http.login
+  - http.mailout
+  - http.nobots
+  - http.realip
+  - http.reauth
+  - http.restic
+  - http.upload
+  - http.webdav
+  - tls.dns.cloudflare
+  default_config: |
+    localhost:80
+    gzip
+    # tls email@example.com
+    # root /var/www
+    git github.com/antoiner77/caddy-ansible

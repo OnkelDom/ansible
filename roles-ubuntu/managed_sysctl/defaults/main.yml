@@ -25,7 +25,7 @@ managed_sysctl:
   - { name: net.ipv6.conf.all.disable_ipv6, value: 0 }
   - { name: net.ipv6.conf.default.disable_ipv6, value: 0 }
   - { name: net.ipv6.conf.lo.disable_ipv6, value: 1 }
-  - { name: vm.swappiness, value: 5 }
+  - { name: vm.swappiness, value: 1 }
   - { name: fs.file-max, value: 16384 }
   remove:
   - { name: net.bridge.bridge-nf-call-ip6tables }
