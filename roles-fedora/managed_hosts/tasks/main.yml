@@ -1,0 +1,12 @@
+---
+- name: configure /etc/hosts
+  tags: hosts
+  become: true
+  template:
+    src: hosts.j2
+    dest: /etc/hosts
+    backup: "{{ managed_hosts.backup | default(true) }}"
+    owner: root
+    group: root
+    mode: 0644
+  when: managed_hosts.enabled|default(false)|bool == true

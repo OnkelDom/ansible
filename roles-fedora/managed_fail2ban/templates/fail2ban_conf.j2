@@ -1,0 +1,14 @@
+# {{ ansible_managed }}
+
+[Definition]
+{% for key, value in managed_fail2ban.config.items()|sort %}
+{%   if value is sameas true %}
+{{ key }}
+{%   elif value is string or value is number %}
+{{ key }} = {{ value }}
+{%   else %}
+{%     for v in value %}
+{{ key }} = {{ v }}
+{%     endfor %}
+{%   endif %}
+{% endfor %}

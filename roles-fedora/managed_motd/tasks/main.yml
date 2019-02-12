@@ -1,0 +1,16 @@
+---
+- name: configure /etc/motd
+  tags: motd
+  template:
+    src: motd.j2
+    dest: /etc/motd
+    owner: root
+    group: root
+    mode: 0644
+  when: managed_motd.enabled|default(false)|bool == true
+
+- name: remove cockpit from /etc/motd.d
+  file:
+    path: /etc/motd.d/cockpit
+    state: absent
+  when: managed_motd.enabled|default(false)|bool == true

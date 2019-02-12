@@ -1,0 +1,4 @@
+---
+managed_timezone:
+  enabled: true
+  timezone: Europe/Berlin

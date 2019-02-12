@@ -1,0 +1,7 @@
+---
+- name: configure timezone
+  tags: timezone
+  become: true
+  timezone:
+    name: "{{ managed_timezone.timezone }}"
+  when: managed_timezone.enabled|default(false)|bool == true

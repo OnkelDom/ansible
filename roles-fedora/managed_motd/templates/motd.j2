@@ -1,0 +1,6 @@
+{{ managed_motd.motd_ascii_art }}
+{% for item in managed_motd.motd_info %}
+{% for key, value in item.iteritems() %}
+{{ key }}{{ value }}
+{% endfor %}
+{% endfor %}

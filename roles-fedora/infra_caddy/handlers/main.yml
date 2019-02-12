@@ -1,0 +1,7 @@
+---
+- name: restart caddy
+  tags: caddy
+  become: true
+  service:
+    name: caddy
+    state: restarted

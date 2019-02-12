@@ -1,0 +1,11 @@
+---
+- name: configure /etc/profile.d/prompt.sh
+  tags: prompt
+  become: true
+  template:
+    src: prompt.j2
+    dest: /etc/profile.d/prompt.sh
+    owner: root
+    group: root
+    mode: 0644
+  when: managed_prompt.enabled|default(false)|bool == true

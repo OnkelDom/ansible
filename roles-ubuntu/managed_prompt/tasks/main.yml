@@ -2,13 +2,15 @@
 - name: install powerline & fonts-powerline
   package:
     name: ['powerline', 'fonts-powerline']
+    state: present
   register: powerline_install
   when: managed_prompt.enabled|default(false)|bool == true
 
 - name: configure /etc/bash.bashrc
-  blackinline:
+  blockinfile:
     path: /etc/bash.bashrc
     insertafter: EOF
+    state: present
     content: |
       if [ -f ` which powerline-daemon` ]; then
         powerline-daemon -q

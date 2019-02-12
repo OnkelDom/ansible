@@ -1,0 +1,55 @@
+---
+- name: install ufw
+  package:
+    name: ufw
+    state: present
+  register: ufw_install
+  when: managed_ufw.enabled|default(false)|bool == true
+
+- name: start and enable ufw
+  service:
+    name: ufw
+    state: started
+    enabled: yes
+  when: ufw_install is success and managed_ufw.enabled|default(false)|bool == true
+
+- name: enable logging
+  ufw:
+    state: enabled
+    logging: on
+  when: ufw_install is success and managed_ufw.enabled|default(false)|bool == true
+  notify: restart ufw
+
+- name: reject auth
+  ufw:
+    rule: reject
+    port: auth
+    log: yes
+  when: ufw_install is success and managed_ufw.enabled|default(false)|bool == true
+  notify: restart ufw
+
+- name: set limit sshd connections
+  ufw:
+    rule: limit
+    port: ssh
+    proto: tcp
+  when: ufw_install is success and managed_ufw.enabled|default(false)|bool == true
+  notify: restart ufw
+
+- name: allow access from RFC1918 networks
+  ufw:
+    rule: allow
+    src: '{{ item }}'
+  with_items:
+  - 10.0.0.0/8
+  - 172.16.0.0/12
+  - 192.168.0.0/16
+  when: ufw_install is success and managed_ufw.enabled|default(false)|bool == true
+  notify: restart ufw
+
+- name: allow OpenSSH
+  ufw:
+    rule: allow
+    name: SSH
+  when: ufw_install is success and managed_ufw.enabled|default(false)|bool == true
+  notify: restart ufw
