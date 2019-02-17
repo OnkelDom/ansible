@@ -4,7 +4,9 @@ managed_packages:
   install:
     - python
     - libselinux-python
-    - network-scripts
+    - NetworkManager
+    - ufw
+    #- firewalld
     - vim
     - htop
     - tmux
@@ -33,6 +35,10 @@ managed_packages:
     - unzip
     - tree
   remove:
-    - NetworkManager
-    - firewalld
+    - network-scripts
     - cockpit
+    - cockpit-bridge
+    - cockpit-packagekit
+    - cockpit-storaged
+    - cockpit-system
+    - cockpit-ws

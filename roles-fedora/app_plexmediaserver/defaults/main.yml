@@ -1,0 +1,4 @@
+---
+app_plexmediaserver:
+  enabled: true
+

@@ -1,0 +1,28 @@
+---
+- name: install NetworkManager
+  package:
+    name: ['NetworkManager', 'python-netaddr', 'python3-netaddr', 'NetworkManager-glib', 'libnm-qt-devel.x86_64', 'nm-connection-editor.x86_64', 'libsemanage-python', 'policycoreutils-python', 'NetworkManager-libnm-devel', 'python3-networkmanager', 'NetworkManager-libnm']
+    state: present
+  register: nm_install
+  when: managed_nm.enabled|default(false)|bool == true
+
+- name: start and enable NetworkManager
+  service:
+    name: NetworkManager
+    state: started
+    enabled: yes
+  when: nm_install is success and managed_nm.enabled|default(false)|bool == true
+
+- name: configure basis Network
+  nmcli:
+    conn_name: default
+    ifname: eth0
+    type: ethernet
+    mac: "{{ ansible_default_ipv4.macaddress }}"
+    ip4: "{{ ansible_default_ipv4.address }}/{{ (ansible_default_ipv4.address + '/' + ansible_default_ipv4.netmask) | ipaddr('prefix') }}"
+    gw4: "{{ ansible_default_ipv4.gateway }}"
+    dns4: "1.1.1.1 1.0.0.1"
+    ip6: "{{ ansible_default_ipv6.address }}/{{ ansible_default_ipv6.prefix }}"
+    gw6: 'fe80::1'
+    dns6: "2606:4700:4700::1111 2606:4700:4700::1001"
+    state: present

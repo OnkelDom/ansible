@@ -1,8 +1,0 @@
----
-- name: update system packages
-  tags: system_update
-  become: true
-  package:
-    name: '*'
-    state: latest
-  when: os_update.enabled|default(false)|bool == true

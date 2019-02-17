@@ -1,28 +1,24 @@
-# OS Update
+# Managed UFW
 
-Ansible Role to update your servers
+Ansible role to manage basic firewall settings for all servers.
 
 You can look at the default file. In this i enable the role by default. You can set
 ```yaml
-os_update:
+managed_ufw:
   enabled: false
 ```
 to quick disable these role without comment it out. Otherwise you can define you defaults in defaults/main.yml.
 
+You can configure firewall rules with services and ports.
+
+By default ssh is allowed for zone public and permanent.
+
 Example Playbook #1
 ```yaml
-- name: "update system packages"
+- name: "configure firewall"
   hosts: all
   roles:
-    - role: "os_update"
-      os_update:
+    - role: "managed_ufw"
+      managed_ufw:
         enabled: true
-```
-
-Example Playbook #2
-```yaml
-- hosts: all
-  roles:
-  # Paramters defined in defaults/main.yml
-  - os_update
 ```

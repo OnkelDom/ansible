@@ -1,7 +1,0 @@
----
-- name: restart open-vm-tools
-  tags: open-vm-tools
-  become: true
-  service:
-    name: vmtoolsd
-    state: restarted

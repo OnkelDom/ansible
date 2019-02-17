@@ -47,7 +47,7 @@
   when: ufw_install is success and managed_ufw.enabled|default(false)|bool == true
   notify: restart ufw
 
-- name: allow OpenSSH
+- name: allow SSH
   ufw:
     rule: allow
     name: SSH

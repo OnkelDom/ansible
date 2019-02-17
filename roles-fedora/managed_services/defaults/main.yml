@@ -4,9 +4,8 @@ managed_services:
   active:
     - chronyd
     - sshd
-    - ufw
     - fail2ban
-    - network
-  disabled:
     - NetworkManager
+    - ufw
+  disabled:
     - firewalld
