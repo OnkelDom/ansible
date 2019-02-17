@@ -1,0 +1,87 @@
+---
+- name: install fuse
+  package:
+    name: fuse
+    state: present
+  register: fuse_install
+  when: app_mediaserver.enabled|default(false)|bool == true
+
+- name: configure /etc/fuse.conf
+  replace:
+    path: /etc/fuse.conf
+    regexp: '{{ item.key }}'
+    replace: '{{ item.value }}'
+  with_items:
+  - key: '# mount_max = 1000'
+    value: 'mount_max = 1000'
+  - key: '# user_allow_other'
+    value: 'user_allow_other'
+  when: fuse_install is success and app_mediaserver.enabled|default(false)|bool == true
+
+- name: create user config folder
+  file:
+    path: "/home/{{ app_mediaserver.config.user }}/.config"
+    state: directory
+    owner: "{{ app_mediaserver.config.user }}"
+    group: "{{ app_mediaserver.config.group }}"
+    mode: 0755
+
+- name: create plexdrive config folder
+  file:
+    path: "/home/{{ app_mediaserver.config.user }}/.config/plexdrive"
+    state: directory
+    owner: "{{ app_mediaserver.config.user }}"
+    group: "{{ app_mediaserver.config.group }}"
+    mode: 0700
+
+- name: create plexdrive mount folder
+  file:
+    path: "/mnt/{{ app_mediaserver.config.mountfolder }}"
+    state: directory
+    owner: "{{ app_mediaserver.config.user }}"
+    group: "{{ app_mediaserver.config.group }}"
+    mode: 0755
+
+- name: copy plexdrive config
+  template:
+    src: plexdrive_conf.j2
+    dest: "/home/{{ app_mediaserver.config.user }}/.config/plexdrive/config.json"
+    owner: "{{ app_mediaserver.config.user }}"
+    group: "{{ app_mediaserver.config.group }}"
+    mode: 0600
+
+- name: copy plexdrive systemd file
+  template:
+    src: plexdrive_service.j2
+    dest: "/etc/systemd/system/plexdrive.service"
+    owner: "{{ app_mediaserver.config.user }}"
+    group: "{{ app_mediaserver.config.group }}"
+    mode: 0755
+
+- block:
+  - name: find the latest plexdrive version
+    uri:
+      url: https://api.github.com/repos/dweidenfeld/plexdrive/releases/latest
+      method: GET
+      return_content: yes
+      status_code: 200
+      body_format: json
+    register: result_json
+    changed_when: false
+  - name: download the latest plexdrive version to /usr/local/bin
+    get_url:
+      url: https://github.com/dweidenfeld/plexdrive/releases/download/{{ (result_json.content|from_json).tag_name }}/plexdrive-linux-amd64
+      dest: /usr/local/bin/plexdrive
+      owner: "{{ app_mediaserver.config.user }}"
+      group: root
+      mode: 0755
+  when: plexdrive_version == "latest"
+
+- name: download custom plexdrive version to /usr/local/bin
+  get_url:
+    url: "https://github.com/dweidenfeld/plexdrive/releases/download/{{ app_mediaserver.config.plexdrive_version }}/plexdrive-linux-amd64"
+    dest: /usr/local/bin/plexdrive
+    owner: "{{ app_mediaserver.config.user }}"
+    group: root
+    mode: 0755
+  when: plexdrive_version != "latest"
