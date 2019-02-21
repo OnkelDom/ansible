@@ -6,7 +6,8 @@ managed_packages:
     - libselinux-python
     - NetworkManager
     - ufw
-    #- firewalld
+    - iftop
+    - bmon
     - vim
     - htop
     - tmux
@@ -36,6 +37,7 @@ managed_packages:
     - tree
   remove:
     - network-scripts
+    - firewalld
     - cockpit
     - cockpit-bridge
     - cockpit-packagekit
