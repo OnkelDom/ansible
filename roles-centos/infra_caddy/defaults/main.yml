@@ -1,5 +1,5 @@
 ---
-infra_caddy:
+app_caddy:
   enabled: true
   config:
     import: conf.d/*.conf
@@ -10,66 +10,14 @@ infra_caddy:
 #      log    /var/log/caddy/srv03.onkeldom.eu_access.log
 #      error  /var/log/caddy/srv03.onkeldom.eu_error.log
 #    }
-    nextcloud: |
-      srv03.onkeldom.eu {
+    plex: |
+      plex.onkeldom.eu {
         root   /usr/share/caddy/nextcloud
-        log    /var/log/caddy/nextcloud_access.log
-        errors /var/log/caddy/nextcloud_errors.log
-          fastcgi / 127.0.0.1:9000 php {
-            env PATH /bin
-          }
-          header / {
-            Strict-Transport-Security	   "max-age=15768000;"
-          }
-          # checks for images
-          rewrite {
-            ext .svg .gif .png .html .ttf .woff .ico .jpg .jpeg
-            r ^/index.php/(.+)$
-            to /{1} /index.php?{1}
-          }
-          rewrite {
-            r ^/\.well-known/host-meta$
-            to /public.php?service=host-meta&{query}
-          }
-          rewrite {
-            r ^/\.well-known/host-meta\.json$
-            to /public.php?service=host-meta-json&{query}
-          }
-          rewrite {
-            r ^/\.well-known/webfinger$
-            to /public.php?service=webfinger&{query}
-          }
-          rewrite {
-            r ^/index.php/.*$
-            to /index.php?{query}
-          }
-          # client support (e.g. os x calendar / contacts)
-          redir /.well-known/carddav /remote.php/carddav 301
-          redir /.well-known/caldav /remote.php/caldav 301
-          # remove trailing / as it causes errors with php-fpm
-          rewrite {
-            r ^/remote.php/(webdav|caldav|carddav|dav)(\/?)(\/?)$
-            to /remote.php/{1}
-          }
-          rewrite {
-            r ^/remote.php/(webdav|caldav|carddav|dav)/(.+?)(\/?)(\/?)$
-            to /remote.php/{1}/{2}
-          }
-          rewrite {
-            r ^/public.php/(dav|webdav|caldav|carddav)(\/?)(\/?)$
-            to /public.php/{1}
-          }
-          rewrite {
-            r ^/public.php/(dav|webdav|caldav|carddav)/(.+)(\/?)(\/?)$
-            to /public.php/{1}/{2}
-          }
-          # .htaccess / data / config / ... shouldn't be accessible from outside
-          status 403 {
-            /.htaccess
-            /data
-            /config
-            /db_structure
-            /.xml
-            /README
+        log    /var/log/caddy/plex_access.log
+        errors /var/log/caddy/plex_errors.log
+        plex.domain.com {
+          gzip
+          proxy / localhost:32400 {
+            transparent
           }
         }

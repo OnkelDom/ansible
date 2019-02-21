@@ -1,0 +1,11 @@
+[Unit]
+After=syslog.target plexdrive.service plexcrypt.service
+Requires=plexdrive.service plexcrypt.service
+PartOf=plexdrive.service plexcrypt.service
+
+[Service]
+User={{ app_mediaserver.config.user }}
+Group={{ app_mediaserver.config.group }}
+# Change PMS's directory
+Environment="PLEX_MEDIA_SERVER_APPLICATION_SUPPORT_DIR=/home/{{ app_mediaserver.config.user }}/.config/plex"
+Environment="PLEX_MEDIA_SERVER_USE_SYSLOG=true"

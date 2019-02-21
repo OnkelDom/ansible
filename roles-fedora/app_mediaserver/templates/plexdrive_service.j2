@@ -7,7 +7,7 @@ After=network-online.target
 Type=simple
 User={{ app_mediaserver.config.user }}
 Group={{ app_mediaserver.config.group }}
-ExecStart=/usr/local/bin/plexdrive -c /home/{{ app_mediaserver.config.user }}/.config/plexdrive --cache-file="/home/{{ app_mediaserver.config.user }}/.config/plexdrive/cache.bolt" -v 2 -o allow_other --refresh-interval=15m --chunk-size=1G mount /mnt/{{ app_mediaserver.config.mountfolder }}
+ExecStart=/usr/local/bin/plexdrive -c /home/{{ app_mediaserver.config.user }}/.config/plexdrive --cache-file="/home/{{ app_mediaserver.config.user }}/.config/plexdrive/cache.bolt" -v 2 -o allow_other --refresh-interval={{ app_mediaserver.config.plexdrive_refresh_interval }} --chunk-size={{ app_mediaserver.config.plexdrive_chunck_size }} mount /mnt/{{ app_mediaserver.config.mountfolder }}
 ExecStop=/usr/bin/sudo /bin/fusermount -u -z /mnt/{{ app_mediaserver.config.mountfolder }}
 Restart=on-failure
 RestartSec=30

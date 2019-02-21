@@ -1,7 +1,7 @@
 ---
-- name: install fuse
+- name: install fuse and unzip
   package:
-    name: fuse
+    name: ['fuse' ,'unzip']
     state: present
   register: fuse_install
   when: app_mediaserver.enabled|default(false)|bool == true
@@ -16,7 +16,9 @@
     value: 'mount_max = 1000'
   - key: '# user_allow_other'
     value: 'user_allow_other'
-  when: fuse_install is success and app_mediaserver.enabled|default(false)|bool == true
+  when:
+  - fuse_install is success
+  - app_mediaserver.enabled|default(false)|bool == true
 
 - name: create user config folder
   file:
@@ -25,6 +27,8 @@
     owner: "{{ app_mediaserver.config.user }}"
     group: "{{ app_mediaserver.config.group }}"
     mode: 0755
+  when:
+  - app_mediaserver.enabled|default(false)|bool == true
 
 - name: create plexdrive config folder
   file:
@@ -32,7 +36,9 @@
     state: directory
     owner: "{{ app_mediaserver.config.user }}"
     group: "{{ app_mediaserver.config.group }}"
-    mode: 0700
+    mode: 0750
+  when:
+  - app_mediaserver.enabled|default(false)|bool == true
 
 - name: create plexdrive mount folder
   file:
@@ -41,6 +47,8 @@
     owner: "{{ app_mediaserver.config.user }}"
     group: "{{ app_mediaserver.config.group }}"
     mode: 0755
+  when:
+  - app_mediaserver.enabled|default(false)|bool == true
 
 - name: copy plexdrive config
   template:
@@ -49,14 +57,8 @@
     owner: "{{ app_mediaserver.config.user }}"
     group: "{{ app_mediaserver.config.group }}"
     mode: 0600
-
-- name: copy plexdrive systemd file
-  template:
-    src: plexdrive_service.j2
-    dest: "/etc/systemd/system/plexdrive.service"
-    owner: "{{ app_mediaserver.config.user }}"
-    group: "{{ app_mediaserver.config.group }}"
-    mode: 0755
+  when:
+  - app_mediaserver.enabled|default(false)|bool == true
 
 - block:
   - name: find the latest plexdrive version
@@ -72,16 +74,292 @@
     get_url:
       url: https://github.com/dweidenfeld/plexdrive/releases/download/{{ (result_json.content|from_json).tag_name }}/plexdrive-linux-amd64
       dest: /usr/local/bin/plexdrive
-      owner: "{{ app_mediaserver.config.user }}"
+      owner: root
       group: root
-      mode: 0755
-  when: plexdrive_version == "latest"
+      mode: 0775
+  when:
+  - app_mediaserver.enabled|default(false)|bool == true
+  - app_mediaserver.config.plexdrive_version == "latest"
 
 - name: download custom plexdrive version to /usr/local/bin
   get_url:
     url: "https://github.com/dweidenfeld/plexdrive/releases/download/{{ app_mediaserver.config.plexdrive_version }}/plexdrive-linux-amd64"
     dest: /usr/local/bin/plexdrive
-    owner: "{{ app_mediaserver.config.user }}"
+    owner: root
+    group: root
+    mode: 0775
+  when:
+  - app_mediaserver.enabled|default(false)|bool == true
+  - app_mediaserver.config.plexdrive_version != "latest"
+
+- name: copy plexdrive systemd file
+  template:
+    src: plexdrive_service.j2
+    dest: "/etc/systemd/system/plexdrive.service"
+    owner: root
     group: root
     mode: 0755
-  when: plexdrive_version != "latest"
+  register: plexdrive_systemd
+  when:
+  - app_mediaserver.enabled|default(false)|bool == true
+  notify:
+  - reload systemd
+
+- name: start and enable plexdrive service
+  service:
+    name: plexdrive
+    state: started
+    enabled: yes
+  when:
+  - plexdrive_systemd is success
+  - app_mediaserver.enabled|default(false)|bool == true
+
+- block:
+  - name: download rclone (latest version)
+    get_url:
+      url: https://downloads.rclone.org/rclone-current-linux-amd64.zip
+      dest: /usr/local/src
+  - name: extract the rclone tarball (latest version) to /tmp
+    unarchive:
+      src: /usr/local/src/rclone-current-linux-amd64.zip
+      dest: /tmp
+      remote_src: yes
+    when:
+    - app_mediaserver.config.rclone_version == "latest"
+
+- block:
+  - name: download rclone (custom version)
+    get_url:
+      url: "https://downloads.rclone.org/v{{ app_mediaserver.config.rclone_version }}/rclone-v{{ app_mediaserver.config.rclone_version }}-linux-amd64.zip"
+      dest: /usr/local/src
+  - name: extract the rclone tarball (custom version) to /tmp
+    unarchive:
+      src: /usr/local/src/rclone-v{{ rclone_version }}-linux-amd64.zip
+      dest: /tmp
+      remote_src: yes
+  when:
+  - app_mediaserver.enabled|default(false)|bool == true
+  - app_mediaserver.config.rclone_version != "latest"
+
+- name: find the name of the created folder
+  find:
+    paths: /tmp
+    file_type: directory
+    patterns: "*rclone*"
+  register: created_dir
+
+- name: ropy rclone binary to /usr/local/bin
+  copy:
+    src: "{{ created_dir.files[0].path }}/rclone"
+    dest: /usr/local/bin/rclone
+    remote_src: yes
+    owner: root
+    group: root
+    mode: 0775
+
+- name: delete temp dir
+  file:
+    path: "{{ created_dir.files[0].path }}"
+    state: absent
+
+- name: create rclone config folder
+  file:
+    path: "/home/{{ app_mediaserver.config.user }}/.config/rclone"
+    state: directory
+    owner: "{{ app_mediaserver.config.user }}"
+    group: "{{ app_mediaserver.config.group }}"
+    mode: 0700
+  when:
+  - app_mediaserver.enabled|default(false)|bool == true
+
+- name: copy rclone config
+  template:
+    src: rclone_conf.j2
+    dest: '/home/{{ app_mediaserver.config.user }}/.config/rclone/rclone.conf'
+    owner: "{{ app_mediaserver.config.user }}"
+    group: "{{ app_mediaserver.config.group }}"
+    mode: 0600
+  when:
+  - app_mediaserver.enabled|default(false)|bool == true
+
+- name: copy rclone plexcrypt systemd file
+  template:
+    src: plexcrypt_service.j2
+    dest: "/etc/systemd/system/plexcrypt.service"
+    owner: root
+    group: root
+    mode: 0755
+  register: plexcrypt_systemd
+  when:
+  - app_mediaserver.enabled|default(false)|bool == true
+  notify:
+  - reload systemd
+
+- name: start and enable rclone plexcrypt service
+  service:
+    name: plexcrypt
+    state: started
+    enabled: yes
+  when:
+  - plexcrypt_systemd is success
+  - app_mediaserver.enabled|default(false)|bool == true
+
+- name: copy rclone plexcrypthttp systemd file
+  template:
+    src: plexcrypthttp_service.j2
+    dest: "/etc/systemd/system/plexcrypthttp.service"
+    owner: root
+    group: root
+    mode: 0755
+  register: plexcrypthttp_systemd
+  when:
+  - app_mediaserver.enabled|default(false)|bool == true
+  notify:
+  - reload systemd
+
+- name: start and enable rclone plexcrypthttp service
+  service:
+    name: plexcrypthttp
+    state: started
+    enabled: yes
+  when:
+  - plexcrypthttp_systemd is success
+  - app_mediaserver.enabled|default(false)|bool == true
+
+
+- name: add plex repository for fedora
+  yum_repository:
+    name: plex
+    description: "Repo for Plex Media Server"
+    file: plex
+    baseurl: https://downloads.plex.tv/repo/rpm/$basearch/
+    gpgkey: https://downloads.plex.tv/plex-keys/PlexSign.key
+    gpgcheck: yes
+    enabled: yes
+  when:
+  - app_mediaserver.enabled|default(false)|bool == true
+
+- name: install plexmediaserver
+  package:
+    name: plexmediaserver
+    state: present
+  register: plexmediaserver_install
+  when:
+  - app_mediaserver.enabled|default(false)|bool == true
+
+- name: create plex systemd override folder
+  file:
+    path: "/etc/systemd/system/plexmediaserver.service.d"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  when:
+  - plexmediaserver_install is success
+  - app_mediaserver.enabled|default(false)|bool == true
+
+- name: copy plex systemd override file
+  template:
+    src: plex_override_conf.j2
+    dest: "/etc/systemd/system/plexmediaserver.service.d/override.conf"
+    owner: root
+    group: root
+    mode: 0644
+  when:
+  - plexmediaserver_install is success
+  - app_mediaserver.enabled|default(false)|bool == true
+  notify:
+  - reload systemd
+
+- name: create plex config folder
+  file:
+    path: "/home/{{ app_mediaserver.config.user }}/.config/plex"
+    state: directory
+    owner: "{{ app_mediaserver.config.user }}"
+    group: "{{ app_mediaserver.config.group }}"
+    mode: 0750
+  when:
+  - plexmediaserver_install is success
+  - app_mediaserver.enabled|default(false)|bool == true
+
+- name: create plex backup folder
+  file:
+    path: "/home/{{ app_mediaserver.config.user }}/.config/plex/backup"
+    state: directory
+    owner: "{{ app_mediaserver.config.user }}"
+    group: "{{ app_mediaserver.config.group }}"
+    mode: 0750
+  when:
+  - plexmediaserver_install is success
+  - app_mediaserver.enabled|default(false)|bool == true
+
+- name: create plex app folder
+  file:
+    path: "/home/{{ app_mediaserver.config.user }}/.config/plex/Plex\ Media\ Server"
+    state: directory
+    owner: "{{ app_mediaserver.config.user }}"
+    group: "{{ app_mediaserver.config.group }}"
+    mode: 0750
+  when:
+  - plexmediaserver_install is success
+  - app_mediaserver.enabled|default(false)|bool == true
+
+- name: copy plex config file
+  template:
+    src: plex_config.j2
+    dest: "/home/{{ app_mediaserver.config.user }}/.config/plex/Plex\ Media\ Server/Preferences.xml"
+    owner: "{{ app_mediaserver.config.user }}"
+    group: "{{ app_mediaserver.config.group }}"
+    mode: 0640
+    backup: yes
+  when:
+  - plexmediaserver_install is success
+  - app_mediaserver.enabled|default(false)|bool == true
+  notify:
+  - reload systemd
+
+- name: copy plexmediaserver ufw rule
+  copy:
+    src: "{{ role_path }}/files/plexmediaserver.ufw"
+    dest: /etc/ufw/applications.d/plexmediaserver
+    owner: root
+    group: root
+    mode: 0644
+  when:
+  - plexmediaserver_install is success
+  - app_mediaserver.enabled|default(false)|bool == true
+
+- name: allow plexmediaserver on ufw
+  ufw:
+    rule: allow
+    name: plexmediaserver
+  when:
+  - plexmediaserver_install is success
+  - app_mediaserver.enabled|default(false)|bool == true
+  notify: restart ufw
+
+#- name: start and enable plexmediaserver service
+#  service:
+#    name: plexmediaserver
+#    state: started
+#    enabled: yes
+#  when:
+#  - plexmediaserver_install is success
+#  - app_mediaserver.enabled|default(false)|bool == true
+
+- name: install the rpmfusion repo packages
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-{{ fedora_current }}.noarch.rpm
+    - http://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-{{ fedora_current }}.noarch.rpm
+  when:
+  - app_mediaserver.enabled|default(false)|bool == true
+
+- name: install ffmpeg
+  package:
+    name: ffmpeg
+    state: present
+  when:
+  - app_mediaserver.enabled|default(false)|bool == true

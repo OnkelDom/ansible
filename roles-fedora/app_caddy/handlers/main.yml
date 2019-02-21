@@ -1,7 +1,10 @@
 ---
 - name: restart caddy
-  tags: caddy
-  become: true
   service:
     name: caddy
+    state: restarted
+
+- name: restart ufw
+  service:
+    name: ufw
     state: restarted

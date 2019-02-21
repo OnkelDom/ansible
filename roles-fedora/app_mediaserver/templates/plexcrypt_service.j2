@@ -1,0 +1,21 @@
+[Unit]
+Description=rClone Crypt Google
+Documentation=http://rclone.org/docs
+After=network-online.target plexdrive.service
+Requires=plexdrive.service
+PartOf=plexdrive.service
+
+[Service]
+Type=simple
+User={{ app_mediaserver.config.user }}
+Group={{ app_mediaserver.config.group }}
+ExecStart=/usr/local/bin/rclone --config "/home/{{ app_mediaserver.config.user }}/.config/rclone/rclone.conf" mount --buffer-size {{ app_mediaserver.config.rclone_buffer_size }} --allow-other --acd-templink-threshold 0 --allow-non-empty --timeout {{ app_mediaserver.config.rclone_timeout }} --contimeout {{ app_mediaserver.config.rclone_contimeout }} --syslog --stats {{ app_mediaserver.config.rclone_stats }} gdrive-crypt: /mnt/{{ app_mediaserver.config.mountfolder }}/{{ app_mediaserver.config.rclone_cryptfolder }}
+ExecStop=/usr/bin/sudo /bin/fusermount -u -z /mnt/{{ app_mediaserver.config.mountfolder }}/{{ app_mediaserver.config.rclone_cryptfolder }}
+Restart=on-abort
+RestartSec=5
+StartLimitInterval=60s
+StartLimitBurst=3
+ExecStartPre=/bin/sleep 5
+
+[Install]
+WantedBy=multi-user.target

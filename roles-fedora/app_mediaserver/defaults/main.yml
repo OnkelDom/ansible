@@ -1,3 +1,56 @@
 ---
 app_mediaserver:
   enabled: true
+  config:
+    user: onkeldom
+    group: onkeldom
+    mountfolder: google
+    plexdrive_client_id: "{{ lookup('file', '~/git/.secure/cabas_google_id') }}"
+    plexdrive_client_secret: "{{ lookup('file', '~/git/.secure/cabas_google_secret') }}"
+    plexdrive_version: latest
+    plexdrive_refresh_interval: "15m"
+    plexdrive_chunck_size: "2G"
+    rclone_buffer_size: "2G"
+    rclone_timeout: "60s"
+    rclone_contimeout: "30s"
+    rclone_stats: "1m"
+    rclone_cryptfolder: media
+    rclone_version: latest
+    pms_username: "{{ lookup('file', '~/git/.secure/pms_username') }}"
+    pms_token: "{{ lookup('file', '~/git/.secure/pms_token') }}"
+    pms_mail: "{{ lookup('file', '~/git/.secure/pms_mail') }}"
+    pms_ip: "{{ ansible_default_ipv4.address }}"
+    pms_transcoderdir: "/dev/shm"
+    pms_transcodertimeout: "120"
+    pms_servername: "OnkelDom"
+    pms_custom_connections: "http://{{ ansible_default_ipv4.address }}:32400,https://plex.onkeldom.eu:32400"
+    pms_cert: ""
+    # pms_cert: 'CertificateVersion="2" customCertificateDomain="https://onkeldom.eu:32400" customCertificateKey="{{ lookup('file', '~/git/.secure/cert_key') }}" customCertificatePath="/home/{{ app_mediaserver.config.user }}/.config/plex/certificate.pfx"'
+  rclone_connections:
+    gdrive:
+      type: drive
+      client_id: "{{ lookup('file', '~/git/.secure/cabas_google_id') }}"
+      client_secret: "{{ lookup('file', '~/git/.secure/cabas_google_secret') }}"
+      token: "{{ lookup('file', '~/git/.secure/cabas_google_token', convert_data=False) |string}}"
+    gdrive-crypt:
+      type: crypt
+      remote: "gdrive:media"
+      filename_encryption: standard
+      password: "{{ lookup('file', '~/git/.secure/rclone_google_password') }}"
+      password2: "{{ lookup('file', '~/git/.secure/rclone_google_password2') }}"
+    share:
+      type: drive
+      client_id: "{{ lookup('file', '~/git/.secure/cabas_share_id') }}"
+      client_secret: "{{ lookup('file', '~/git/.secure/cabas_share_secret') }}"
+      scope: drive
+      team_drive: "{{ lookup('file', '~/git/.secure/cabas_share_teamdrive') }}"
+      use_trash: false
+      skip_gdocs: true
+      token: "{{ lookup('file', '~/git/.secure/cabas_share_token', convert_data=False) |string}}"
+    share-crypt:
+      type: crypt
+      remote: "{{ lookup('file', '~/git/.secure/rclone_share_folder') }}"
+      filename_encryption: standard
+      directory_name_encryption: true
+      password: "{{ lookup('file', '~/git/.secure/rclone_share_password') }}"
+      password2: "{{ lookup('file', '~/git/.secure/rclone_share_password2') }}"

@@ -1,0 +1,23 @@
+---
+- name: restart plexdrive
+  service:
+    name: plexdrive
+    state: restarted
+
+- name: restart plexcrypt
+  service:
+    name: plexcrypt
+    state: restarted
+
+- name: restart plexcrypthttp
+  service:
+    name: plexcrypthttp
+    state: restarted
+
+- name: reload systemd
+  command: systemctl daemon-reload
+
+- name: restart ufw
+  service:
+    name: ufw
+    state: restarted

@@ -1,0 +1,11 @@
+---
+app_caddy:
+  enabled: true
+  config:
+    import: conf.d/*.conf
+  vhosts:
+    onkeldom_website: |
+      onkeldom.eu {
+        gzip
+        root /usr/share/caddy
+      }
