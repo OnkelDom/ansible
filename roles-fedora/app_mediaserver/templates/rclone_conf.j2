@@ -1,9 +1,0 @@
-{% if app_mediaserver.rclone_connections -%}
-{% for (remote, options) in app_mediaserver.rclone_connections.items() %}
-[{{ remote }}]
-{% for (key, value) in options.items() %}
-{{ key }} = {{ value }}
-{% endfor %}
-
-{% endfor %}
-{% endif %}

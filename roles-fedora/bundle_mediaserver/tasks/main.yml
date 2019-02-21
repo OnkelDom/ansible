@@ -4,7 +4,7 @@
     name: ['fuse' ,'unzip']
     state: present
   register: fuse_install
-  when: app_mediaserver.enabled|default(false)|bool == true
+  when: bundle_mediaserver.enabled|default(false)|bool == true
 
 - name: configure /etc/fuse.conf
   replace:
@@ -18,47 +18,47 @@
     value: 'user_allow_other'
   when:
   - fuse_install is success
-  - app_mediaserver.enabled|default(false)|bool == true
+  - bundle_mediaserver.enabled|default(false)|bool == true
 
 - name: create user config folder
   file:
-    path: "/home/{{ app_mediaserver.config.user }}/.config"
+    path: "/home/{{ bundle_mediaserver.config.user }}/.config"
     state: directory
-    owner: "{{ app_mediaserver.config.user }}"
-    group: "{{ app_mediaserver.config.group }}"
+    owner: "{{ bundle_mediaserver.config.user }}"
+    group: "{{ bundle_mediaserver.config.group }}"
     mode: 0755
   when:
-  - app_mediaserver.enabled|default(false)|bool == true
+  - bundle_mediaserver.enabled|default(false)|bool == true
 
 - name: create plexdrive config folder
   file:
-    path: "/home/{{ app_mediaserver.config.user }}/.config/plexdrive"
+    path: "/home/{{ bundle_mediaserver.config.user }}/.config/plexdrive"
     state: directory
-    owner: "{{ app_mediaserver.config.user }}"
-    group: "{{ app_mediaserver.config.group }}"
+    owner: "{{ bundle_mediaserver.config.user }}"
+    group: "{{ bundle_mediaserver.config.group }}"
     mode: 0750
   when:
-  - app_mediaserver.enabled|default(false)|bool == true
+  - bundle_mediaserver.enabled|default(false)|bool == true
 
 - name: create plexdrive mount folder
   file:
-    path: "/mnt/{{ app_mediaserver.config.mountfolder }}"
+    path: "/mnt/{{ bundle_mediaserver.config.mountfolder }}"
     state: directory
-    owner: "{{ app_mediaserver.config.user }}"
-    group: "{{ app_mediaserver.config.group }}"
+    owner: "{{ bundle_mediaserver.config.user }}"
+    group: "{{ bundle_mediaserver.config.group }}"
     mode: 0755
   when:
-  - app_mediaserver.enabled|default(false)|bool == true
+  - bundle_mediaserver.enabled|default(false)|bool == true
 
 - name: copy plexdrive config
   template:
     src: plexdrive_conf.j2
-    dest: "/home/{{ app_mediaserver.config.user }}/.config/plexdrive/config.json"
-    owner: "{{ app_mediaserver.config.user }}"
-    group: "{{ app_mediaserver.config.group }}"
+    dest: "/home/{{ bundle_mediaserver.config.user }}/.config/plexdrive/config.json"
+    owner: "{{ bundle_mediaserver.config.user }}"
+    group: "{{ bundle_mediaserver.config.group }}"
     mode: 0600
   when:
-  - app_mediaserver.enabled|default(false)|bool == true
+  - bundle_mediaserver.enabled|default(false)|bool == true
 
 - block:
   - name: find the latest plexdrive version
@@ -78,19 +78,19 @@
       group: root
       mode: 0775
   when:
-  - app_mediaserver.enabled|default(false)|bool == true
-  - app_mediaserver.config.plexdrive_version == "latest"
+  - bundle_mediaserver.enabled|default(false)|bool == true
+  - bundle_mediaserver.config.plexdrive_version == "latest"
 
 - name: download custom plexdrive version to /usr/local/bin
   get_url:
-    url: "https://github.com/dweidenfeld/plexdrive/releases/download/{{ app_mediaserver.config.plexdrive_version }}/plexdrive-linux-amd64"
+    url: "https://github.com/dweidenfeld/plexdrive/releases/download/{{ bundle_mediaserver.config.plexdrive_version }}/plexdrive-linux-amd64"
     dest: /usr/local/bin/plexdrive
     owner: root
     group: root
     mode: 0775
   when:
-  - app_mediaserver.enabled|default(false)|bool == true
-  - app_mediaserver.config.plexdrive_version != "latest"
+  - bundle_mediaserver.enabled|default(false)|bool == true
+  - bundle_mediaserver.config.plexdrive_version != "latest"
 
 - name: copy plexdrive systemd file
   template:
@@ -101,7 +101,7 @@
     mode: 0755
   register: plexdrive_systemd
   when:
-  - app_mediaserver.enabled|default(false)|bool == true
+  - bundle_mediaserver.enabled|default(false)|bool == true
   notify:
   - reload systemd
 
@@ -112,7 +112,7 @@
     enabled: yes
   when:
   - plexdrive_systemd is success
-  - app_mediaserver.enabled|default(false)|bool == true
+  - bundle_mediaserver.enabled|default(false)|bool == true
 
 - block:
   - name: download rclone (latest version)
@@ -125,12 +125,12 @@
       dest: /tmp
       remote_src: yes
     when:
-    - app_mediaserver.config.rclone_version == "latest"
+    - bundle_mediaserver.config.rclone_version == "latest"
 
 - block:
   - name: download rclone (custom version)
     get_url:
-      url: "https://downloads.rclone.org/v{{ app_mediaserver.config.rclone_version }}/rclone-v{{ app_mediaserver.config.rclone_version }}-linux-amd64.zip"
+      url: "https://downloads.rclone.org/v{{ bundle_mediaserver.config.rclone_version }}/rclone-v{{ bundle_mediaserver.config.rclone_version }}-linux-amd64.zip"
       dest: /usr/local/src
   - name: extract the rclone tarball (custom version) to /tmp
     unarchive:
@@ -138,8 +138,8 @@
       dest: /tmp
       remote_src: yes
   when:
-  - app_mediaserver.enabled|default(false)|bool == true
-  - app_mediaserver.config.rclone_version != "latest"
+  - bundle_mediaserver.enabled|default(false)|bool == true
+  - bundle_mediaserver.config.rclone_version != "latest"
 
 - name: find the name of the created folder
   find:
@@ -164,23 +164,23 @@
 
 - name: create rclone config folder
   file:
-    path: "/home/{{ app_mediaserver.config.user }}/.config/rclone"
+    path: "/home/{{ bundle_mediaserver.config.user }}/.config/rclone"
     state: directory
-    owner: "{{ app_mediaserver.config.user }}"
-    group: "{{ app_mediaserver.config.group }}"
+    owner: "{{ bundle_mediaserver.config.user }}"
+    group: "{{ bundle_mediaserver.config.group }}"
     mode: 0700
   when:
-  - app_mediaserver.enabled|default(false)|bool == true
+  - bundle_mediaserver.enabled|default(false)|bool == true
 
 - name: copy rclone config
   template:
     src: rclone_conf.j2
-    dest: '/home/{{ app_mediaserver.config.user }}/.config/rclone/rclone.conf'
-    owner: "{{ app_mediaserver.config.user }}"
-    group: "{{ app_mediaserver.config.group }}"
+    dest: '/home/{{ bundle_mediaserver.config.user }}/.config/rclone/rclone.conf'
+    owner: "{{ bundle_mediaserver.config.user }}"
+    group: "{{ bundle_mediaserver.config.group }}"
     mode: 0600
   when:
-  - app_mediaserver.enabled|default(false)|bool == true
+  - bundle_mediaserver.enabled|default(false)|bool == true
 
 - name: copy rclone plexcrypt systemd file
   template:
@@ -191,7 +191,7 @@
     mode: 0755
   register: plexcrypt_systemd
   when:
-  - app_mediaserver.enabled|default(false)|bool == true
+  - bundle_mediaserver.enabled|default(false)|bool == true
   notify:
   - reload systemd
 
@@ -202,7 +202,7 @@
     enabled: yes
   when:
   - plexcrypt_systemd is success
-  - app_mediaserver.enabled|default(false)|bool == true
+  - bundle_mediaserver.enabled|default(false)|bool == true
 
 - name: copy rclone plexcrypthttp systemd file
   template:
@@ -213,7 +213,7 @@
     mode: 0755
   register: plexcrypthttp_systemd
   when:
-  - app_mediaserver.enabled|default(false)|bool == true
+  - bundle_mediaserver.enabled|default(false)|bool == true
   notify:
   - reload systemd
 
@@ -224,7 +224,7 @@
     enabled: yes
   when:
   - plexcrypthttp_systemd is success
-  - app_mediaserver.enabled|default(false)|bool == true
+  - bundle_mediaserver.enabled|default(false)|bool == true
 
 
 - name: add plex repository for fedora
@@ -237,7 +237,7 @@
     gpgcheck: yes
     enabled: yes
   when:
-  - app_mediaserver.enabled|default(false)|bool == true
+  - bundle_mediaserver.enabled|default(false)|bool == true
 
 - name: install plexmediaserver
   package:
@@ -245,7 +245,7 @@
     state: present
   register: plexmediaserver_install
   when:
-  - app_mediaserver.enabled|default(false)|bool == true
+  - bundle_mediaserver.enabled|default(false)|bool == true
 
 - name: create plex systemd override folder
   file:
@@ -256,7 +256,7 @@
     mode: 0755
   when:
   - plexmediaserver_install is success
-  - app_mediaserver.enabled|default(false)|bool == true
+  - bundle_mediaserver.enabled|default(false)|bool == true
 
 - name: copy plex systemd override file
   template:
@@ -267,67 +267,67 @@
     mode: 0644
   when:
   - plexmediaserver_install is success
-  - app_mediaserver.enabled|default(false)|bool == true
+  - bundle_mediaserver.enabled|default(false)|bool == true
   notify:
   - reload systemd
 
 - name: create plex config folder
   file:
-    path: "/home/{{ app_mediaserver.config.user }}/.config/plex"
+    path: "/home/{{ bundle_mediaserver.config.user }}/.config/plex"
     state: directory
-    owner: "{{ app_mediaserver.config.user }}"
-    group: "{{ app_mediaserver.config.group }}"
+    owner: "{{ bundle_mediaserver.config.user }}"
+    group: "{{ bundle_mediaserver.config.group }}"
     mode: 0750
   when:
   - plexmediaserver_install is success
-  - app_mediaserver.enabled|default(false)|bool == true
+  - bundle_mediaserver.enabled|default(false)|bool == true
 
 - name: create plex backup folder
   file:
-    path: "/home/{{ app_mediaserver.config.user }}/.config/plex/backup"
+    path: "/home/{{ bundle_mediaserver.config.user }}/.config/plex/backup"
     state: directory
-    owner: "{{ app_mediaserver.config.user }}"
-    group: "{{ app_mediaserver.config.group }}"
+    owner: "{{ bundle_mediaserver.config.user }}"
+    group: "{{ bundle_mediaserver.config.group }}"
     mode: 0750
   when:
   - plexmediaserver_install is success
-  - app_mediaserver.enabled|default(false)|bool == true
+  - bundle_mediaserver.enabled|default(false)|bool == true
 
-- name: create plex app folder
+- name: create plex bundle folder
   file:
-    path: "/home/{{ app_mediaserver.config.user }}/.config/plex/Plex\ Media\ Server"
+    path: "/home/{{ bundle_mediaserver.config.user }}/.config/plex/Plex\ Media\ Server"
     state: directory
-    owner: "{{ app_mediaserver.config.user }}"
-    group: "{{ app_mediaserver.config.group }}"
+    owner: "{{ bundle_mediaserver.config.user }}"
+    group: "{{ bundle_mediaserver.config.group }}"
     mode: 0750
   when:
   - plexmediaserver_install is success
-  - app_mediaserver.enabled|default(false)|bool == true
+  - bundle_mediaserver.enabled|default(false)|bool == true
 
 - name: copy plex config file
   template:
     src: plex_config.j2
-    dest: "/home/{{ app_mediaserver.config.user }}/.config/plex/Plex\ Media\ Server/Preferences.xml"
-    owner: "{{ app_mediaserver.config.user }}"
-    group: "{{ app_mediaserver.config.group }}"
+    dest: "/home/{{ bundle_mediaserver.config.user }}/.config/plex/Plex\ Media\ Server/Preferences.xml"
+    owner: "{{ bundle_mediaserver.config.user }}"
+    group: "{{ bundle_mediaserver.config.group }}"
     mode: 0640
     backup: yes
   when:
   - plexmediaserver_install is success
-  - app_mediaserver.enabled|default(false)|bool == true
+  - bundle_mediaserver.enabled|default(false)|bool == true
   notify:
   - reload systemd
 
 - name: copy plexmediaserver ufw rule
   copy:
     src: "{{ role_path }}/files/plexmediaserver.ufw"
-    dest: /etc/ufw/applications.d/plexmediaserver
+    dest: /etc/ufw/bundlelications.d/plexmediaserver
     owner: root
     group: root
     mode: 0644
   when:
   - plexmediaserver_install is success
-  - app_mediaserver.enabled|default(false)|bool == true
+  - bundle_mediaserver.enabled|default(false)|bool == true
 
 - name: allow plexmediaserver on ufw
   ufw:
@@ -335,7 +335,7 @@
     name: plexmediaserver
   when:
   - plexmediaserver_install is success
-  - app_mediaserver.enabled|default(false)|bool == true
+  - bundle_mediaserver.enabled|default(false)|bool == true
   notify: restart ufw
 
 #- name: start and enable plexmediaserver service
@@ -345,7 +345,7 @@
 #    enabled: yes
 #  when:
 #  - plexmediaserver_install is success
-#  - app_mediaserver.enabled|default(false)|bool == true
+#  - bundle_mediaserver.enabled|default(false)|bool == true
 
 - name: install the rpmfusion repo packages
   package:
@@ -355,11 +355,11 @@
     - http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-{{ fedora_current }}.noarch.rpm
     - http://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-{{ fedora_current }}.noarch.rpm
   when:
-  - app_mediaserver.enabled|default(false)|bool == true
+  - bundle_mediaserver.enabled|default(false)|bool == true
 
 - name: install ffmpeg
   package:
     name: ffmpeg
     state: present
   when:
-  - app_mediaserver.enabled|default(false)|bool == true
+  - bundle_mediaserver.enabled|default(false)|bool == true

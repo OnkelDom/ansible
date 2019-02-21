@@ -10,5 +10,4 @@ managed_motd:
     Virtual: "{{ 'Yes' if ansible_virtualization_role == 'guest' else 'No' }}"
     CPUs: "   {{ ansible_processor_vcpus }}"
     RAM: "    {{ (ansible_memtotal_mb / 1000) | round(1) }}GB"
-    IPv4: "   {{ ansible_default_ipv4.address }}"
-    IPv6: "   {{ ansible_default_ipv6.address }}\n"
+    IPv4: "   {{ ansible_default_ipv4.address }}\n"

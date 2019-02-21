@@ -1,0 +1,65 @@
+---
+- name: adduser {{ managed_admin.username }}
+  user:
+    name: "{{ managed_admin.username }}"
+    comment: "{{ managed_admin.fullname }}"
+    groups: wheel
+    shell: /bin/bash
+    create_home: true
+    ssh_key_file: "{{ lookup('file', '~/.ssh/id_rsa') }}"
+- name: add authorized_key for {{ managed_admin.username }}
+  authorized_key:
+    user: {{ managed_admin.username }}
+    state: present
+    key: '{{ item }}'
+  with_items:
+  - "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+  - "{{ lookup('file', '~/git/.secure/id_rsa_work.pub') }}"
+- name: install packages
+  package:
+    name: ['vim', 'vim-enhanced', 'git', 'xclip', 'powerline', 'powerline-fonts', 'tmux-powerline', 'vim-powerline', 'python3']
+    state: present
+- name: install pip3 powerline_gitstatus
+  command: "pip3 install --user powerline_gitstatus"
+  become: true
+  become_user: {{ managed_admin.username }}
+- name: pip3 install powerline_gitstatus
+  pip:
+    name: powerline_gitstatus
+    executable: pip3
+- name: clone github.com/onkeldom/.dot
+  git:
+    repo: 'https://github.com/onkeldom/.dot.git'
+    dest: /home/{{ managed_admin.username }}/.dot
+    update: no
+  become: true
+  become_user: {{ managed_admin.username }}
+- name: create .config folder in {{ managed_admin.username }} home
+  file:
+    path: /home/{{ managed_admin.username }}/.config
+    owner: {{ managed_admin.username }}
+    group: {{ managed_admin.username }}
+    state: directory
+    mode: 0755
+- name: remove .bashrc
+  file:
+    path: '/home/{{ managed_admin.username }}/.bashrc'
+    state: absent
+- name: set symlinks for .dot
+  file:
+    src: '/home/{{ managed_admin.username }}/.dot/{{ item }}'
+    dest: '/home/{{ managed_admin.username }}/{{ item }}'
+    state: link
+  with_items:
+  - .gitconfig
+  - .vimrc
+  - .vim
+  - .bashrc
+  - .tmux.conf
+  become: true
+  become_user: {{ managed_admin.username }}
+- name: set symlinks for powerline_gitstatus
+  file:
+    src: '/home/{{ managed_admin.username }}/.dot/powerline'
+    dest: '/home/{{ managed_admin.username }}/.config/powerline'
+    state: link

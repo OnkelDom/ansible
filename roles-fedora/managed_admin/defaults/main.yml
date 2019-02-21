@@ -1,0 +1,5 @@
+---
+managed_admin:
+  enabled: true
+  username: onkeldom
+  fullname: "Dominik Lenhardt"

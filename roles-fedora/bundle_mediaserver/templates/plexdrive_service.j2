@@ -1,0 +1,18 @@
+[Unit]
+Description=Plexdrive
+AssertPathIsDirectory=/mnt/{{ bundle_mediaserver.config.mountfolder }}
+After=network-online.target
+
+[Service]
+Type=simple
+User={{ bundle_mediaserver.config.user }}
+Group={{ bundle_mediaserver.config.group }}
+ExecStart=/usr/local/bin/plexdrive -c /home/{{ bundle_mediaserver.config.user }}/.config/plexdrive --cache-file="/home/{{ bundle_mediaserver.config.user }}/.config/plexdrive/cache.bolt" -v 2 -o allow_other --refresh-interval={{ bundle_mediaserver.config.plexdrive_refresh_interval }} --chunk-size={{ bundle_mediaserver.config.plexdrive_chunck_size }} mount /mnt/{{ bundle_mediaserver.config.mountfolder }}
+ExecStop=/usr/bin/sudo /bin/fusermount -u -z /mnt/{{ bundle_mediaserver.config.mountfolder }}
+Restart=on-failure
+RestartSec=30
+StartLimitInterval=200
+StartLimitBurst=5
+
+[Install]
+WantedBy=multi-user.target
