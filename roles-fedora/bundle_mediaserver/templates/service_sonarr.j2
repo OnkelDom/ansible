@@ -1,0 +1,19 @@
+[Unit]
+Description=Sonarr Daemon
+Requires=plexdrive.service plexcrypt.service
+After=syslog.target network-online.target plexdrive.service plexcrypt.service
+
+[Service]
+User={{ bundle_mediaserver.config.user }}
+Group={{ bundle_mediaserver.config.group }}
+Type=simple
+ExecStart=/usr/bin/mono /opt/NzbDrone/NzbDrone.exe -nobrowser
+TimeoutStopSec=20
+KillMode=process
+Restart=on-failure
+RestartSec=30
+StartLimitInterval=200
+StartLimitBurst=5
+
+[Install]
+WantedBy=multi-user.target

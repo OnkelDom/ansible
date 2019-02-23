@@ -1,0 +1,8 @@
+---
+- name: restart jdownloader
+  service:
+    name: jdownloader
+    state: restarted
+
+- name: reload systemd
+  command: systemctl daemon-reload

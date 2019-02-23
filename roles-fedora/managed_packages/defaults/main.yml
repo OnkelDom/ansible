@@ -35,6 +35,7 @@ managed_packages:
     - xclip
     - unzip
     - tree
+    - xz
   remove:
     - network-scripts
     - firewalld

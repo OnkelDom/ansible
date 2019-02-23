@@ -1,0 +1,68 @@
+---
+- name: create directory for /opt/upload,download
+  file:
+    path: "/opt/{{ item }}"
+    state: directory
+    owner: "{{ app_jdownloader2.user }}"
+    group: "{{ app_jdownloader2.group }}"
+    mode: 0755
+  with_items:
+  - upload
+  - download
+  - jd2
+  - jd2/cfg
+  when:
+  - app_jdownloader2.enabled|default(false)|bool == true
+
+- name: install java-openjdk-headless
+  package:
+    name: java-openjdk-headless
+    state: present
+  when:
+  - app_jdownloader2.enabled|default(false)|bool == true
+
+- name: "download jdownloader to {{ app_jdownloader2.folder }}"
+  get_url:
+    url: http://installer.jdownloader.org/JDownloader.jar
+    dest: "{{ app_jdownloader2.folder }}"
+    owner: "{{ app_jdownloader2.user }}"
+    group: "{{ app_jdownloader2.group }}"
+    mode: 0775
+  when:
+  - app_jdownloader2.enabled|default(false)|bool == true
+
+- name: copy jd2 configs
+  template:
+    dest: "{{ item.dest }}"
+    src: "{{ item.src }}"
+    owner: "{{ app_jdownloader2.user }}"
+    group: "{{ app_jdownloader2.group }}"
+    mode: 0640
+    force: no
+  with_items:
+  - dest: "{{ app_jdownloader2.folder }}/cfg/org.jdownloader.api.myjdownloader.MyJDownloaderSettings.json"
+    src: userconfig.j2
+  - dest: "{{ app_jdownloader2.folder }}/cfg/org.jdownloader.settings.GeneralSettings.json"
+    src: generalconfig.j2
+  when:
+  - app_jdownloader2.enabled|default(false)|bool == true
+  notify:
+  - restart jdownloader
+
+- name: copy jd2 systemd file
+  template:
+    dest: "/etc/systemd/system/jdownloader.service"
+    src: jdownloader_service.j2
+    owner: root
+    group: root
+    mode: 0755
+  when:
+  - app_jdownloader2.enabled|default(false)|bool == true
+
+- name: start and enable jdownloader service
+  service:
+    name: jdownloader
+    state: started
+    enabled: yes
+  when:
+  - app_jdownloader2.enabled|default(false)|bool == true

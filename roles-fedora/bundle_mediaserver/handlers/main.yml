@@ -14,10 +14,25 @@
     name: plexcrypthttp
     state: restarted
 
-- name: reload systemd
-  command: systemctl daemon-reload
+- name: restart sonnar
+  service:
+    name: sonnar
+    state: restarted
+
+- name: restart plexmediaserver
+  service:
+    name: plexmediaserver
+    state: restarted
+
+- name: restart caddy
+  service:
+    name: caddy
+    state: restarted
 
 - name: restart ufw
   service:
     name: ufw
     state: restarted
+
+- name: reload systemd
+  command: systemctl daemon-reload

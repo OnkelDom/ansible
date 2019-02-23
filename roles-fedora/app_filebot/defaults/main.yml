@@ -1,0 +1,7 @@
+---
+app_filebot:
+  enabled: true
+  filebot_url: "http://downloads.sourceforge.net/project/filebot/filebot/FileBot_4.7.9-portable.tar.xz"
+  filebot_tmp: "/tmp/FileBot_4.7.9-portable.tar.xz"
+  filebot_install: "/usr/local/lib/filebot"
+  filebot_bin: "/usr/local/bin/filebot"

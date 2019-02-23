@@ -9,7 +9,7 @@
     ssh_key_file: "{{ lookup('file', '~/.ssh/id_rsa') }}"
 - name: add authorized_key for {{ managed_admin.username }}
   authorized_key:
-    user: {{ managed_admin.username }}
+    user: "{{ managed_admin.username }}"
     state: present
     key: '{{ item }}'
   with_items:
@@ -22,7 +22,7 @@
 - name: install pip3 powerline_gitstatus
   command: "pip3 install --user powerline_gitstatus"
   become: true
-  become_user: {{ managed_admin.username }}
+  become_user: "{{ managed_admin.username }}"
 - name: pip3 install powerline_gitstatus
   pip:
     name: powerline_gitstatus
@@ -33,12 +33,12 @@
     dest: /home/{{ managed_admin.username }}/.dot
     update: no
   become: true
-  become_user: {{ managed_admin.username }}
+  become_user: "{{ managed_admin.username }}"
 - name: create .config folder in {{ managed_admin.username }} home
   file:
     path: /home/{{ managed_admin.username }}/.config
-    owner: {{ managed_admin.username }}
-    group: {{ managed_admin.username }}
+    owner: "{{ managed_admin.username }}"
+    group: "{{ managed_admin.username }}"
     state: directory
     mode: 0755
 - name: remove .bashrc
@@ -57,7 +57,7 @@
   - .bashrc
   - .tmux.conf
   become: true
-  become_user: {{ managed_admin.username }}
+  become_user: "{{ managed_admin.username }}"
 - name: set symlinks for powerline_gitstatus
   file:
     src: '/home/{{ managed_admin.username }}/.dot/powerline'

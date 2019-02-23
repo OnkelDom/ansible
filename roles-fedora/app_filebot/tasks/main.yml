@@ -1,0 +1,52 @@
+- name: install java package
+  package:
+    name: java
+    state: present
+  register: fuse_install
+  when: app_filebot.enabled|default(false)|bool == true
+
+- name: "check for installation"
+  stat:
+    path: "{{ app_filebot.filebot_bin }}"
+  register: filebot_bin
+  when: app_filebot.enabled|default(false)|bool == true
+
+#- name: "download installer"
+#  get_url:
+#    url: "{{ app_filebot.filebot_url }}"
+#    dest: "{{ app_filebot.filebot_tmp }}"
+#  when: app_filebot.enabled|default(false)|bool == true and not filebot_bin.stat.exists
+
+- name: copy FileBot_4.7.9-portable.tar.xz
+  copy:
+    src: "{{ role_path }}/files/FileBot_4.7.9-portable.tar.xz"
+    dest: "{{ app_filebot.filebot_tmp }}"
+    owner: root
+    group: root
+  when: app_filebot.enabled|default(false)|bool == true and not filebot_bin.stat.exists
+
+- name: "ensure install directory exists"
+  file:
+    path: "{{ app_filebot.filebot_install }}"
+    state: directory
+  when: app_filebot.enabled|default(false)|bool == true
+
+- name: "ensure the binaries extracted"
+  unarchive:
+    copy: "no"
+    src: "{{ app_filebot.filebot_tmp }}"
+    dest: "{{ app_filebot.filebot_install }}/"
+  when: app_filebot.enabled|default(false)|bool == true and not filebot_bin.stat.exists
+
+- name: "ensure link on path to filebot bin"
+  file:
+    src: "{{ app_filebot.filebot_install }}/filebot.sh"
+    dest: "{{ app_filebot.filebot_bin }}"
+    state: link
+  when: app_filebot.enabled|default(false)|bool == true
+
+- name: "remove installer from tmp"
+  file:
+    path: "{{ app_filebot.filebot_tmp }}"
+    state: absent
+  when: app_filebot.enabled|default(false)|bool == true

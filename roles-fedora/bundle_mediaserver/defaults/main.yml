@@ -10,12 +10,15 @@ bundle_mediaserver:
     plexdrive_version: latest
     plexdrive_refresh_interval: "15m"
     plexdrive_chunck_size: "2G"
-    rclone_buffer_size: "2G"
-    rclone_timeout: "60s"
-    rclone_contimeout: "30s"
-    rclone_stats: "1m"
     rclone_cryptfolder: media
     rclone_version: latest
+    rclone_dir_cache_time: "60m"
+    rclone_http_addr: "127.0.0.1:9123"
+    rclone_http_user: "{{ lookup('file', '~/git/.secure/rclone_http_user') }}"
+    rclone_http_pass: "{{ lookup('file', '~/git/.secure/rclone_http_pass') }}"
+    sonarr_port: 8989
+    sonarr_basepath: "/sonarr/"
+    sonarr_autoupdate: "True"
     pms_username: "{{ lookup('file', '~/git/.secure/pms_username') }}"
     pms_token: "{{ lookup('file', '~/git/.secure/pms_token') }}"
     pms_mail: "{{ lookup('file', '~/git/.secure/pms_mail') }}"
@@ -26,11 +29,41 @@ bundle_mediaserver:
     pms_custom_connections: "http://{{ ansible_default_ipv4.address }}:32400,https://plex.onkeldom.eu:32400"
     pms_cert: ""
     # pms_cert: 'CertificateVersion="2" customCertificateDomain="https://onkeldom.eu:32400" customCertificateKey="{{ lookup('file', '~/git/.secure/cert_key') }}" customCertificatePath="/home/{{ app_mediaserver.config.user }}/.config/plex/certificate.pfx"'
+  caddy_config:
+    plex.onkeldom.eu: |
+      gzip
+      proxy / localhost:32400 {
+        transparent
+      }
+    media.onkeldom.eu: |
+      gzip
+      timeouts none
+      root /usr/share/caddy/
+      proxy /web localhost:32400 {
+        transparent
+      }
+      proxy /sonarr localhost:8989 {
+        transparent
+      }
+      proxy /gdrive localhost:9123 {
+        transparent
+      }
+      proxy /tautulli localhost:8181 {
+        header_upstream Host {host}
+        header_upstream X-Real-IP {remote}
+        header_upstream X-Forwarded-For {remote}
+        header_upstream X-Forwarded-Proto {scheme}
+        header_upstream X-Forwarded-Host {host}
+        header_upstream X-Forwarded-Ssl {on}
+      }
   rclone_connections:
     gdrive:
       type: drive
       client_id: "{{ lookup('file', '~/git/.secure/cabas_google_id') }}"
       client_secret: "{{ lookup('file', '~/git/.secure/cabas_google_secret') }}"
+      scope: drive
+      use_trash: false
+      skip_gdocs: true
       token: "{{ lookup('file', '~/git/.secure/cabas_google_token', convert_data=False) |string}}"
     gdrive-crypt:
       type: crypt

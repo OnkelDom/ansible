@@ -1,0 +1,12 @@
+---
+app_jdownloader2:
+  enabled: true
+  folder: "/opt/jd2"
+  servername: "{{ ansible_hostname }}"
+  mail: "{{ lookup('file', '~/git/.secure/jd2_mail') }}"
+  password: "{{ lookup('file', '~/git/.secure/jd2_password') }}"
+  dlpath: "/opt/download/<jd:packagename>"
+  spdlimit: 31457280
+  maxsimultanedownloads: 15
+  user: onkeldom
+  group: onkeldom
