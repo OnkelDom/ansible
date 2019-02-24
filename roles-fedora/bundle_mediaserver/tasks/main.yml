@@ -254,6 +254,27 @@
   when:
   - bundle_mediaserver.enabled|default(false)|bool == true
 
+- name: copy backup file
+  copy:
+    src: "{{ role_path }}/files/backup.sh"
+    dest: /home/{{ bundle_mediaserver.config.user }}"
+    owner: "{{ bundle_mediaserver.config.user }}"
+    group: "{{ bundle_mediaserver.config.group }}"
+    mode: 0775
+  when:
+  - bundle_mediaserver.enabled|default(false)|bool == true
+
+- name: add crontab entry
+  cron:
+    name: "backup mediaserver configs and databases"
+    minute: "30"
+    hour: "05"
+    weekday: "*"
+    job: "/bin/bash /home/onkeldom/.home/bin/backup.sh"
+    #user: "admin"
+    disabled: "no"
+  become_user: "{{ bundle_mediaserver.config.user }}"
+
 - name: allow plexmediaserver on ufw
   ufw:
     rule: allow
