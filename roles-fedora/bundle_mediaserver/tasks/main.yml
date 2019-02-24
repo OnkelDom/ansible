@@ -126,7 +126,7 @@
 - name: change ownership of /opt/NzbDrone
   command: "chown -R {{ bundle_mediaserver.config.user }}:{{ bundle_mediaserver.config.group }} /opt/NzbDrone"
   when: bundle_mediaserver.enabled|default(false)|bool == true
-  
+
 - name: clone https://github.com/Tautulli/Tautulli.git
   git:
     repo: 'https://github.com/Tautulli/Tautulli.git'
@@ -276,7 +276,7 @@
   - plexcrypthttp
   - plexmediaserver
   - tautulli
-  #- sonnar
+  - sonnar
   - caddy
   when:
   - bundle_mediaserver.enabled|default(false)|bool == true
