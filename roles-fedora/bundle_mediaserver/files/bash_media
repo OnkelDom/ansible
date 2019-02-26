@@ -1,0 +1,8 @@
+# movie and series management
+alias fbseries="filebot -rename -r $1 -non-strict --format \"{n.space('.').lower()}/season.{s.pad(2)}/{n.space('.').lower()}.{'s'+s.pad(2)}e{e.pad(2)}{'-' + t.space('.').lower()}{'-' + hd.lower()}{'-' + vf.lower()}\" --action move --output /opt/upload/series"
+alias fbmovies="filebot -rename -r $1 --db themoviedb -non-strict --format \"{n.space('.').lower()}.{y}{'.' + imdbid.lower()}/{n.space('.').lower()}.{y}{'-' + hd.lower()}{'-' + vf.lower()}\" --action move --output /opt/upload/movies"
+alias fbuhd="filebot -rename -r $1  --db themoviedb -non-strict --format \"{n.space('.').lower()}.{y}{'.' + imdbid.lower()}/{n.space('.').lower()}.{y}{'-' + hd.lower()}{'-' + vf.lower()}\" --action move --output /opt/upload/uhd"
+alias fbsubs="filebot -get-subtitles $1 --lang de --encoding utf8 -non-strict"
+alias fbsubseng="filebot -get-subtitles $1 --lang en --encoding utf8 -non-strict"
+alias fbarts="filebot -script fn:artwork.tmdb $1 --encoding utf8 -non-strict"
+alias upload="cd /opt/upload && for i in \$(find /opt/upload/ -type f -name \"*.mkv\"); do fbsubs \$i; fbsubseng $i; echo Convert: \$i; /usr/local/bin/2mp4 \$i; rm -rf \$i; done && rclone -v move --transfers 1 /opt/upload/ gdrive-crypt:"

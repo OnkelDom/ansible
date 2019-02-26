@@ -1,9 +1,11 @@
 ---
-bundle_mediaserver:
+app_mediamgmt:
   enabled: true
+  filebot_install: "/usr/local/lib/filebot"
+  user: onkeldom
+  group: onkeldom
   config:
-    user: onkeldom
-    group: onkeldom
+
     mountfolder: google
     rclone_cryptfolder: media
     rclone_version: latest

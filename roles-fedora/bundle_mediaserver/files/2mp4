@@ -1,0 +1,109 @@
+#!/bin/bash
+
+export PATH="$PATH:/usr/bin"
+
+log=/tmp/$(date +%Y.%m.%d)_2mp4.log
+tmp=$(mktemp)
+f="$1"
+t="${f%.*}.mp4"
+t2="${f%.*}.m4v"
+
+# tools
+ffprobe=/usr/bin/ffprobe
+ffmpeg=/usr/bin/ffmpeg
+hb=/usr/bin/HandBrakeCLI
+
+loglevel="-loglevel error -hide_banner"
+flags="-fflags +genpts"
+preout="-max_muxing_queue_size 4096"
+codec="-c:v copy -c:s mov_text -c:a aac -ac 2 -b:a 160k"
+#handbrake="-Z \"Apple 1080p30 Surround\""
+
+# not working for aac (codec copy)
+#if [ "$f" != "${f/tv\/uwe\/}" ]; then
+# volume boost if tv/uwe/
+#    boost="$(ffmpeg -i "$f" -af "volumedetect" -c:v copy -f null /dev/null 2>&1 | awk 'BEGIN{m=100}/max_volume/{if(m>-$(NF-1)){m=-$(NF-1)}}END{print m}')"
+#    if [ -n "$boost" -a "${boost:0:1}" != "-" -a "${codec/-c:a:? copy}" = "$codec" ]; then
+#        codec="-af volume=${boost}dB $codec"
+#    fi
+#fi
+
+printf "%s\t%s\t" $(date +%F-%R) $(pwd) >> $tmp
+
+map="$($ffprobe -show_streams "$f" 2>&1 | gawk -F= '
+    BEGIN           {iv=0; ia=0}
+    /\[STREAM\]/    {i=-1}
+    /^index=/       {i=strtonum($2)}
+    /^codec_name=/  {c[i]=$2}
+    /^pix_fmt=/     {p[i]=$2}
+    /^codec_type=/  {t[i]=$2; switch($2){
+                        case "audio": tp[i]=ia++; break;
+                        case "video": tp[i]=iv++; break;
+                    }}
+    /TAG:language=/ {l[i]=$2}
+    /\[\/STREAM\]/  {}
+    END             {
+        ia=0;
+        for (i in c){
+            printf("%d:%s(%s),",i,c[i],l[i]) >> "'$tmp'";
+            switch(t[i]) {
+                case "video":
+                    switch(c[i]) {
+                        case "h264":    if(p[i] == "yuv420p10le"){
+                                            printf("-c:v:%d libx264 -crf 18 -preset veryfast ",i);
+                                        };
+                                        printf("-map 0:%d ",i); break;
+                        case "h265":    printf("-map 0:%d -tag:v hvc1 ",i); break;
+                        case "hevc":    printf("-map 0:%d -tag:v hvc1 ",i); break;
+                        case "mjpeg":   break;
+                        default:        printf("handbrake ");
+                    }; break;
+                case "audio":
+                    switch(substr(c[i],0,3)) {
+                        case "pcm": printf("-map 0:%d ",i,tp[i]+ia); break;
+                        case "aac": printf("-map 0:%d -c:a:%d copy ",i,tp[i]); break;
+                        case "ac3": tst=0; for (tmp in c) {if (c[tmp] == "aac" && l[tmp] == l[i]){tst=1}};
+                                    if(tst == 0){
+                                        #printf("-map 0:%d -map 0:%d -c:a:%d copy ",i,i,tp[i]+(++ia))
+                                        printf("-map 0:%d ",i)
+                                    #}else{
+                                    #    printf("-map 0:%d -c:a:%d copy ",i,tp[i]+ia)
+                                    }; break;
+                        #default:    printf("-map 0:%d -map 0:%d -c:a:%d copy ",i,i,tp[i]+(++ia));
+                        default:    printf("-map 0:%d ",i);
+                    }; break;
+                case "subtitle":
+                    switch(c[i]) {
+                        case "dvdsub":              printf("save "); break;
+                        case "pgssub":              printf("save "); break;
+                        case "hdmv_pgs_subtitle":   printf("save "); break;
+                        case "dvd_subtitle":        printf("save "); break;
+                        default:                    printf("-map 0:%d ",i);
+                    }; break;
+            }
+        }}')"
+
+echo "$map" | grep -q "handbrake "
+if [ $? -eq 0 ]; then
+# Handbrake (video needs to be converted)
+    printf "\t%s\n" "HandBrakeCLI -i \"$f\" $handbrake -o \"$t\"" >> $tmp
+    cat $tmp >> $log
+    rm -f $tmp
+
+    $hb -i "$f" -Z "Apple 1080p30 Surround" -o "$t" 2>/dev/null
+else
+    map="$(echo "$map" | sed 's/save //g')"
+    printf "\t%s\n" "ffmpeg $flags -i \"$f\" $codec $map $preout \"$t2\"" >> $tmp
+    cat $tmp >> $log
+    rm -f $tmp
+
+    $ffmpeg $loglevel $flags -i "$f" $codec $map $preout "$t2" 2>/dev/null
+    mv "$t2" "$t" 2>/dev/null
+fi
+if [ $? -eq 0 ]; then
+# worked
+    chmod 644 "$t"
+else
+# failed
+    rm -f "$t"
+fi

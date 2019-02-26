@@ -1,6 +1,6 @@
-- name: install java package
+- name: install packages
   package:
-    name: java
+    name: ['java-1.8.0-openjdk', 'mediainfo', 'libmediainfo', 'libzen']
     state: present
   register: fuse_install
   when: app_filebot.enabled|default(false)|bool == true
@@ -49,4 +49,28 @@
   file:
     path: "{{ app_filebot.filebot_tmp }}"
     state: absent
+  when: app_filebot.enabled|default(false)|bool == true
+
+- name: change ownership of /usr/local/lib/filebot
+  command: "chown -R {{ app_filebot.user }} {{ app_filebot.filebot_install }}"
+  when: app_filebot.enabled|default(false)|bool == true
+
+- name: copy config for opensubtitles
+  template:
+    src: prefs.properties.j2
+    dest: "{{ app_filebot.filebot_install }}/data/prefs.properties"
+    owner: "{{ app_filebot.user }}"
+    group: root
+    mode: 0644
+
+- name: set symlinks for libs
+  file:
+    src: "{{ item.src }}"
+    dest: "{{ app_filebot.filebot_install }}/{{ item.dest }}"
+    state: link
+  with_items:
+  - src: /usr/lib64/libmediainfo.so.0
+    dest: libmediainfo.so
+  - src: /usr/lib64/libzen.so.0
+    dest: libzen.so
   when: app_filebot.enabled|default(false)|bool == true

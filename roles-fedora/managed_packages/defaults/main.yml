@@ -21,6 +21,7 @@ managed_packages:
     - ipmitool
     - nfs-utils
     - bzip2
+    - unrar
     - cifs-utils
     - dstat
     - iotop

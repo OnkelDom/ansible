@@ -1,7 +1,7 @@
 [Unit]
 Description=Tautulli - Stats for Plex Media Server usage
 Wants=network-online.target
-After=network-online.target
+After=network-online.target plexcrypt.service
 
 [Service]
 ExecStart=/opt/tautulli/Tautulli.py --config /home/{{ bundle_mediaserver.config.user }}/.config/tautulli/config.ini --datadir /opt/tautulli --quiet --daemon --nolaunch

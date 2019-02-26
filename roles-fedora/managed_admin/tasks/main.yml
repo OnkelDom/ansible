@@ -1,5 +1,5 @@
 ---
-- name: adduser {{ managed_admin.username }}
+- name: adduser
   user:
     name: "{{ managed_admin.username }}"
     comment: "{{ managed_admin.fullname }}"

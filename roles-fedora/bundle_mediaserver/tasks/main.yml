@@ -23,31 +23,10 @@
 
 - name: install packages
   package:
-    name: ['fuse', 'plexmediaserver', 'gettext', 'mono-devel', 'mediainfo', 'libmediainfo', 'sqlite', 'libzen', 'HandBrake', 'java', 'libdrm', 'ffmpeg', 'caddy', 'https://downloads.rclone.org/rclone-current-linux-amd64.rpm']
+    name: ['fuse', 'plexmediaserver', 'gettext', 'mono-devel', 'mediainfo', 'libmediainfo', 'sqlite', 'libzen', 'HandBrake', 'java-1.8.0-openjdk', 'libdrm', 'ffmpeg', 'caddy', 'https://downloads.rclone.org/rclone-current-linux-amd64.rpm']
     state: present
   register: fuse_install
   when: bundle_mediaserver.enabled|default(false)|bool == true
-
-- block:
-  - name: find the latest plexdrive version
-    uri:
-      url: https://api.github.com/repos/dweidenfeld/plexdrive/releases/latest
-      method: GET
-      return_content: yes
-      status_code: 200
-      body_format: json
-    register: result_json
-    changed_when: false
-  - name: install the latest plexdrive version to /usr/local/bin
-    get_url:
-      url: https://github.com/dweidenfeld/plexdrive/releases/download/{{ (result_json.content|from_json).tag_name }}/plexdrive-linux-amd64
-      dest: /usr/local/bin/plexdrive
-      owner: root
-      group: root
-      mode: 0775
-  when:
-  - bundle_mediaserver.enabled|default(false)|bool == true
-  - bundle_mediaserver.config.plexdrive_version == "latest"
 
 - name: create folders
   file:
@@ -73,10 +52,6 @@
     user: "{{ bundle_mediaserver.config.user }}"
     group: "{{ bundle_mediaserver.config.group }}"
     mode: "0750"
-  - folder: "/home/{{ bundle_mediaserver.config.user }}/.config/plexdrive"
-    user: "{{ bundle_mediaserver.config.user }}"
-    group: "{{ bundle_mediaserver.config.group }}"
-    mode: "0750"
   - folder: "/home/{{ bundle_mediaserver.config.user }}/.config/rclone"
     user: "{{ bundle_mediaserver.config.user }}"
     group: "{{ bundle_mediaserver.config.group }}"
@@ -90,6 +65,10 @@
     group: "{{ bundle_mediaserver.config.group }}"
     mode: "0750"
   - folder: "/mnt/{{ bundle_mediaserver.config.mountfolder }}"
+    user: "{{ bundle_mediaserver.config.user }}"
+    group: "{{ bundle_mediaserver.config.group }}"
+    mode: "0755"
+  - folder: "/mnt/{{ bundle_mediaserver.config.mountfolder }}/{{ bundle_mediaserver.config.rclone_cryptfolder }}"
     user: "{{ bundle_mediaserver.config.user }}"
     group: "{{ bundle_mediaserver.config.group }}"
     mode: "0755"
@@ -158,12 +137,6 @@
     mode: "{{ item.mode }}"
     force: "{{ item.force }}"
   with_items:
-  - src: conf_plexdrive.j2
-    dest: "/home/{{ bundle_mediaserver.config.user }}/.config/plexdrive/config.json"
-    owner: "{{ bundle_mediaserver.config.user }}"
-    group: "{{ bundle_mediaserver.config.group }}"
-    mode: "0640"
-    force: yes
   - src: conf_rclone.j2
     dest: "/home/{{ bundle_mediaserver.config.user }}/.config/rclone/rclone.conf"
     owner: "{{ bundle_mediaserver.config.user }}"
@@ -184,12 +157,6 @@
     force: yes
   - src: conf_caddy.j2
     dest: "/etc/caddy/caddy.conf"
-    owner: root
-    group: root
-    mode: "0644"
-    force: yes
-  - src: service_plexdrive.j2
-    dest: "/etc/systemd/system/plexdrive.service"
     owner: root
     group: root
     mode: "0644"
@@ -254,13 +221,26 @@
   when:
   - bundle_mediaserver.enabled|default(false)|bool == true
 
-- name: copy backup file
+- name: copy local file
   copy:
-    src: "{{ role_path }}/files/backup.sh"
-    dest: /home/{{ bundle_mediaserver.config.user }}"
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "{{ item.owner }}"
+    group: "{{ item.group }}"
+    mode: 0774
+  with_items:
+  - src: "{{ role_path }}/files/mediabackup.sh"
+    dest: "/usr/local/bin/mediabackup.sh"
     owner: "{{ bundle_mediaserver.config.user }}"
     group: "{{ bundle_mediaserver.config.group }}"
-    mode: 0775
+  - src: "{{ role_path }}/files/bash_media"
+    dest: "/home/{{ bundle_mediaserver.config.user }}/.bash_media"
+    owner: "{{ bundle_mediaserver.config.user }}"
+    group: "{{ bundle_mediaserver.config.group }}"
+  - src: "{{ role_path }}/files/2mp4"
+    dest: "/usr/local/bin/2mp4"
+    owner: "{{ bundle_mediaserver.config.user }}"
+    group: root
   when:
   - bundle_mediaserver.enabled|default(false)|bool == true
 
@@ -270,7 +250,7 @@
     minute: "30"
     hour: "05"
     weekday: "*"
-    job: "/bin/bash /home/onkeldom/.home/bin/backup.sh"
+    job: "/bin/bash /usr/local/bin/mediabackup.sh"
     #user: "admin"
     disabled: "no"
   become_user: "{{ bundle_mediaserver.config.user }}"
@@ -288,16 +268,15 @@
 
 - name: start and enable mediaserver services
   service:
-    name: plexdrive
-    state: started
+    name: "{{ item }}"
+    state: restarted
     enabled: yes
   with_items:
-  - plexdrive
   - plexcrypt
   - plexcrypthttp
   - plexmediaserver
   - tautulli
-  - sonnar
+  - sonarr
   - caddy
   when:
   - bundle_mediaserver.enabled|default(false)|bool == true

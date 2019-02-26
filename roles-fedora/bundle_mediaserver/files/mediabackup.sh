@@ -10,9 +10,9 @@ TMP_BACKUP_DIR="/tmp"
 # Dies ist nur ein Beispiel - bitte an eigene Bedürfnisse anpassen.
 # Bei Verzeichnissen, für die der User keine durchgehenden Leserechte hat (z.B. /etc) sind Fehler vorprogrammiert.
 # Pfade sollte nicht mit "/" enden!
-SOURCE="$HOME/.config "
+SOURCE="/home/onkeldom/.config"
 
-tar -cjpf $TMP_BACKUP_DIR/backup-$DATE-config.tar.bz2 $SOURCE --exclude="htop" --exclude=".mono" --exclude="NzBDrone" --exclude="plex"
+tar --exclude=$SOURCE/htop --exclude=$SOURCE/.mono --exclude=$SOURCE/NzbDrone --exclude=$SOURCE/plex -cjpf $TMP_BACKUP_DIR/backup-$DATE-config.tar.bz2 $SOURCE
 sleep 3
 rclone move --transfers 1 $TMP_BACKUP_DIR/backup-$DATE-config.tar.bz2 gdrive-crypt:backup/
 logger -p 'syslog.info' 'BACKUP ERSTELLT: .config'
@@ -21,5 +21,5 @@ rclone -v copy /home/onkeldom/.config/plex/backup/ gdrive-crypt:backup/plexdb/
 
 rclone -v copy /home/onkeldom/.config/NzbDrone/Backups/ gdrive-crypt:backup/sonarrdb/
 
-find /mnt/google/media/backup/ -mtime +14 -name "*.tar.bz2" -exec  rm -f {} \;
+find /mnt/google/media/backup/ -mtime +7 -name "*.tar.bz2" -exec  rm -f {} \;
 logger -p 'syslog.info' 'BACKUP Älter 7 Tage gelöscht'
