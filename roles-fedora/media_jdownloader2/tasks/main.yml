@@ -7,7 +7,7 @@
   when:
     - media_jd2_enabled|default(false)|bool == true
 
-- name: create directory for jd2
+- name: create directories for jd2
   file:
     path: "{{ item }}"
     state: directory
@@ -15,8 +15,8 @@
     group: "{{ media_j2_service_group }}"
     mode: 0755
   with_items:
-    - opt/upload
-    - opt/download
+    - "{{ media_j2_downloaddir }}"
+    - "{{ media_j2_uploaddir }}"
     - "{{ media_j2_installdir }}"
     - "{{ media_j2_installdir }}/cfg"
   when:
