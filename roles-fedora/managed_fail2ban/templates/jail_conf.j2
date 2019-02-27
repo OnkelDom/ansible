@@ -4,7 +4,7 @@
 before = paths-fedora.conf
 
 [DEFAULT]
-{% for key, value in managed_fail2ban.jail_config.items()|sort %}
+{% for key, value in managed_fail2ban_jail_config.items()|sort %}
 {%   if value is sameas true %}
 {{ key }}
 {%   elif value is string or value is number %}
@@ -17,7 +17,7 @@ before = paths-fedora.conf
 {% endfor %}
 
 # JAILS
-{% for key, value in managed_fail2ban.jail_services.items()|sort %}
+{% for key, value in managed_fail2ban_jail_services.items()|sort %}
 {%   if value is sameas true %}
 [{{ key }}]
 {%   elif value is string or value is number %}

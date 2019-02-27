@@ -1,24 +1,10 @@
 # Managed UFW
 
-Ansible role to manage basic firewall settings for all servers.
+Ansible Role zur Verwaltung der Firewall mittels UFW.
 
-You can look at the default file. In this i enable the role by default. You can set
+Die Firewall Regeln fuer Applikationen sind in den Rollen der Applikationen in den Files hinterlegt und werden mit dieser auch bereitgestellt. Hier wird nur die absolute default Konfigurationen fuer alle Server vorgenommen.
+
+Default Variables
 ```yaml
-managed_ufw:
-  enabled: false
-```
-to quick disable these role without comment it out. Otherwise you can define you defaults in defaults/main.yml.
-
-You can configure firewall rules with services and ports.
-
-By default ssh is allowed for zone public and permanent.
-
-Example Playbook #1
-```yaml
-- name: "configure firewall"
-  hosts: all
-  roles:
-    - role: "managed_ufw"
-      managed_ufw:
-        enabled: true
+managed_ufw_enabled: true
 ```

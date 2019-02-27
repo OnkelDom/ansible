@@ -1,28 +1,34 @@
 ---
 - name: add sysctl entrys
-  tags: add_sysctl
-  become: true
   sysctl:
     name: "{{ item.name }}"
     value: "{{ item.value }}"
     state: present
     reload: no
     ignoreerrors: yes
-  with_items: "{{ managed_sysctl.add }}"
-  when: managed_sysctl.enabled|default(false)|bool == true and managed_sysctl.add is defined
+  with_items: "{{ managed_sysctl_add }}"
+  register: managed_sysctl_added
+  when:
+    - managed_sysctl_enabled|default(false)|bool == true
+    - managed_sysctl_add is defined
 
 - name: remove sysctl entrys
-  tags: remove_sysctl
-  become: true
   sysctl:
     name: "{{ item.name }}"
     state: absent
     reload: no
     ignoreerrors: yes
-  with_items: "{{ managed_sysctl.remove }}"
-  when: managed_sysctl.enabled|default(false)|bool == true and managed_sysctl.remove is defined
+  with_items: "{{ managed_sysctl_remove }}"
+  register: managed_sysctl_removed
+  when:
+    - managed_sysctl.enabled|default(false)|bool == true
+    - managed_sysctl_remove is defined
 
 - name: reload sysctl
   command: /bin/true
   notify:
     - reload sysctl.conf
+  when:
+    - managed_sysctl.enabled|default(false)|bool == true
+    - managed_sysctl_removed.changed
+    - managed_sysctl_added.changed

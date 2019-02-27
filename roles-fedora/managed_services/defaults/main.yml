@@ -1,11 +1,10 @@
 ---
-managed_services:
-  enabled: true
-  active:
-    - chronyd
-    - sshd
-    - fail2ban
-    - NetworkManager
-    - ufw
-  disabled:
-    - firewalld
+managed_services_enabled: true
+managed_services_active:
+  - chronyd
+  - sshd
+  - fail2ban
+  - NetworkManager
+  - ufw
+managed_services_disabled:
+  - firewalld

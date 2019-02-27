@@ -1,41 +1,53 @@
 # Managed Packages
 
-Ansible Role to manage your installed software
+Ansible Role zur Verwaltung von Standardpaketen.
 
-You can look at the default file. In this i enable the role by default. You can set
+Default Variables
 ```yaml
-managed_packages:
-  enabled: false
-```
-to quick disable these role without comment it out. Otherwise you can define you defaults in defaults/main.yml.
-
-You can install or remove packages. If the package are installed or removed, the role ignores errors.
-
-Example Playbook #1
-```yaml
-- name: "configure installed software"
-  hosts: all
-  roles:
-    - role: "managed_packages"
-      managed_packages:
-        enabled: true
-        install:
-          - python
-          - vim
-          - htop
-          - tmux
-          - wget
-          - epel-release
-          - bash-completion
-          - bash-completion-extras
-        remove:
-          - NetworkManager
-```
-
-Example Playbook #2
-```yaml
-- hosts: all
-  roles:
-  # Paramters defined in defaults/main.yml
-  - managed_packages
+managed_packages_enabled: true
+managed_packages_install:
+  - python
+  - libselinux-python
+  - NetworkManager
+  - ufw
+  - iftop
+  - bmon
+  - vim
+  - htop
+  - tmux
+  - wget
+  - whois
+  - bind-utils
+  - bash-completion
+  - telnet
+  - net-snmp-utils
+  - net-tools
+  - ipmitool
+  - nfs-utils
+  - bzip2
+  - unrar
+  - cifs-utils
+  - dstat
+  - iotop
+  - expect
+  - dos2unix
+  - nmap
+  - swaks
+  - p7zip
+  - strace
+  - tcpdump
+  - rsync
+  - xclip
+  - unzip
+  - tree
+  - xz
+managed_packages_remove:
+  - network-scripts
+  - firewalld
+  - cockpit
+  - cockpit-bridge
+  - cockpit-packagekit
+  - cockpit-storaged
+  - cockpit-system
+  - cockpit-ws
 ```

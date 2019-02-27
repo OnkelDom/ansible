@@ -1,16 +1,13 @@
 ---
-- name: install chronyd
-  tags: chrony
-  become: true
+- name: install chrony
   package:
     name: chrony
     state: present
   register: chrony_install
-  when: managed_chrony.enabled|default(false)|bool == true
+  when:
+    - managed_chrony_enabled|default(false)|bool == true
 
 - name: configure /etc/chrony.conf & /etc/sysconfig/chronyd
-  tags: chrony
-  become: true
   template:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
@@ -18,21 +15,29 @@
     group: chrony
     mode: "{{ item.mode }}"
   when:
-  - chrony_install is success
-  - managed_chrony.enabled|default(false)|bool == true
+    - managed_chrony_enabled|default(false)|bool == true
+    - chrony_install is success
   with_items:
-  - { src: chrony_conf.j2, dest: /etc/chrony.conf, mode: '0644' }
-  - { src: chrony_sysconfig.j2, dest: /etc/sysconfig/chronyd, mode: '0644' }
-  notify: 
+    - { src: chrony_conf.j2, dest: /etc/chrony.conf, mode: '0644' }
+    - { src: chrony_sysconfig.j2, dest: /etc/sysconfig/chronyd, mode: '0644' }
+  notify:
   - restart chronyd
 
+- name: UFW allow NTP
+  ufw:
+    rule: allow
+    name: ntp
+  when:
+    - managed_chrony_enabled|default(false)|bool == true
+    - chrony_install is success
+    - managed_chrony_server.allow is defined
+  notify: reload ufw
+
 - name: start and enable chronyd service
-  tags: chronyd
-  become: true
   service:
     name: chronyd
     state: started
     enabled: yes
   when:
+  - managed_chrony_enabled|default(false)|bool == true
   - chrony_install is success
-  - managed_chrony.enabled|default(false)|bool == true

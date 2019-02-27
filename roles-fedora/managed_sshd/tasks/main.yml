@@ -4,20 +4,9 @@
     name: ['openssh', 'openssh-server', 'openssh-clients']
     state: present
   register: openssh_install
-  when: managed_sshd.enabled|default(false)|bool == true
+  when: managed_sshd_enabled|default(false)|bool == true
 
-- name: configure /etc/ssh/ssh_config
-  template:
-    src: ssh_config.j2
-    dest: /etc/ssh/ssh_config
-    owner: root
-    group: root
-    mode: 0644
-  when:
-  - openssh_install is success
-  - managed_sshd.enabled|default(false)|bool == true
-
-- name: configure /etc/sshd/sshd_config & /etc/sysconfig/sshd
+- name: configure /etc/sshd/ssh_config, /etc/sshd/sshd_config, /etc/sysconfig/sshd
   template:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
@@ -25,13 +14,14 @@
     group: root
     mode: "{{ item.mode }}"
   with_items:
-  - { src: sshd_config.j2, dest: /etc/ssh/sshd_config, mode: '0600' }
-  - { src: sshd_sysconfig.j2, dest: /etc/sysconfig/sshd, mode: '0640' }
+    - { src: ssh_config.j2, dest: /etc/ssh/ssh_config, mode: '0644' }
+    - { src: sshd_config.j2, dest: /etc/ssh/sshd_config, mode: '0600' }
+    - { src: sshd_sysconfig.j2, dest: /etc/sysconfig/sshd, mode: '0640' }
   when:
-  - openssh_install is success
-  - managed_sshd.enabled|default(false)|bool == true
+    - openssh_install is success
+    - managed_sshd_enabled|default(false)|bool == true
   notify:
-  - restart sshd
+    - restart sshd
 
 - name: start and enable sshd service
   service:
@@ -39,5 +29,5 @@
     state: started
     enabled: yes
   when:
-  - openssh_install is success
-  - managed_sshd.enabled|default(false)|bool == true
+    - openssh_install is success
+    - managed_sshd_enabled|default(false)|bool == true

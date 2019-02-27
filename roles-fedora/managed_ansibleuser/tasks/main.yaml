@@ -6,23 +6,26 @@
     regexp: "^%wheel"
     line: "%wheel ALL=(ALL:ALL) NOPASSWD: ALL"
     validate: "/usr/sbin/visudo -cf %s"
-  when: managed_ansibleuser.enabled|default(false)|bool == true
+  when:
+    - managed_ansibleuser_enabled|default(false)|bool == true
 
 - name: create ansible user
   user:
-    name: "{{ managed_ansibleuser.name }}"
+    name: "{{ managed_ansibleuser_name }}"
     groups: wheel
-    password: "{{ managed_ansibleuser.pass }}"
+    password: "{{ managed_ansibleuser_pass }}"
     shell: /bin/bash
-    comment: "{{ managed_ansibleuser.comment }}"
+    comment: "{{ managed_ansibleuser_comment }}"
     update_password: always
     state: present
-  when: managed_ansibleuser.enabled|default(false)|bool == true
+  when:
+    - managed_ansibleuser_enabled|default(false)|bool == true
 
 - name: add authorized key for ansible user
   authorized_key:
     exclusive: true
     state: present
-    user: "{{ managed_ansibleuser.name }}"
-    key: "{{ managed_ansibleuser.key }}"
-  when: managed_ansibleuser.enabled|default(false)|bool == true
+    user: "{{ managed_ansibleuser_name }}"
+    key: "{{ managed_ansibleuser_key }}"
+  when:
+    - managed_ansibleuser_enabled|default(false)|bool == true

@@ -2,20 +2,18 @@
 
 127.0.0.1      localhost localhost.localdomain localhost4 localhost4.localdomain4
 ::1            localhost6 localhost6.localdomain6 localhost6
-{% if managed_hosts.ipv4 is defined %}
-{% set space = 16 - managed_hosts.ipv4 | length %}
-{{ managed_hosts.ipv4 }}{% for i in range(1, space,1) %} {% endfor %}{{ managed_hosts.hostname }}.{{ managed_hosts.domain }} {{ managed_hosts.hostname }}{% if managed_hosts.alias is defined %}{% for alias in managed_hosts.alias %} {{ alias }}{% endfor %}{% endif %}
+{% if managed_hosts_ipv4 is defined %}
+{% set space = 16 - managed_hosts_ipv4 | length %}
+{{ managed_hosts_ipv4 }}{% for i in range(1, space,1) %} {% endfor %}{{ managed_hosts_hostname }}.{{ managed_hosts_domain }} {{ managed_hosts_hostname }}{% if managed_hosts_alias is defined %}{% for alias in managed_hosts_alias %} {{ alias }}{% endfor %}{% endif %}
+{% endif %}
+{% if managed_hosts_ipv6 is defined %}
+{% set space = 39 - managed_hosts_ipv6 | length %}
+{{ managed_hosts_ipv6 }}{% for i in range(1, space,1) %} {% endfor %}{{ managed_hosts_hostname }}.{{ managed_hosts_domain }} {{ managed_hosts_hostname }}{% if managed_hosts_alias is defined %}{% for alias in managed_hosts_alias %} {{ alias }}{% endfor %}{% endif %}
 {% endif %}
 
-{% if managed_hosts.ipv6 is defined %}
-{% set space = 39 - managed_hosts.ipv6 | length %}
-{{ managed_hosts.ipv6 }}{% for i in range(1, space,1) %} {% endfor %}{{ managed_hosts.hostname }}.{{ managed_hosts.domain }} {{ managed_hosts.hostname }}{% if managed_hosts.alias is defined %}{% for alias in managed_hosts.alias %} {{ alias }}{% endfor %}{% endif %}
-{% endif %}
-
-{% if managed_hosts.entrys is defined %}
-{% for hosts in managed_hosts.entrys %}
+{% if managed_hosts_entrys is defined %}
+{% for hosts in managed_hosts_entrys %}
 {% set space = 16 - hosts.ip | length %}
 {{ hosts.ip }}{% for i in range(1, space,1) %} {% endfor %}{{ hosts.hostname }}.{{ hosts.domain }} {{ hosts.hostname }}{% if hosts.alias is defined %}{% for alias in hosts.alias %} {{ alias }}{% endfor %}{% endif %} # {{ hosts.comment }}
-
 {% endfor %}
 {% endif %}

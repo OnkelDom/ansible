@@ -1,42 +1,41 @@
 ---
 - name: install fail2ban
-  tags: fail2ban
-  become: true
   package:
     name: fail2ban
     state: present
   register: fail2ban_install
-  when: managed_fail2ban.enabled|default(false)|bool == true
+  when:
+    - managed_fail2ban_enabled|default(false)|bool == true
 
 - name: configure /etc/fail2ban/fail2ban.conf
-  tags: fail2ban
-  become: true
   template:
     src: fail2ban_conf.j2
     dest: /etc/fail2ban/fail2ban.conf
     owner: root
     group: root
     mode: 0644
-  when: fail2ban_install is success and managed_fail2ban.enabled|default(false)|bool == true
+  when:
+    - managed_fail2ban_enabled|default(false)|bool == true
+    - fail2ban_install is success
   notify: restart fail2ban
 
 - name: configure /etc/fail2ban/jail.conf
-  tags: fail2ban
-  become: true
   template:
     src: jail_conf.j2
     dest: /etc/fail2ban/jail.conf
     owner: root
     group: root
     mode: 0644
-  when: fail2ban_install is success and managed_fail2ban.enabled|default(false)|bool == true
+  when:
+    - managed_fail2ban_enabled|default(false)|bool == true
+    - fail2ban_install is success
   notify: restart fail2ban
 
 - name: start and enable fail2ban service
-  tags: fail2ban
-  become: true
   service:
     name: fail2ban
     state: started
     enabled: yes
-  when: fail2ban_install is success and managed_fail2ban.enabled|default(false)|bool == true
+  when:
+    - managed_fail2ban_enabled|default(false)|bool == true
+    - fail2ban_install is success

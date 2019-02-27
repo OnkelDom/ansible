@@ -1,3 +1,2 @@
 ---
-managed_ufw:
-  enabled: true
+managed_ufw_enabled: true

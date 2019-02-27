@@ -1,65 +1,105 @@
 ---
-- name: adduser
-  user:
-    name: "{{ managed_admin.username }}"
-    comment: "{{ managed_admin.fullname }}"
-    groups: wheel
-    shell: /bin/bash
-    create_home: true
-    ssh_key_file: "{{ lookup('file', '~/.ssh/id_rsa') }}"
-- name: add authorized_key for {{ managed_admin.username }}
-  authorized_key:
-    user: "{{ managed_admin.username }}"
-    state: present
-    key: '{{ item }}'
-  with_items:
-  - "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
-  - "{{ lookup('file', '~/git/.secure/id_rsa_work.pub') }}"
 - name: install packages
   package:
     name: ['vim', 'vim-enhanced', 'git', 'xclip', 'powerline', 'powerline-fonts', 'tmux-powerline', 'vim-powerline', 'python3']
     state: present
+  when:
+    - managed_admin_enabled|default(false)|bool == true
+
+- name: add admins
+  user:
+    name: "{{ item.user }}"
+    comment: "{{ item.fullname }}"
+    groups: wheel
+    shell: /bin/bash
+    create_home: true
+    state: "{{ item.state }}"
+  with_item: "{{ managed_admin_users }}"
+  when:
+    - managed_admin_enabled|default(false)|bool == true
+    - managed_admin_users is defined
+
+- name: add admins pubkeys
+  authorized_key:
+    user: "{{ item.user }}"
+    state: "{{ item.state }}"
+    key: '{{ item.key }}'
+  with_item: "{{ managed_admin_users }}"
+  when:
+    - managed_admin_enabled|default(false)|bool == true
+    - managed_admin_users is defined
+
 - name: install pip3 powerline_gitstatus
   command: "pip3 install --user powerline_gitstatus"
   become: true
-  become_user: "{{ managed_admin.username }}"
-- name: pip3 install powerline_gitstatus
+  become_user: "{{ item.user }}"
+  with_item: "{{ managed_admin_users }}"
+  when:
+    - managed_admin_enabled|default(false)|bool == true
+    - managed_admin_users is defined
+
+- name: pip install powerline_gitstatus
   pip:
     name: powerline_gitstatus
     executable: pip3
+
 - name: clone github.com/onkeldom/.dot
   git:
     repo: 'https://github.com/onkeldom/.dot.git'
-    dest: /home/{{ managed_admin.username }}/.dot
+    dest: /home/{{ item.user }}/.dot
     update: no
   become: true
-  become_user: "{{ managed_admin.username }}"
-- name: create .config folder in {{ managed_admin.username }} home
+  become_user: "{{ item.user }}"
+  with_item: "{{ managed_admin_users }}"
+  when:
+    - managed_admin_enabled|default(false)|bool == true
+    - managed_admin_users is defined
+
+- name: create .config folder for all admins
   file:
-    path: /home/{{ managed_admin.username }}/.config
-    owner: "{{ managed_admin.username }}"
-    group: "{{ managed_admin.username }}"
+    path: /home/{{ item.user }}/.config
+    owner: "{{ item.user }}"
+    group: "{{ item.user }}"
     state: directory
     mode: 0755
+  with_item: "{{ managed_admin_users }}"
+  when:
+    - managed_admin_enabled|default(false)|bool == true
+    - managed_admin_users is defined
+
 - name: remove .bashrc
   file:
-    path: '/home/{{ managed_admin.username }}/.bashrc'
+    path: '/home/{{ item.user }}/.bashrc'
     state: absent
+  with_item: "{{ managed_admin_users }}"
+  when:
+    - managed_admin_enabled|default(false)|bool == true
+    - managed_admin_users is defined
+
 - name: set symlinks for .dot
   file:
-    src: '/home/{{ managed_admin.username }}/.dot/{{ item }}'
-    dest: '/home/{{ managed_admin.username }}/{{ item }}'
+    src: '/home/{{ item.user }}/.dot/{{ item }}'
+    dest: '/home/{{ item.user }}/{{ item }}'
     state: link
   with_items:
-  - .gitconfig
-  - .vimrc
-  - .vim
-  - .bashrc
-  - .tmux.conf
+    - .gitconfig
+    - .vimrc
+    - .vim
+    - .bashrc
+    - .tmux.conf
   become: true
-  become_user: "{{ managed_admin.username }}"
+  become_user: "{{ item.user }}"
+  with_item: "{{ managed_admin_users }}"
+  when:
+    - managed_admin_enabled|default(false)|bool == true
+    - managed_admin_users is defined
+
 - name: set symlinks for powerline_gitstatus
   file:
-    src: '/home/{{ managed_admin.username }}/.dot/powerline'
-    dest: '/home/{{ managed_admin.username }}/.config/powerline'
+    src: '/home/{{ item.user }}/.dot/powerline'
+    dest: '/home/{{ item.user }}/.config/powerline'
     state: link
+  with_item: "{{ managed_admin_users }}"
+  when:
+    - managed_admin_enabled|default(false)|bool == true
+    - managed_admin_users is defined

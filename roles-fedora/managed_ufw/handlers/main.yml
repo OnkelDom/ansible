@@ -1,5 +1,3 @@
 ---
-- name: restart ufw
-  service:
-    name: ufw
-    state: restarted
+- name: reload ufw
+  command: /usr/sbin/ufw reload

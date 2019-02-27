@@ -1,4 +1,4 @@
 # {{ ansible_managed }}
 
-AUTOCREATE_SERVER_KEYS="{{ managed_sshd.sysconfig.autocreate_server_keys|join(' ') }}"
-SSH_USE_STRONG_RNG={{ '1' if managed_sshd.sysconfig.use_strong_rng|bool else '0' }}
+AUTOCREATE_SERVER_KEYS="{{ managed_sshd_autocreate_server_keys|join(' ') }}"
+SSH_USE_STRONG_RNG={{ '1' if managed_sshd_use_strong_rng|bool else '0' }}

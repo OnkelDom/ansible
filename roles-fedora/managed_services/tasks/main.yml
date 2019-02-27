@@ -1,16 +1,23 @@
 ---
 - name: disable services
-  tags: servicedisable
-  become: true
-  service: name={{ item }} enabled=no state=stopped masked=true
+  service:
+    name: "{{ item }}"
+    enabled: no
+    state: stopped
+    masked: true
   ignore_errors: true
-  with_items: "{{ managed_services.disabled }}"
-  when: managed_services.enabled|default(false)|bool == true
+  with_items:
+    - "{{ managed_services_disabled }}"
+  when:
+    - managed_services.enabled|default(false)|bool == true
 
 - name: enable services
-  tags: serviceenable
-  become: true
-  service: name={{ item }} enabled=yes state=started
+  service:
+    name: "{{ item }}"
+    enabled: yes
+    state: started
   ignore_errors: true
-  with_items: "{{ managed_services.active }}"
-  when: managed_services.enabled|default(false)|bool == true
+  with_items:
+    - "{{ managed_services_active }}"
+  when:
+    - managed_services_enabled|default(false)|bool == true

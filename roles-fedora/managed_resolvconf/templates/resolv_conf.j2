@@ -1,25 +1,23 @@
 # {{ ansible_managed }}
 
-{% if managed_resolvconf is defined %}
-{% if managed_resolvconf.search | length > 0 %}
-search {{ managed_resolvconf.search }}
+{% if managed_resolvconf_search | length > 0 %}
+search {{ managed_resolvconf_search }}
 {% endif %}
-{% if managed_resolvconf.domain != "" %}
-domain {{ managed_resolvconf.domain }}
+{% if managed_resolvconf_domain != "" %}
+domain {{ managed_resolvconf_domain }}
 {% endif %}
-{% if managed_resolvconf.nameservers | length > 0 %}
-{% for ns in managed_resolvconf.nameservers %}
+{% if managed_resolvconf_nameservers | length > 0 %}
+{% for ns in managed_resolvconf_nameservers %}
 nameserver {{ ns }}
 {% endfor %}
 {% endif %}
-{% if managed_resolvconf.sortlist | length > 0 %}
-{% for sl in managed_resolvconf.sortlist %}
+{% if managed_resolvconf_sortlist | length > 0 %}
+{% for sl in managed_resolvconf_sortlist %}
 sortlist {{ sl }}
 {% endfor %}
 {% endif %}
-{% if managed_resolvconf.options | length > 0 %}
-{% for options in managed_resolvconf.options %}
+{% if managed_resolvconf_options | length > 0 %}
+{% for options in managed_resolvconf_options %}
 options {{ options }}
 {% endfor %}
-{% endif %}
 {% endif %}

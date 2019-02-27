@@ -1,7 +1,6 @@
 # {{ ansible_managed }}
 
-{% if managed_sshd.server|length > 0 %}
-{%   for option, value in managed_sshd.server.items()|sort %}
+{%   for option, value in managed_sshd_server.items()|sort %}
 {%     if value is sameas true %}
 {{ option }} yes
 {%     elif value is sameas false %}
@@ -18,4 +17,3 @@
 {{ option }} {{ value }}
 {%     endif %}
 {%   endfor %}
-{% endif %}

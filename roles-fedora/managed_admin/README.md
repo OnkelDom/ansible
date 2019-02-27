@@ -1,4 +1,9 @@
----
+# Managed Admin
+
+Ansible Role zur Verwaltung der Adminuser, deren Authorized Keys und Powerline.
+
+Default Variables
+```yaml
 managed_admin_enabled: true
 managed_admin_users:
   - user: onkeldom
@@ -7,5 +12,6 @@ managed_admin_users:
     state: present
   - user: testuser
     fullname: "Testuser"
-    key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+    key: "{{ lookup('file', '~/.ssh/id_rsa_test.pub') }}"
     state: present
+```

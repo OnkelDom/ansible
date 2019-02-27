@@ -1,5 +1,5 @@
-{{ managed_motd.motd_ascii_art }}
-{% for key, value in managed_motd.motd_info.items() %}
+{{ managed_motd_ascii_art }}
+{% for key, value in managed_motd_info.items() %}
 {%   if value is sameas true %}
  {{ key }}
 {%   elif value is string or value is number %}

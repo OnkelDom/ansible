@@ -7,13 +7,15 @@ Mit dem Hintergrund das mir die Community dabei viel geholfen hat, gebe ich mein
 Ich habe meine Landschaft in 3 Kategorien eingeteilt:
 * managed_ = Grundlegende Serverkonfiguration die ich zusammen "standard_server" nenne.
 * app_     = Einzelne Applikationen (z.B. Plex)
-* bundle_  = Mehrerer zussamenlaufende Applikationen (z.B. Webserver incl. caddy,php-fpm,nextcloud,mariadb usw)
 
-Ich hatte mich zuerst an CentOS versucht. Da hier aber die meisten Pakete zu alt sind, bin ich mitlerweile auf Ubuntu umgestiegen. Da ich aber die schon geleistete Arbeit nicht wegwerfen wollte, habe "erstmal" ywei Ordner gemacht. Irgendwann werde ich die Rolen zusammenfuehren.
+Ich hatte mich zuerst an CentOS versucht. Da mer aber die meisten Pakete zu alt sind, bin ich erst auf Ubuntu und dann doch letzendlich bei Fedora gelandet. Da ich aber die schon geleistete Arbeit nicht wegwerfen wollte, habe ich "erstmal" neue Rollenordner dafuer angelegt. Irgendwann werde ich die Rolen zusammenfuehren.
 
-State:
-* Ubuntu 18.04 LTS up2date
-* CentOS 7.6 last edit at 18.01.2019
+Irgendwann ist es mein Ziel rede Rolle fuer Debian, Ubuntu, CentOS und Fedora nutzbar zu haben.
+
+Genutzte Distros:
+* Ubuntu 18.04 LTS
+* CentOS 7.6
+* Fedora Workstation 29
 
 Damit jeder verstehen kann, wie meine Rollen funktionieren, habe ich zu jeder Rolle eine eigene README-Datei geschrieben.
 
@@ -26,85 +28,77 @@ Fuer folgende Rollen nutze ich die Standard Ansible Module:
 * [Modprobe with Ansible](https://docs.ansible.com/ansible/latest/modules/modprobe_module.html)
 * [Kernel Blacklist with Ansible](https://docs.ansible.com/ansible/latest/modules/kernel_blacklist_module.html)
 
-Folgende Rollen (stand 02.02.2019) erstelle ich noch:
 ```yaml
-# My Infra - basics:
-  - managed_logrotate  # feature work for more complexed logs and items
-  - managed_rsyslog    # feature work for ssl support and encrypted transfers
-  - managed_auditbeat  # feature work for full elk stack
-  - managed_filebeat   # feature work for full elk stack
-  - managed_metricbeat # feature work for full elk stack
-  - managed_webcontent # Build Website with Jekyll https://jekyllrb.com/ and git
-# My Infra - bundles:
-  - bundle_webserver   # caddy, php, php-fpm, mariadb, nextcloud
-  - bundle_mediaserver # rclone, plexdrive, plex, sonarr
-  - bundle_mailserver  # postfix, dovecot, opendkim, opendmarc, rspamd, clamav
-  - bundle_mgmt        # dnsmasq (dns,dhcp,pxe,tftp), lighthttpd, samba5dc, git-server
-  - bundle_auth        # openldap, slapd, oauth2
-  - bundle_lb          # keepalived, haproxy, squid, ntp
-  - bundle_ns          # bind, unbound or/and powerdns
-  - bundle_syslog      # elastic, logstash, kibana, zabbix, grafana
-# My Infra - applications
-  - app_jdownloader2
-  
-# Interessts:
-- slapd
-- dnsmasq
+## Webservices
+- web_lighthttpd
+- web_caddy
+- web_nextcloud
+- web_jekyll https://jekyllrb.com/ and git
+## Media Management
+- media_plex
+- media_tautulli
+- media_sonarr
+- media_jdownloader2
+- media_filebot
+- media_converter (movies, series to mp4)
+- media_rclone
+## Proxys
+- proxy__squid
+- proxy__haproxy
+- proxy__keepalived (for app_haproxy or single use)
+## Mail
+- mail_postfix
+- mail_dovecot
+- mail_opendkim
+- mail_opendmarc
+- mail_rspamd
+- mail_clamav
+## DNS
+- dns_bind
+- dns_unbound
+- dns_powerdns
+- dns_dnsmasq
   - cache
   - resolver
   - dhcp
   - pxe
   - tftp
-- dns
-  - bind
-  - unbound
-  - powerdns
-- dhcpd
-- squid
-- elastic
-  - logstash
-  - elasticsearch
-  - kibana
-- mail
-  - postfix
-  - dovecot
-  - opendkim
-  - opendmarc
-  - rspamd
-  - clamav
-- nfs https://github.com/shelleg/ansible-role-nfs
-- webservers
-  - lighthttpd
-  - caddy
-  - nginx https://github.com/shelleg/ansible-role-nginx
-  - apache
-- openvpn
-- openldap
-- ldapadmin https://github.com/shelleg/ansible-role-php-ldapadmin
-- openssh_ca
-- oauth2
-- samba5dc
-- letsencrypt
-- nextcloud
-- wordpress
-- haproxy
-- keepalived
-- plex
-- rclone
-- jdownloader
-- sonarr
-- gitlab
-- jenkins https://github.com/shelleg/ansible-role-jenkins
-- grafana https://github.com/shelleg/ansible-role-grafana
-- zabbix
-  - webfrontend
-  - server
-  - proxy
-  - java-gateway
-- database
-  - mysql https://github.com/shelleg/ansible-role-mysql
-  - postgresql
-  - mongodb
-- atlassian
- - jira https://github.com/shelleg/ansible-role-jira https://github.com/shelleg/ansible-playbook-jira
+## Logging
+- log_logstash
+- log_elasticsearch
+- log_kibana
+- managed_logrotate    # feature work for more complexed logs and items
+- managed_rsyslog      # feature work for ssl support and encrypted transfers
+- managed_auditbeat    # feature work for full elk stack
+- managed_journalbeat  # feature work for full elk stack
+- managed_filebeat     # feature work for full elk stack
+- managed_metricbeat   # feature work for full elk stack
+## Monitoring
+- mon_grafana https://github.com/shelleg/ansible-role-grafana
+- mon_zabbix_web
+- mon_zabbix_server
+- mon_zabbix_proxy
+- mon_zabbix_java-gateway
+## Security
+- sec_openvpn
+- sec_openssh_ca
+- sec_oauth2
+## LDAP
+- ldap_slapd
+- ldap_openldap
+- ldap_ldapadmin https://github.com/shelleg/ansible-role-php-ldapadmin
+- ldap_samba5dc
+## Databases
+- db_mysql https://github.com/shelleg/ansible-role-mysql
+- db_postgresql
+- db_mongodb
+## Productivity & Communication
+- com_gitlab
+- com_jenkins https://github.com/shelleg/ansible-role-jenkins
+- com_jira https://github.com/shelleg/ansible-role-jira https://github.com/shelleg/ansible-playbook-jira
+- com_confluence
+- com_slack
+- com_telegramm
+## Others
+- files_nfs https://github.com/shelleg/ansible-role-nfs
 ```

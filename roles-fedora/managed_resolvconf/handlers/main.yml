@@ -1,7 +1,5 @@
 ---
 - name: restart NetworkManager
-  tags: NetworkManager
-  become: true
   service:
     name: NetworkManager
     state: restarted

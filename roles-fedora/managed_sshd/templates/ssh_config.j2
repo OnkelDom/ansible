@@ -1,9 +1,7 @@
 # {{ ansible_managed }}
 
-{% if managed_sshd.client|length > 0 %}
-
 Host *
-{%   for option, value in managed_sshd.client.items()|sort %}
+{%   for option, value in managed_sshd_client.items()|sort %}
 {%     if value is sameas true %}
   {{ option }} yes
 {%     elif value is sameas false %}
@@ -20,4 +18,3 @@ Host *
   {{ option }} {{ value }}
 {%     endif %}
 {%   endfor %}
-{% endif %}

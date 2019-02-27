@@ -1,6 +1,6 @@
 # {{ ansible_managed }}
 
-{% for command, value in managed_chrony.client.items()|sort %}
+{% for command, value in managed_chrony_client.items()|sort %}
 {%   if value is sameas true %}
 {{ command }}
 {%   elif value is string or value is number %}
@@ -11,7 +11,7 @@
 {%     endfor %}
 {%   endif %}
 {% endfor %}
-{% for command, value in managed_chrony.server.items()|sort %}
+{% for command, value in managed_chrony_server.items()|sort %}
 {%   if value is sameas true %}
 {{ command }}
 {%   elif value is string or value is number %}
