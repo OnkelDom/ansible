@@ -1,0 +1,16 @@
+---
+- name: restart rclone
+  service:
+    name: rclone
+    state: restarted
+
+- name: restart rclone-http
+  service:
+    name: rclone-http
+    state: restarted
+
+- name: reload systemd
+  command: /usr/bin/systemctl daemon-reload
+
+- name: reload ufw
+  command: /usr/sbin/ufw reload

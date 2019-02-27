@@ -1,0 +1,29 @@
+---
+- name: install rpmfusion repos
+  package:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-29.noarch.rpm
+    - http://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-29.noarch.rpm
+  when:
+    - media_converter_enabled|default(false)|bool == true
+
+- name: install packages
+  package:
+    name: ['HandBrake', 'ffmpeg', 'libdrm']
+    state: present
+  register: converter_install
+  when:
+    - media_converter_enabled|default(false)|bool == true
+
+- name: copy 2mp4 file
+  copy:
+    src: "{{ role_path }}/files/2mp4"
+    dest: "/usr/local/bin/2mp4"
+    owner: "{{ media_converter_service_user }}"
+    group: root
+    mode: 0774
+  when:
+    - media_converter_enabled|default(false)|bool == true
+    - converter_install is success

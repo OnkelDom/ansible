@@ -1,0 +1,30 @@
+---
+- name: install php-fpm
+  package:
+    name: php-fpm
+    state: present
+  register: php_fpm_install
+  when:
+    - web_php_fpm.enabled|default(false)|bool == true
+
+- name: configure /etc/php-fpm.d/www.conf
+  template:
+    src: php_fpm_conf.j2
+    dest: /etc/php-fpm.d/www.conf
+    owner: root
+    group: root
+    mode: 0644
+  when:
+    - web_php_fpm.enabled|default(false)|bool == true
+    - php_fpm_install is success
+  notify:
+    - restart php-fpm
+
+- name: start and enable php-fpm service
+  service:
+    name: php-fpm
+    state: started
+    enabled: yes
+  when:
+    - web_php_fpm.enabled|default(false)|bool == true
+    - php_fpm_install is success

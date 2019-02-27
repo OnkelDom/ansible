@@ -1,0 +1,6 @@
+---
+media_plex_enabled: true
+media_plex_port: 32400
+media_plex_service_user: "{{ media_user }}"
+media_plex_service_group: "{{ media_group }}"
+media_plex_use_reverse_proxy: true

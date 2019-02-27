@@ -1,0 +1,4 @@
+[Tautulli]
+title=Tautulli
+description=Tautulli the Plex Media Server viewer
+ports={{ media_tautulli_port }}/tcp

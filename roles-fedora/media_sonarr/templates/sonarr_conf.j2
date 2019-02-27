@@ -1,0 +1,14 @@
+<Config>
+  <LogLevel>Info</LogLevel>
+  <Port>{{ bundle_mediaserver.config.sonarr_port }}</Port>
+  <UrlBase>{{ bundle_mediaserver.config.sonarr_basepath }}</UrlBase>
+  <BindAddress>*</BindAddress>
+  <SslPort>9898</SslPort>
+  <EnableSsl>False</EnableSsl>
+  <AuthenticationMethod>Forms</AuthenticationMethod>
+  <Branch>master</Branch>
+  <LaunchBrowser>True</LaunchBrowser>
+  <SslCertHash></SslCertHash>
+  <UpdateMechanism>BuiltIn</UpdateMechanism>
+  <UpdateAutomatically>{{ bundle_mediaserver.config.sonarr_autoupdate }}</UpdateAutomatically>
+</Config>

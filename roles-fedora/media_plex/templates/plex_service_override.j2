@@ -1,0 +1,10 @@
+[Unit]
+After=syslog.target plexcrypt.service
+Requires=network-online.target
+
+[Service]
+User={{ bundle_mediaserver.config.user }}
+Group={{ bundle_mediaserver.config.group }}
+# Change PMS's directory
+Environment="PLEX_MEDIA_SERVER_APPLICATION_SUPPORT_DIR=/home/{{ bundle_mediaserver.config.user }}/.config/plex"
+Environment="PLEX_MEDIA_SERVER_USE_SYSLOG=true"

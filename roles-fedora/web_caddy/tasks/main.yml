@@ -1,0 +1,73 @@
+---
+- name: install caddy
+  package:
+    name: caddy
+    state: present
+  register: caddy_install
+  when:
+    - web_caddy_enabled|default(false)|bool == true
+
+- name: configure /etc/caddy/caddy.conf
+  template:
+    src: caddy_conf.j2
+    dest: /etc/caddy/caddy.conf
+    owner: root
+    group: root
+    mode: 0644
+  when:
+    - web_caddy_enabled|default(false)|bool == true
+    - caddy_install is success
+  notify:
+    - restart caddy
+
+- name: configure /etc/caddy/conf.d/ vhosts
+  template:
+    src: caddy_vhost.j2
+    dest: /etc/caddy/conf.d/{{ item.name }}.conf
+    owner: root
+    group: root
+    mode: 0644
+  with_items: "{{ web_caddy_vhosts }}"
+  when:
+    - web_caddy_enabled|default(false)|bool == true
+    - caddy_install is success
+  notify:
+    - restart caddy
+
+- name: configure sysctls - file descriptors and number of threads
+  pam_limits:
+    domain: caddy
+    limit_type: "{{item.limit_type}}"
+    limit_item: "{{item.limit_item}}"
+    value: "{{item.value}}"
+  with_items:
+  - { limit_type: '-', limit_item: 'nofile', value: 8192 }
+  - { limit_type: '-', limit_item: 'nproc', value: 8192 }
+  - { limit_type: 'soft', limit_item: 'memlock', value: unlimited }
+  - { limit_type: 'hard', limit_item: 'memlock', value: unlimited }
+  when:
+    - web_caddy_enabled|default(false)|bool == true
+    - caddy_install is success
+  notify:
+    - reload sysctl.conf
+
+- name: UFW allow HTTP and HTTPS
+  ufw:
+    rule: allow
+    name: "WWW Full"
+  when:
+    - web_caddy_enabled|default(false)|bool == true
+    - caddy_install is success
+  notify:
+    - reload ufw
+
+- name: start and enable caddy service
+  tags: caddy
+  become: true
+  service:
+    name: caddy
+    state: started
+    enabled: yes
+  when:
+  - caddy_install is success
+  - web_caddy_enabled|default(false)|bool == true

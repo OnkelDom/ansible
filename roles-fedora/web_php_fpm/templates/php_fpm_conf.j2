@@ -1,0 +1,14 @@
+# {{ ansible_managed }}
+
+[www]
+{% for key, value in web_php_fpm_config.items()|sort %}
+{%   if value is sameas true %}
+{{ key }}
+{%   elif value is string or value is number %}
+{{ key }} = {{ value }}
+{%   else %}
+{%     for v in value %}
+{{ key }} = {{ v }}
+{%     endfor %}
+{%   endif %}
+{% endfor %}

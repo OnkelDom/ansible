@@ -1,0 +1,11 @@
+---
+- name: restart tautulli
+  service:
+    name: tautulli
+    state: restarted
+
+- name: reload systemd
+  command: /usr/bin/systemctl daemon-reload
+  
+- name: reload ufw
+  command: /usr/sbin/ufw reload

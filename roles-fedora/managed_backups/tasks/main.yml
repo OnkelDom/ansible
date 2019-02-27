@@ -1,0 +1,10 @@
+- name: add crontab entry for backups
+  cron:
+    name: "backup mediaserver configs and databases"
+    minute: "30"
+    hour: "05"
+    weekday: "*"
+    job: "/bin/bash /usr/local/bin/mediabackup.sh"
+    #user: "admin"
+    disabled: "no"
+  become_user: "{{ media_plex_service_user }}"

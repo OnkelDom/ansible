@@ -1,0 +1,80 @@
+---
+- name: install java-1.8.0-openjdk
+  package:
+    name: java-1.8.0-openjdk
+    state: present
+  register: java_install
+  when:
+    - media_jd2_enabled|default(false)|bool == true
+
+- name: create directory for jd2
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ media_j2_service_user }}"
+    group: "{{ media_j2_service_group }}"
+    mode: 0755
+  with_items:
+    - opt/upload
+    - opt/download
+    - "{{ media_j2_installdir }}"
+    - "{{ media_j2_installdir }}/cfg"
+  when:
+    - media_jd2_enabled|default(false)|bool == true
+    - java_install is success
+
+- name: download JDownloader.jar
+  get_url:
+    url: http://installer.jdownloader.org/JDownloader.jar
+    dest: "{{ media_j2_installdir }}/JDownloader.jar"
+    owner: "{{ media_j2_service_user }}"
+    group: "{{ media_j2_service_group }}"
+    mode: 0775
+  register: jdownloader_download
+  when:
+    - media_jd2_enabled|default(false)|bool == true
+    - java_install is success
+
+- name: copy jd2 configs on first run
+  template:
+    dest: "{{ item.dest }}"
+    src: "{{ item.src }}"
+    owner: "{{ media_j2_service_user }}"
+    group: "{{ media_j2_service_group }}"
+    mode: 0640
+    force: no
+  with_items:
+    - dest: "{{ media_j2_installdir }}/cfg/org.jdownloader.api.myjdownloader.MyJDownloaderSettings.json"
+      src: myjdownloader.j2
+    - dest: "{{ media_j2_installdir }}/cfg/org.jdownloader.settings.GeneralSettings.json"
+      src: generalconfig.j2
+    - dest: "{{ media_j2_installdir }}/cfg/org.jdownloader.extensions.extraction.ExtractionExtension.json"
+      src: extraction.j2
+  when:
+    - media_jd2_enabled|default(false)|bool == true
+    - java_install is success
+    - jdownloader_download is success
+  notify:
+    - restart jdownloader
+
+- name: copy jd2 systemd file
+  template:
+    dest: "/etc/systemd/system/jdownloader.service"
+    src: jdownloader_service.j2
+    owner: root
+    group: root
+    mode: 0644
+  when:
+    - media_jd2_enabled|default(false)|bool == true
+    - java_install is success
+    - jdownloader_download is success
+
+- name: start and enable jdownloader service
+  service:
+    name: jdownloader
+    state: started
+    enabled: yes
+  when:
+    - media_jd2_enabled|default(false)|bool == true
+    - java_install is success
+    - jdownloader_download is success

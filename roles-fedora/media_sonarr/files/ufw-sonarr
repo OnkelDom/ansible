@@ -1,0 +1,4 @@
+[Sonarr]
+title=Sonnar
+description=Sonarr the NzBDrone
+ports={{ media_sonarr_port }}/tcp

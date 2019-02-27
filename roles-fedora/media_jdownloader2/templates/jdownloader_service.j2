@@ -1,0 +1,16 @@
+[Unit]
+Description=JDownloader Service
+After=syslog.target network-online.target
+Wants=network-online.target
+
+[Service]
+User={{ media_j2_service_user }}
+Group={{ media_j2_service_user }}
+Environment={{ media_j2_installdir }}
+Type=oneshot
+TimeoutStopSec=20
+ExecStart=/usr/bin/java -Djava.awt.headless=true -jar {{ media_j2_installdir }}/JDownloader.jar
+RemainAfterExit=True
+
+[Install]
+WantedBy=multi-user.target
