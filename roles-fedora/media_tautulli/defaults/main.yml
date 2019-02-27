@@ -1,3 +1,7 @@
 ---
 media_tautulli_enabled: true
 media_tautulli_port: 9123
+media_tautulli_service_user: "{{ media_user }}"
+media_tautulli_service_group: "{{ media_group }}"
+media_tautulli_use_reverse_proxy: true
+media_tautulli_use_firewall: false

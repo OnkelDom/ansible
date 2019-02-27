@@ -1,2 +1,4 @@
 ---
 media_rclone_enabled: true
+media_rclone_service_user: "{{ media_user }}"
+media_rclone_service_group: "{{ media_group }}"

@@ -1,3 +1,7 @@
 ---
 media_sonarr_enabled: true
 media_sonarr_port: 8989
+media_sonarr_service_user: "{{ media_user }}"
+media_sonarr_service_group: "{{ media_group }}"
+media_sonarr_use_reverse_proxy: true
+media_sonarr_use_firewall: false

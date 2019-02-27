@@ -89,6 +89,7 @@
   when:
     - media_plex_enabled|default(false)|bool == true
     - plex_install is success
+    - media_plex_use_firewall|bool == true
 
 - name: UFW allow Plexmediaserver
   ufw:
@@ -97,6 +98,7 @@
   when:
     - media_plex_enabled|default(false)|bool == true
     - plex_install is success
+    - media_plex_use_firewall|bool == true
   notify:
     - reload ufw
 
