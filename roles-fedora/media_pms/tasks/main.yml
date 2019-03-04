@@ -1,0 +1,129 @@
+---
+- name: install plex repo
+  yum_repository:
+    name: plex
+    description: "Repo for Plex Media Server"
+    file: plex
+    baseurl: https://downloads.plex.tv/repo/rpm/$basearch/
+    gpgkey: https://downloads.plex.tv/plex-keys/PlexSign.key
+    gpgcheck: yes
+    enabled: yes
+  when:
+    - media_pms_enabled|default(false)|bool == true
+
+- name: install plexmediaserver
+  package:
+    name: plexmediaserver
+    state: present
+  register: plex_install
+  when:
+    - media_pms_enabled|default(false)|bool == true
+
+- name: create plex config and systemd override folders
+  file:
+    path: "{{ item.folder }}"
+    state: directory
+    owner: "{{ item.user }}"
+    group: "{{ item.group }}"
+    mode: "{{ item.mode }}"
+  with_items:
+  - folder: "/home/{{ media_pms_service_user }}/.config"
+    user: "{{ media_pms_service_user }}"
+    group: "{{ media_pms_service_group }}"
+    mode: "0750"
+  - folder: "/home/{{ media_pms_service_user }}/.config/plex"
+    user: "{{ media_pms_service_user }}"
+    group: "{{ media_pms_service_group }}"
+    mode: "0750"
+  - folder: "/home/{{ media_pms_service_user }}/.config/plex/backup"
+    user: "{{ media_pms_service_user }}"
+    group: "{{ media_pms_service_group }}"
+    mode: "0750"
+  - folder: "/home/{{ media_pms_service_user }}/.config/plex/Plex\ Media\ Server"
+    user: "{{ media_pms_service_user }}"
+    group: "{{ media_pms_service_group }}"
+    mode: "0750"
+  - folder: "/etc/systemd/system/plexmediaserver.service.d"
+    user: root
+    group: root
+    mode: "0755"
+  when:
+    - media_pms_enabled|default(false)|bool == true
+    - plex_install is success
+
+- name: configure Preferences.xml
+  template:
+    src: plex_conf.j2
+    dest: "/home/{{ media_pms_service_user }}/.config/plex/Plex\ Media\ Server/Preferences.xml"
+    owner: "{{ media_pms_service_user }}"
+    group: "{{ media_pms_service_group }}"
+    mode: 0640
+    force: no
+  when:
+    - media_pms_enabled|default(false)|bool == true
+    - plex_install is success
+  notify:
+    - restart plexmediaserver
+
+- name: configure /etc/systemd/system/plexmediaserver.service.d/override.conf
+  template:
+    src: plex_service_override.j2
+    dest: "/etc/systemd/system/plexmediaserver.service.d/override.conf"
+    owner: root
+    group: root
+    mode: 0644
+  when:
+    - media_pms_enabled|default(false)|bool == true
+    - plex_install is success
+  notify:
+    - reload systemd
+    - restart plexmediaserver
+
+- block:
+  - name: copy ufw-plexmediaserver to /etc/ufw/applications.d
+    copy:
+      src: "{{ role_path }}/files/ufw-plexmediaserver"
+      dest: /etc/ufw/applications.d/plexmediaserver
+      owner: root
+      group: root
+      mode: 0644
+  - name: UFW allow Plexmediaserver
+    ufw:
+      rule: allow
+      name: plexmediaserver
+    when:
+      - media_pms_enabled|default(false)|bool == true
+      - plex_install is success
+      - media_pms_use_firewall|bool == true
+    notify:
+      - reload ufw
+  when:
+    - media_pms_enabled|default(false)|bool == true
+    - plex_install is success
+    - media_pms_use_firewall|bool == true
+
+- name: include web_caddy for reverse proxy configuration
+  include_role:
+    name: web_caddy
+  vars:
+    web_caddy_vhosts:
+      - name: reverse_proxy_{{ media_pms_reverse_proxy_path }}
+        content: |
+          {{ media_pms_reverse_proxy_domain }} {
+            proxy /{{ media_pms_reverse_proxy_path }} localhost:{{ media_pms_port }} {
+              transparent
+            }
+          }
+  when:
+    - media_pms_enabled|default(false)|bool == true
+    - plex_install is success
+    - media_pms_use_firewall|bool == true
+
+- name: start and enable mediaserver services
+  service:
+    name: plexmediaserver
+    state: started
+    enabled: yes
+  when:
+    - media_pms_enabled|default(false)|bool == true
+    - plex_install is success

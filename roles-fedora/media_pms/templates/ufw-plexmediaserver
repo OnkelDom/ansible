@@ -1,4 +1,4 @@
 [Plexmediaserver]
 title=Plex Media Server
 description=Playing Movies, TV Shows and other media on your computer simple
-ports={{ media_plex_port }}/tcp|1900/udp|32469/udp|5353/udp|32400/udp
+ports={{ media_pms_port }}/tcp|1900/udp|32469/udp|5353/udp|32400/udp

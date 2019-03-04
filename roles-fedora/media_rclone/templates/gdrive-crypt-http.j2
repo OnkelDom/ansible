@@ -1,0 +1,17 @@
+[Unit]
+Description=rClone - Google Cabas Cache Crypt HTTP
+Documentation=http://rclone.org/docs
+After=network-online.target plexcrypt.service
+
+[Service]
+Type=simple
+User={{ media_rclone_service_user }}
+Group={{ media_rclone_service_group }}
+ExecStart={{ media_rclone_installdir }}/rclone serve http gdrive-crypt: --config "/home/{{ bundle_mediaserver.config.user }}/.config/rclone/rclone.conf" --cache-db-path "/home/{{ bundle_mediaserver.config.user }}/.config/rclone/rclone-http.cache"  --addr {{ bundle_mediaserver.config.rclone_http_addr }} --user {{ bundle_mediaserver.config.rclone_http_user }} --pass {{ bundle_mediaserver.config.rclone_http_pass }} {{ bundle_mediaserver.config.rclone_http_params }}
+Restart=on-abort
+RestartSec=5
+StartLimitInterval=60s
+StartLimitBurst=3
+
+[Install]
+WantedBy=multi-user.target

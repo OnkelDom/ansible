@@ -35,7 +35,7 @@
     - media_jd2_enabled|default(false)|bool == true
     - java_install is success
 
-- name: copy jd2 configs on first run
+- name: configure jd2 for first run
   template:
     dest: "{{ item.dest }}"
     src: "{{ item.src }}"

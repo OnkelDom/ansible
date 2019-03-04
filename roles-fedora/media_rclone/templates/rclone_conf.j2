@@ -1,5 +1,5 @@
-{% if bundle_mediaserver.rclone_connections -%}
-{% for (remote, options) in bundle_mediaserver.rclone_connections.items() %}
+{% if media_rclone_connections -%}
+{% for (remote, options) in media_rclone_connections.items() %}
 [{{ remote }}]
 {% for (key, value) in options.items() %}
 {{ key }} = {{ value }}

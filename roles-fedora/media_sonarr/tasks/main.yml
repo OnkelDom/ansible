@@ -1,16 +1,4 @@
 ---
-- name: install plex repo
-  yum_repository:
-    name: plex
-    description: "Repo for Plex Media Server"
-    file: plex
-    baseurl: https://downloads.plex.tv/repo/rpm/$basearch/
-    gpgkey: https://downloads.plex.tv/plex-keys/PlexSign.key
-    gpgcheck: yes
-    enabled: yes
-  when:
-  - bundle_mediaserver.enabled|default(false)|bool == true
-
 - name: install rpmfusion repos
   package:
     name: "{{ item }}"
@@ -19,264 +7,134 @@
     - http://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-29.noarch.rpm
     - http://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-29.noarch.rpm
   when:
-  - bundle_mediaserver.enabled|default(false)|bool == true
+    - media_sonarr_enabled|default(false)|bool == true
 
 - name: install packages
   package:
-    name: ['fuse', 'plexmediaserver', 'gettext', 'mono-devel', 'mediainfo', 'libmediainfo', 'sqlite', 'libzen', 'HandBrake', 'java-1.8.0-openjdk', 'libdrm', 'ffmpeg', 'caddy', 'https://downloads.rclone.org/rclone-current-linux-amd64.rpm']
+    name: ['gettext', 'mono-core', 'mono-devel', 'mediainfo', 'libmediainfo', 'sqlite', 'libzen']
     state: present
-  register: fuse_install
-  when: bundle_mediaserver.enabled|default(false)|bool == true
+  register: package_install
+  when:
+    - media_sonarr_enabled|default(false)|bool == true
 
 - name: create folders
   file:
     path: "{{ item.folder }}"
     state: directory
-    owner: "{{ item.user }}"
-    group: "{{ item.group }}"
-    mode: "{{ item.mode }}"
+    owner: "{{ media_sonarr_service_user }}"
+    group: "{{ media_sonarr_service_group }}"
+    mode: 0750
   with_items:
-  - folder: "/home/{{ bundle_mediaserver.config.user }}/.config"
-    user: "{{ bundle_mediaserver.config.user }}"
-    group: "{{ bundle_mediaserver.config.group }}"
-    mode: "0750"
-  - folder: "/home/{{ bundle_mediaserver.config.user }}/.config/plex"
-    user: "{{ bundle_mediaserver.config.user }}"
-    group: "{{ bundle_mediaserver.config.group }}"
-    mode: "0750"
-  - folder: "/home/{{ bundle_mediaserver.config.user }}/.config/plex/backup"
-    user: "{{ bundle_mediaserver.config.user }}"
-    group: "{{ bundle_mediaserver.config.group }}"
-    mode: "0750"
-  - folder: "/home/{{ bundle_mediaserver.config.user }}/.config/plex/Plex\ Media\ Server"
-    user: "{{ bundle_mediaserver.config.user }}"
-    group: "{{ bundle_mediaserver.config.group }}"
-    mode: "0750"
-  - folder: "/home/{{ bundle_mediaserver.config.user }}/.config/rclone"
-    user: "{{ bundle_mediaserver.config.user }}"
-    group: "{{ bundle_mediaserver.config.group }}"
-    mode: "0750"
-  - folder: "/home/{{ bundle_mediaserver.config.user }}/.config/tautulli"
-    user: "{{ bundle_mediaserver.config.user }}"
-    group: "{{ bundle_mediaserver.config.group }}"
-    mode: "0750"
-  - folder: "/home/{{ bundle_mediaserver.config.user }}/.config/NzbDrone"
-    user: "{{ bundle_mediaserver.config.user }}"
-    group: "{{ bundle_mediaserver.config.group }}"
-    mode: "0750"
-  - folder: "/mnt/{{ bundle_mediaserver.config.mountfolder }}"
-    user: "{{ bundle_mediaserver.config.user }}"
-    group: "{{ bundle_mediaserver.config.group }}"
-    mode: "0755"
-  - folder: "/mnt/{{ bundle_mediaserver.config.mountfolder }}/{{ bundle_mediaserver.config.rclone_cryptfolder }}"
-    user: "{{ bundle_mediaserver.config.user }}"
-    group: "{{ bundle_mediaserver.config.group }}"
-    mode: "0755"
-  - folder: "/etc/systemd/system/plexmediaserver.service.d"
-    user: root
-    group: root
-    mode: "0755"
-  - folder: "/opt/tautulli"
-    user: "{{ bundle_mediaserver.config.user }}"
-    group: "{{ bundle_mediaserver.config.group }}"
-    mode: "0755"
+    - folder: "/home/{{ media_sonarr_service_user }}/.config"
+      mode: "0750"
+    - folder: "/home/{{ media_sonarr_service_user }}/.config/NzbDrone"
+      mode: "0750"
+    - folder: "{{ media_sonarr_installdir }}"
+      mode: "0755"
   when:
-  - bundle_mediaserver.enabled|default(false)|bool == true
+    - media_sonarr_enabled|default(false)|bool == true
+    - package_install is success
 
-- name: "check for installed sonarr"
+- name: check for installed sonarr
   stat:
-    path: "/opt/NzbDrone/NzbDrone.exe"
+    path: "{{ media_sonarr_installdir }}/NzbDrone.exe"
   register: sonarr_bin
-  when: bundle_mediaserver.enabled|default(false)|bool == true
-
-- name: "download sonarr"
-  get_url:
-    url: "http://download.sonarr.tv/v2/master/mono/NzbDrone.master.tar.gz"
-    dest: "/tmp/NzbDrone.master.tar.gz"
-  when: bundle_mediaserver.enabled|default(false)|bool == true and not sonarr_bin.stat.exists
-
-- name: "extract sonarr"
-  unarchive:
-    copy: "no"
-    src: "/tmp/NzbDrone.master.tar.gz"
-    dest: "/opt/"
-  when: bundle_mediaserver.enabled|default(false)|bool == true and not sonarr_bin.stat.exists
-
-- name: change ownership of /opt/NzbDrone
-  command: "chown -R {{ bundle_mediaserver.config.user }}:{{ bundle_mediaserver.config.group }} /opt/NzbDrone"
-  when: bundle_mediaserver.enabled|default(false)|bool == true
-
-- name: clone https://github.com/Tautulli/Tautulli.git
-  git:
-    repo: 'https://github.com/Tautulli/Tautulli.git'
-    dest: /opt/tautulli
-    update: no
-  become: true
-  become_user: "{{ bundle_mediaserver.config.user }}"
-
-- name: configure /etc/fuse.conf
-  replace:
-    path: /etc/fuse.conf
-    regexp: '{{ item.key }}'
-    replace: '{{ item.value }}'
-  with_items:
-  - key: '# mount_max = 1000'
-    value: 'mount_max = 1000'
-  - key: '# user_allow_other'
-    value: 'user_allow_other'
   when:
-  - fuse_install is success
-  - bundle_mediaserver.enabled|default(false)|bool == true
+    - media_sonarr_enabled|default(false)|bool == true
+    - package_install is success
 
-- name: copy configs and systemd units
+- name: extract sonarr
+  unarchive:
+    src: "{{ media_sonarr_url }}"
+    dest: "{{ media_sonarr_installdir }}"
+    owner: "{{ media_sonarr_service_user }}"
+    group: "{{ media_sonarr_service_group }}"
+    remote_src: true
+    extra_opts: "--strip-components=1"
+  when:
+    - media_sonarr_enabled|default(false)|bool == true
+    - package_install is success
+    - not sonarr_bin.stat.exists
+
+- name: change file permissions
+  file:
+    path: "{{ media_sonarr_installdir }}"
+    owner: "{{ media_sonarr_service_user }}"
+    group: "{{ media_sonarr_service_group }}"
+    recurse: yes
+  when:
+    - media_sonarr_enabled|default(false)|bool == true
+    - package_install is success
+
+- name: configure sonarr
   template:
-    src: "{{ item.src }}"
-    dest: "{{ item.dest }}"
-    owner: "{{ item.owner }}"
-    group: "{{ item.group }}"
-    mode: "{{ item.mode }}"
-    force: "{{ item.force }}"
-  with_items:
-  - src: conf_rclone.j2
-    dest: "/home/{{ bundle_mediaserver.config.user }}/.config/rclone/rclone.conf"
-    owner: "{{ bundle_mediaserver.config.user }}"
-    group: "{{ bundle_mediaserver.config.group }}"
-    mode: "0640"
+    src: sonarr_conf.j2
+    dest: "/home/{{ media_sonarr_service_user }}/.config/NzbDrone/config.xml"
+    owner: "{{ media_sonarr_service_user }}"
+    group: "{{ media_sonarr_service_group }}"
+    mode: 0640
     force: no
-  - src: conf_plex.j2
-    dest: "/home/{{ bundle_mediaserver.config.user }}/.config/plex/Plex\ Media\ Server/Preferences.xml"
-    owner: "{{ bundle_mediaserver.config.user }}"
-    group: "{{ bundle_mediaserver.config.group }}"
-    mode: "0640"
-    force: no
-  - src: conf_sonarr.j2
-    dest: "/home/{{ bundle_mediaserver.config.user }}/.config/NzbDrone/config.xml"
-    owner: "{{ bundle_mediaserver.config.user }}"
-    group: "{{ bundle_mediaserver.config.group }}"
-    mode: "0640"
-    force: yes
-  - src: conf_caddy.j2
-    dest: "/etc/caddy/caddy.conf"
-    owner: root
-    group: root
-    mode: "0644"
-    force: yes
-  - src: service_plexcrypt.j2
-    dest: "/etc/systemd/system/plexcrypt.service"
-    owner: root
-    group: root
-    mode: "0644"
-    force: yes
-  - src: service_plexcrypthttp.j2
-    dest: "/etc/systemd/system/plexcrypthttp.service"
-    owner: root
-    group: root
-    mode: "0644"
-    force: yes
-  - src: service_tautulli.j2
-    dest: "/etc/systemd/system/tautulli.service"
-    owner: root
-    group: root
-    mode: "0644"
-    force: yes
-  - src: service_plex_override.j2
-    dest: "/etc/systemd/system/plexmediaserver.service.d/override.conf"
-    owner: root
-    group: root
-    mode: "0644"
-    force: yes
-  - src: service_sonarr.j2
+  when:
+    - media_sonarr_enabled|default(false)|bool == true
+    - package_install is success
+  notify:
+    - restart sonarr
+
+- name: copy sonarr systemd unit
+  template:
+    src: sonarr_service.j2
     dest: "/etc/systemd/system/sonarr.service"
     owner: root
     group: root
-    mode: "0644"
-    force: yes
+    mode: 0640
   when:
-  - bundle_mediaserver.enabled|default(false)|bool == true
+    - media_sonarr_enabled|default(false)|bool == true
+    - package_install is success
   notify:
-  - reload systemd
+    - reload systemd
+    - restart sonarr
 
-- name: configure system settings, file descriptors and number of threads
-  pam_limits:
-    domain: caddy
-    limit_type: "{{item.limit_type}}"
-    limit_item: "{{item.limit_item}}"
-    value: "{{item.value}}"
-  with_items:
-  - { limit_type: '-', limit_item: 'nofile', value: 8192 }
-  - { limit_type: '-', limit_item: 'nproc', value: 8192 }
-  - { limit_type: 'soft', limit_item: 'memlock', value: unlimited }
-  - { limit_type: 'hard', limit_item: 'memlock', value: unlimited }
-
-- name: reload settings from all system configuration files
-  shell: sysctl --system
-
-- name: copy plexmediaserver ufw rule
-  copy:
-    src: "{{ role_path }}/files/plexmediaserver.ufw"
-    dest: /etc/ufw/applications.d/plexmediaserver
-    owner: root
-    group: root
-    mode: 0644
+- block:
+  - name: copy sonarr ufw role
+    template:
+      src: ufw-sonarr.j2
+      dest: /etc/ufw/applications.d/ufw-sonarr
+      owner: root
+      group: root
+      mode: 0644
+  - name: UFW allow Sonarr
+    ufw:
+      rule: allow
+      name: Sonarr
+    notify:
+      - reload ufw
   when:
-  - bundle_mediaserver.enabled|default(false)|bool == true
+    - media_sonarr_enabled|default(false)|bool == true
+    - package_install is success
+    - media_sonarr_use_firewall|default(false)|bool == true
 
-- name: copy local file
-  copy:
-    src: "{{ item.src }}"
-    dest: "{{ item.dest }}"
-    owner: "{{ item.owner }}"
-    group: "{{ item.group }}"
-    mode: 0774
-  with_items:
-  - src: "{{ role_path }}/files/mediabackup.sh"
-    dest: "/usr/local/bin/mediabackup.sh"
-    owner: "{{ bundle_mediaserver.config.user }}"
-    group: "{{ bundle_mediaserver.config.group }}"
-  - src: "{{ role_path }}/files/bash_media"
-    dest: "/home/{{ bundle_mediaserver.config.user }}/.bash_media"
-    owner: "{{ bundle_mediaserver.config.user }}"
-    group: "{{ bundle_mediaserver.config.group }}"
-  - src: "{{ role_path }}/files/2mp4"
-    dest: "/usr/local/bin/2mp4"
-    owner: "{{ bundle_mediaserver.config.user }}"
-    group: root
+- name: include web_caddy for reverse proxy configuration
+  include_role:
+    name: web_caddy
+  vars:
+    web_caddy_vhosts:
+      - name: reverse_proxy_{{ media_sonarr_reverse_proxy_path }}
+        content: |
+          {{ media_sonarr_reverse_proxy_domain }} {
+            proxy /{{ media_sonarr_reverse_proxy_path }} localhost:{{ media_sonarr_port }} {
+              transparent
+            }
+          }
   when:
-  - bundle_mediaserver.enabled|default(false)|bool == true
+    - media_sonarr_enabled|default(false)|bool == true
+    - package_install is success
+    - media_sonarr_use_reverse_proxy|default(false)|bool == true
 
-- name: add crontab entry
-  cron:
-    name: "backup mediaserver configs and databases"
-    minute: "30"
-    hour: "05"
-    weekday: "*"
-    job: "/bin/bash /usr/local/bin/mediabackup.sh"
-    #user: "admin"
-    disabled: "no"
-  become_user: "{{ bundle_mediaserver.config.user }}"
-
-- name: allow plexmediaserver on ufw
-  ufw:
-    rule: allow
-    name: plexmediaserver
-  with_items:
-  - plexmediaserver
-  - "WWW Full"
-  when:
-  - bundle_mediaserver.enabled|default(false)|bool == true
-  notify: restart ufw
-
-- name: start and enable mediaserver services
+- name: start and enable sonarr services
   service:
-    name: "{{ item }}"
+    name: sonarr
     state: restarted
     enabled: yes
-  with_items:
-  - plexcrypt
-  - plexcrypthttp
-  - plexmediaserver
-  - tautulli
-  - sonarr
-  - caddy
   when:
-  - bundle_mediaserver.enabled|default(false)|bool == true
+    - media_sonarr_enabled|default(false)|bool == true
+    - package_install is success

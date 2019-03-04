@@ -14,36 +14,60 @@
   when:
     - media_filebot_enabled|default(false)|bool == true
 
-- name: copy filebot tar
-  copy:
-    src: "{{ role_path }}/files/{{ media_filebot_filename }}"
-    dest: "/tmp/{{ media_filebot_filename }}"
-    owner: root
-    group: root
-  when:
-    - media_filebot_enabled|default(false)|bool == true and not filebot_bin.stat.exists
-    - filebot_install is success
-
-- name: "ensure install directory exists"
+- name: create directories
   file:
-    path: "{{ media_filebot_installdir }}"
+    path: "{{ item }}"
     state: directory
-    owner: {{ media_filebot_user }}
-    group: root
+    owner: "{{ media_filebot_user }}"
+    group: "{{ media_filebot_group }}"
+  with_items:
+    - "{{ media_filebot_installdir }}"
+    - "{{ media_filebot_installdir }}/data"
   when:
     - media_filebot_enabled|default(false)|bool == true
     - filebot_install is success
 
-- name: "ensure the binaries are arextracted"
-  unarchive:
-    copy: "no"
-    src: "/tmp/{{ media_filebot_filename }}"
-    dest: "{{ media_filebot_installdir }}/"
-  when:
-    - media_filebot_enabled|default(false)|bool == true and not filebot_bin.stat.exists
-    - filebot_install is success
+#- name: copy filebot tar
+#  copy:
+#    src: "{{ role_path }}/files/{{ media_filebot_filename }}"
+#    dest: "/tmp/{{ media_filebot_filename }}"
+#    owner: root
+#    group: root
+#  when:
+#    - media_filebot_enabled|default(false)|bool == true and not filebot_bin.stat.exists
+#    - filebot_install is success
 
-- name: "ensure link on path to filebot bin"
+#- name: "ensure the binaries are arextracted"
+#  unarchive:
+#    copy: "no"
+#    src: "/tmp/{{ media_filebot_filename }}"
+#    dest: "{{ media_filebot_installdir }}/"
+#  when:
+#    - media_filebot_enabled|default(false)|bool == true and not filebot_bin.stat.exists
+#    - filebot_install is success
+
+#- name: remove installer from tmp
+#  file:
+#    path: "/tmp/{{ media_filebot_filename }}"
+#    state: absent
+#  when:
+#    - media_filebot_enabled|default(false)|bool == true
+#    - filebot_install is success
+
+- name: extract filebot
+  unarchive:
+    src: "{{ role_path }}/files/{{ media_filebot_filename }}"
+    dest: "{{ media_filebot_installdir }}"
+    owner: "{{ media_filebot_service_user }}"
+    group: "{{ media_filebot_service_group }}"
+    remote_src: true
+    extra_opts: "--strip-components=1"
+  when:
+    - media_filebot_enabled|default(false)|bool == true
+    - filebot_install is success
+    - not filebot_bin.stat.exists
+
+- name: create link on path to filebot bin
   file:
     src: "{{ media_filebot_install }}/filebot.sh"
     dest: "{{ media_filebot_bin }}"
@@ -52,16 +76,12 @@
     - media_filebot_enabled|default(false)|bool == true
     - filebot_install is success
 
-- name: "remove installer from tmp"
+- name: change file permissions
   file:
-    path: "/tmp/{{ media_filebot_filename }}"
-    state: absent
-  when:
-    - media_filebot_enabled|default(false)|bool == true
-    - filebot_install is success
-
-- name: change ownership of filebot folder
-  command: "chown -R {{ media_filebot_service_user }} {{ media_filebot_installdir }}"
+    path: "{{ media_filebot_installdir }}"
+    owner: "{{ media_filebot_service_user }}"
+    group: "{{ media_filebot_service_group }}"
+    recurse: yes
   when:
     - media_filebot_enabled|default(false)|bool == true
     - filebot_install is success
@@ -71,8 +91,8 @@
     src: prefs.properties.j2
     dest: "{{ media_filebot_installdir }}/data/prefs.properties"
     owner: "{{ media_filebot_service_user }}"
-    group: root
-    mode: 0644
+    group: "{{ media_filebot_service_group }}"
+    mode: 0640
   when:
     - media_filebot_enabled|default(false)|bool == true
     - filebot_install is success

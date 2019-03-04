@@ -2,3 +2,43 @@
 media_rclone_enabled: true
 media_rclone_service_user: "{{ media_user }}"
 media_rclone_service_group: "{{ media_group }}"
+media_rclone_installdir: "/usr/local/bin"
+media_rclone_use_reverse_proxy_for_http: true
+media_rclone_reverse_proxy_path: "gdrive"
+media_rclone_reverse_proxy_domain: "{{ media_domain }}"
+media_rclone_http_username: "{{ media_user }}"
+media_rclone_http_password: "{{ media_group }}"
+media_rclone_basefolder: "/mnt/google"
+media_rclone_mountfolder: "/mnt/google/media"
+media_rclone_connections:
+  gdrive:
+    type: drive
+    client_id: "{{ lookup('file', '~/git/.secure/cabas_google_id') }}"
+    client_secret: "{{ lookup('file', '~/git/.secure/cabas_google_secret') }}"
+    scope: drive
+    use_trash: false
+    skip_gdocs: true
+    token: "{{ lookup('file', '~/git/.secure/cabas_google_token', convert_data=False) |string}}"
+  gdrive-crypt:
+    type: crypt
+    remote: "gdrive-cache:"
+    filename_encryption: standard
+    directory_name_encryption: "true"
+    password: "{{ lookup('file', '~/git/.secure/rclone_google_password') }}"
+    password2: "{{ lookup('file', '~/git/.secure/rclone_google_password2') }}"
+  share:
+    type: drive
+    client_id: "{{ lookup('file', '~/git/.secure/cabas_share_id') }}"
+    client_secret: "{{ lookup('file', '~/git/.secure/cabas_share_secret') }}"
+    scope: drive
+    team_drive: "{{ lookup('file', '~/git/.secure/cabas_share_teamdrive') }}"
+    use_trash: false
+    skip_gdocs: true
+    token: "{{ lookup('file', '~/git/.secure/cabas_share_token', convert_data=False) |string}}"
+  share-crypt:
+    type: crypt
+    remote: "{{ lookup('file', '~/git/.secure/rclone_share_folder') }}"
+    filename_encryption: standard
+    directory_name_encryption: true
+    password: "{{ lookup('file', '~/git/.secure/rclone_share_password') }}"
+    password2: "{{ lookup('file', '~/git/.secure/rclone_share_password2') }}"

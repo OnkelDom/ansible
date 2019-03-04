@@ -1,7 +1,279 @@
 ---
 media_tautulli_enabled: true
 media_tautulli_port: 9123
+media_tautulli_address: "127.0.0.1"
+media_tautulli_domain: "localhost"
 media_tautulli_service_user: "{{ media_user }}"
 media_tautulli_service_group: "{{ media_group }}"
+media_tautulli_password: "{{ media_tautulli_passwd }}"
+media_tautulli_installdir: "/usr/local/lib/tautulli"
 media_tautulli_use_reverse_proxy: true
+media_tautulli_reverse_proxy_path: "tautulli"
+media_tautulli_reverse_proxy_domain: "{{ media_domain }}"
 media_tautulli_use_firewall: false
+media_tautulli_api_key: "{{ media_tautulli_apikey }}"
+media_tautulli_plexip: "{{ media_plex_ip }}"
+media_tautulli_plexident: "{{ media_plex_identifier }}"
+media_tautulli_plexport: "{{ media_plex_port }}"
+media_tautulli_plextoken: "{{ media_plex_token }}"
+media_tautulli_plexuser: "{{ media_plex_username }}"
+
+media_tautulli_config_pms:
+  pms_identifier: ''
+  pms_ip: '{{ media_plex_ip }}'
+  pms_is_cloud: 0
+  pms_is_remote: 0
+  pms_logs_folder: '/home/{{ media_tautulli_service_user }}/.config/plex/Plex Media Server/Logs'
+  pms_logs_line_cap: 1000
+  pms_name: '{{ media_tautulli_plexuser }}'
+  pms_platform: 'Linux'
+  pms_plexpass: 1
+  pms_port: '{{ media_tautulli_plexport }}'
+  pms_ssl: 0
+  pms_token: '{{ media_tautulli_plextoken }}'
+  pms_update_channel: plex
+  pms_update_distro: ''
+  pms_url: ''
+  pms_url_manual: 0
+  pms_use_bif: 0
+  pms_uuid: ''
+  pms_web_url: https://app.plex.tv/desktop
+media_tautulli_config_general:
+  allow_guest_access: 0
+  anon_redirect: http://www.nullrefer.com/?
+  api_enabled: 1
+  api_key: "{{ 'tautulli'|md5 }}"
+  api_sql: 0
+  backup_days: 3
+  backup_dir: "{{ media_tautulli_installdir }}/backups"
+  backup_interval: 6
+  cache_dir: "{{ media_tautulli_installdir }}/cache"
+  cache_images: 1
+  check_github: 1
+  check_github_interval: 360
+  check_github_on_startup: 1
+  cleanup_files: 0
+  date_format: YYYY-MM-DD
+  do_not_override_git_branch: 0
+  enable_https: 0
+  first_run_complete: 0
+  freeze_db: 0
+  geoip_db: ''
+  get_file_sizes: 0
+  git_branch: master
+  git_path: ''
+  git_remote: origin
+  git_repo: Tautulli
+  git_token: ''
+  git_user: Tautulli
+  graph_days: 30
+  graph_months: 12
+  graph_tab: tabs-1
+  graph_type: plays
+  group_history_tables: 1
+  history_table_activity: 1
+  home_library_cards:
+    - 1
+    - 2
+  home_refresh_interval: 10
+  home_sections:
+    - current_activity
+    - library_stats
+    - recently_added
+    - watch_stats
+  home_stats_cards:
+    - last_watched
+    - most_concurrent
+    - popular_movies
+    - popular_music
+    - popular_tv
+    - top_movies
+    - top_music
+    - top_platforms
+    - top_tv
+    - top_users
+  home_stats_count: 5
+  home_stats_length: 30
+  home_stats_recently_added_count: 50
+  home_stats_type: 0
+  http_base_url: ''
+  http_basic_auth: 0
+  http_environment: production
+  http_hash_password: 0
+  http_hashed_password: 0
+  http_host: 0.0.0.0
+  http_password: '{{ media_tautulli_password }}'
+  http_plex_admin: 0
+  http_port: '{{ media_tautulli_port }}'
+  http_proxy: 0
+  http_root: '{{ media_tautulli_reverse_proxy_path }}'
+  http_username: '{{ media_tautulli_service_user }}'
+  https_cert: '{{ media_tautulli_installdir }}/server.crt'
+  https_cert_chain: ''
+  https_create_cert: 0
+  https_domain: '{{ media_tautulli_reverse_proxy_domain }}'
+  https_ip: '{{ media_tautulli_address }}'
+  https_key: '{{ media_tautulli_installdir }}/server.key'
+  interface: default
+  ip_logging_enable: 0
+  launch_browser: 1
+  log_blacklist: 1
+  log_dir: '{{ media_tautulli_installdir }}/logs'
+  plexpy_auto_update: 0
+  show_advanced_settings: 0
+  themoviedb_apikey: ''
+  themoviedb_lookup: 0
+  time_format: HH:mm
+  tvmaze_lookup: 0
+  update_db_interval: 24
+  update_labels: 1
+  update_libraries_db_notify: 0
+  update_notifiers_db: 0
+  update_section_ids: 1
+  update_show_changelog: 0
+  week_start_monday: 0
+media_tautulli_config_advanced:
+  config_version: 11
+  journal_mode: wal
+  jwt_secret: ''
+  metadata_cache_seconds: 1800
+  notification_threads: 2
+  pms_timeout: 15
+  remote_access_ping_threshold: 3
+  session_db_write_attempts: 5
+  system_analytics: 1
+  verify_ssl_cert: 1
+  websocket_connection_attempts: 5
+  websocket_connection_timeout: 5
+media_tautulli_config_cloudinary:
+  cloudinary_api_key: ''
+  cloudinary_api_secret: ''
+  cloudinary_cloud_name: ''
+media_tautulli_config_monitoring:
+  buffer_threshold: 3
+  buffer_wait: 900
+  imgur_client_id: ''
+  logging_ignore_interval: 120
+  monitor_pms_updates: 0
+  monitor_remote_access: 0
+  monitoring_interval: 60
+  monitoring_use_websocket: 1
+  movie_logging_enable: 1
+  movie_notify_enable: 0
+  movie_notify_on_pause: 0
+  movie_notify_on_start: 1
+  movie_notify_on_stop: 0
+  movie_watched_percent: 85
+  music_logging_enable: 1
+  music_notify_enable: 0
+  music_notify_on_pause: 0
+  music_notify_on_start: 1
+  music_notify_on_stop: 0
+  music_watched_percent: 85
+  notify_concurrent_by_ip: 0
+  notify_concurrent_threshold: 2
+  notify_consecutive: 0
+  notify_group_recently_added: 0
+  notify_group_recently_added_grandparent: 0
+  notify_group_recently_added_parent: 0
+  notify_on_buffer_body_text: '{user} ({player}) is buffering {title}.'
+  notify_on_buffer_subject_text: 'Tautulli ({server_name})'
+  notify_on_concurrent_body_text: '{user} has {user_streams} concurrent streams.'
+  notify_on_concurrent_subject_text: 'Tautulli ({server_name})'
+  notify_on_created_body_text: '{title} was recently added to Plex.'
+  notify_on_created_subject_text: 'Tautulli ({server_name})'
+  notify_on_extdown_body_text: 'The Plex Media Server remote access is down.'
+  notify_on_extdown_subject_text: 'Tautulli ({server_name})'
+  notify_on_extup_body_text: 'The Plex Media Server remote access is back up.'
+  notify_on_extup_subject_text: 'Tautulli ({server_name})'
+  notify_on_intdown_body_text: 'The Plex Media Server is down.'
+  notify_on_intdown_subject_text: 'Tautulli ({server_name})'
+  notify_on_intup_body_text: 'The Plex Media Server is back up.'
+  notify_on_intup_subject_text: 'Tautulli ({server_name})'
+  notify_on_newdevice_body_text: '{user} is streaming from a new device: {player}.'
+  notify_on_newdevice_subject_text: 'Tautulli ({server_name})'
+  notify_on_pause_body_text: '{user} ({player}) has paused {title}.'
+  notify_on_pause_subject_text: 'Tautulli ({server_name})'
+  notify_on_pmsupdate_body_text: 'An update is available for the Plex Media Server (version {update_version}).'
+  notify_on_pmsupdate_subject_text: 'Tautulli ({server_name})'
+  notify_on_resume_body_text: '{user} ({player}) has resumed {title}.'
+  notify_on_resume_subject_text: 'Tautulli ({server_name})'
+  notify_on_start_body_text: '{user} ({player}) started playing {title}.'
+  notify_on_start_subject_text: 'Tautulli ({server_name})'
+  notify_on_stop_body_text: '{user} ({player}) has stopped {title}.'
+  notify_on_stop_subject_text: 'Tautulli ({server_name})'
+  notify_on_watched_body_text: '{user} ({player}) has watched {title}.'
+  notify_on_watched_subject_text: 'Tautulli ({server_name})'
+  notify_recently_added: 0
+  notify_recently_added_delay: 60
+  notify_recently_added_grandparent: 0
+  notify_recently_added_upgrade: 0
+  notify_scripts_args_text: ''
+  notify_upload_posters: 0
+  notify_watched_percent: 85
+  refresh_libraries_interval: 12
+  refresh_libraries_on_startup: 1
+  refresh_users_interval: 12
+  refresh_users_on_startup: 1
+  tv_logging_enable: 1
+  tv_notify_enable: 0
+  tv_notify_on_pause: 0
+  tv_notify_on_start: 1
+  tv_notify_on_stop: 0
+  tv_watched_percent: 85
+  video_logging_enable: 1
+media_tautulli_config_newsletter:
+  newsletter_auth: 0
+  newsletter_custom_dir: ''
+  newsletter_dir: '{{ media_tautulli_installdir }}/newsletters'
+  newsletter_inline_styles: 0
+  newsletter_password: ''
+  newsletter_self_hosted: 0
+  newsletter_static_url: 0
+  newsletter_templates: newsletters
+media_tautulli_config_plexwatch:
+  grouping_charts: 0
+  grouping_global_history: 0
+  grouping_user_history: 0
+  plexwatch_database: ''
+media_tautulli_config_provider_notifications:
+  Boxcar:
+    boxcar_enabled: 0
+  Browser:
+    browser_enabled: 0
+  Email:
+    email_enabled: 0
+  Facebook:
+    facebook_enabled: 0
+  Growl:
+    growl_enabled: 0
+  Hipchat:
+    hipchat_enabled: 0
+  IFTTT:
+    ifttt_enabled: 0
+  Join:
+    join_enabled: 0
+  NMA:
+    nma_enabled: 0
+  OSX_Notify:
+    osx_notify_enabled: 0
+  Plex:
+    plex_enabled: 0
+  Prowl:
+    prowl_enabled: 0
+  Pushalot:
+    pushalot_enabled: 0
+  PushBullet:
+    pushbullet_enabled: 0
+  Pushover:
+    pushover_enabled: 0
+  Scripts:
+    scripts_enabled: 0
+  Slack:
+    slack_enabled: 0
+  Telegram:
+    telegram_enabled: 0
+  Twitter:
+    twitter_enabled: 0
+  XBMC:
+    xbmc_enabled: 0

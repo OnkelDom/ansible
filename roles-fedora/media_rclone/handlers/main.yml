@@ -1,12 +1,12 @@
 ---
-- name: restart rclone
+- name: restart gdrive-crypt
   service:
-    name: rclone
+    name: gdrive-crypt
     state: restarted
 
-- name: restart rclone-http
+- name: restart gdrive-crypt-http
   service:
-    name: rclone-http
+    name: gdrive-crypt-http
     state: restarted
 
 - name: reload systemd

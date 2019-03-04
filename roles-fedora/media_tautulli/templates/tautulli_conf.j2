@@ -1,0 +1,140 @@
+[Advanced]
+{% for tak, tav in media_tautulli_config_advanced.iteritems()|sort %}
+{%   if tav is sameas true %}
+{{ tak }} = True
+{%   elif tav is sameas false %}
+{{ tak }} = False
+{%   elif tav is string %}
+{{ tak }} = {{ tav|string }}
+{%   elif tav is number %}
+{{ tak }} = {{ tav|int }}
+{%   elif tav is iterable %}
+{{ tak }} = {{ tav|join(', ') }}
+{%   else %}
+{{ tak }} = {{ tav }}
+{%   endif %}
+{% endfor %}
+
+[Cloudinary]
+{% for tck, tcv in media_tautulli_config_cloudinary.iteritems()|sort %}
+{%   if tcv is sameas true %}
+{{ tck }} = True
+{%   elif tcv is sameas false %}
+{{ tck }} = False
+{%   elif tcv is string %}
+{{ tck }} = {{ tcv|string }}
+{%   elif tcv is number %}
+{{ tck }} = {{ tcv|int }}
+{%   elif tcv is iterable %}
+{{ tck }} = {{ tcv|join(', ') }}
+{%   else %}
+{{ tck }} = {{ tcv }}
+{%   endif %}
+{% endfor %}
+
+[General]
+{% for tgk, tgv in media_tautulli_config_general.iteritems()|sort %}
+{%   if tgv is sameas true %}
+{{ tgk }} = True
+{%   elif tgv is sameas false %}
+{{ tgk }} = False
+{%   elif tgv is string %}
+{{ tgk }} = {{ tgv|string }}
+{%   elif tgv is number %}
+{{ tgk }} = {{ tgv|int }}
+{%   elif tgv is iterable %}
+{{ tgk }} = {{ tgv|join(', ') }}
+{%   else %}
+{{ tgk }} = {{ tgv }}
+{%   endif %}
+{% endfor %}
+
+[Monitoring]
+{% for tmk, tmv in media_tautulli_config_monitoring.iteritems()|sort %}
+{%   if tmv is sameas true %}
+{{ tmk }} = True
+{%   elif tmv is sameas false %}
+{{ tmk }} = False
+{%   elif tmv is string %}
+{{ tmk }} = {{ tmv|string }}
+{%   elif tmv is number %}
+{{ tmk }} = {{ tmv|int }}
+{%   elif tmv is iterable %}
+{{ tmk }} = {{ tmv|join(', ') }}
+{%   else %}
+{{ tmk }} = {{ tmv }}
+{%   endif %}
+{% endfor %}
+
+[Newsletter]
+{% for tnk, tnv in media_tautulli_config_newsletter.iteritems()|sort %}
+{%   if tnv is sameas true %}
+{{ tnk }} = True
+{%   elif tnv is sameas false %}
+{{ tnk }} = False
+{%   elif tnv is string %}
+{{ tnk }} = {{ tnv|string }}
+{%   elif tnv is number %}
+{{ tnk }} = {{ tnv|int }}
+{%   elif tnv is iterable %}
+{{ tnk }} = {{ tnv|join(', ') }}
+{%   else %}
+{{ tnk }} = {{ tnv }}
+{%   endif %}
+{% endfor %}
+
+[PlexWatch]
+{% for tpk, tpv in media_tautulli_config_plexwatch.iteritems()|sort %}
+{%   if tpv is sameas true %}
+{{ tpk }} = True
+{%   elif tpv is sameas false %}
+{{ tpk }} = False
+{%   elif tpv is string %}
+{{ tpk }} = {{ tpv|string }}
+{%   elif tpv is number %}
+{{ tpk }} = {{ tpv|int }}
+{%   elif tpv is iterable %}
+{{ tpk }} = {{ tpv|join(', ') }}
+{%   else %}
+{{ tpk }} = {{ tpv }}
+{%   endif %}
+{% endfor %}
+
+[PMS]
+{% for tpk, tpv in media_tautulli_config_pms.iteritems()|sort %}
+{%   if tpv is sameas true %}
+{{ tpk }} = True
+{%   elif tpv is sameas false %}
+{{ tpk }} = False
+{%   elif tpv is string %}
+{{ tpk }} = {{ tpv|string }}
+{%   elif tpv is number %}
+{{ tpk }} = {{ tpv|int }}
+{%   elif tpv is iterable %}
+{{ tpk }} = {{ tpv|join(', ') }}
+{%   else %}
+{{ tpk }} = {{ tpv }}
+{%   endif %}
+{% endfor %}
+
+{% for tpn in media_tautulli_config_provider_notifications|sort %}
+[{{ tpn }}]
+{%   for tpnk, tpkv in media_tautulli_config_provider_notifications[tpn].iteritems()|sort %}
+{%     if tpkv is sameas true %}
+{{ tpnk }} = True
+{%     elif tpkv is sameas false %}
+{{ tpnk }} = False
+{%     elif tpkv is string %}
+{{ tpnk }} = {{ tpkv|string }}
+{%     elif tpkv is number %}
+{{ tpnk }} = {{ tpkv|int }}
+{%     elif tpkv is iterable %}
+{{ tpnk }} = {{ tpkv|join(', ') }}
+{%     else %}
+{{ tpnk }} = {{ tpkv }}
+{%     endif %}
+{%   endfor %}
+{%   if not loop.last %}
+
+{%   endif %}
+{% endfor %}

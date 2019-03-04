@@ -1,0 +1,18 @@
+---
+media_pms_enabled: true
+media_pms_port: {{ media_plex_port }}
+media_pms_service_user: "{{ media_user }}"
+media_pms_service_group: "{{ media_group }}"
+media_pms_use_reverse_proxy: true
+media_pms_ip: "{{ media_plex_ip }}"
+media_pms_reverse_proxy_path: "web"
+media_pms_reverse_proxy_domain: "{{ media_domain }}"
+media_pms_use_firewall: true
+media_pms_username: "{{ media_plex_username }}"
+media_pms_token: "{{ media_plex_token }}"
+media_pms_mail: "{{ media_plex_mail }}"
+media_pms_transcoderdir: "/dev/shm"
+media_pms_transcodertimeout: "120"
+media_pms_servername: "OnkelDom"
+media_pms_custom_connections: "http://{{ ansible_default_ipv4.address }}:32400"
+media_pms_cert: ""
