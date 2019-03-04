@@ -3,3 +3,4 @@ env_*
 hosts
 ansible.log
 *.retry
+group_vars
