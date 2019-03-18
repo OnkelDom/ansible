@@ -3,9 +3,6 @@ managed_admin_enabled: true
 managed_admin_users:
   - user: onkeldom
     fullname: "Dominik Lenhardt"
-    key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+    key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}\n{{ lookup('file', '~/git/.secure/id_rsa_work.pub') }}"
     state: present
-  - user: testuser
-    fullname: "Testuser"
-    key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
-    state: present
+    repo: https://github.com/onkeldom/.dot.git

@@ -6,13 +6,14 @@ media_j2_service_group: "{{ media_user }}"
 media_j2_downloaddir: "/opt/download"
 media_j2_uploaddir: "/opt/upload"
 # org.jdownloader.api.myjdownloader.MyJDownloaderSettings.json
-media_jd2_myjdownloader_email: "{{ lookup('file', '~/git/.secure/jd2_mail') }}"
-media_jd2_myjdownloader_password: "{{ lookup('file', '~/git/.secure/jd2_password') }}"
-media_jd2_myjdownloader_servername: "{{ ansible_hostname }}"
+media_j2_myjdownloader_email: "your@mail.com"
+media_j2_myjdownloader_password: "yourJD2pass"
+media_j2_myjdownloader_servername: "{{ ansible_fqdn }}"
 # org.jdownloader.settings.GeneralSettings.json
 media_j2_defaultdownloadfolder: "<jd:packagename>"
 media_j2_downloadspeedlimit: 31457280
 media_j2_maxsimultanedownloads: 15
+media_j2_downloadspeedlimitenabled: true
 # org.jdownloader.extensions.extraction.ExtractionExtension.json
 media_j2_exctraction_enabled: true
 media_j2_subpath: "%PACKAGENAME%"

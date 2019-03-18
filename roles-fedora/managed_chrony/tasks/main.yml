@@ -26,11 +26,12 @@
 - name: UFW allow NTP
   ufw:
     rule: allow
-    name: ntp
+    port: 123
+    proto: udp
   when:
     - managed_chrony_enabled|default(false)|bool == true
     - chrony_install is success
-    - managed_chrony_server.allow is defined
+    - managed_chrony_server_enabled|default(false)|bool == true
   notify: reload ufw
 
 - name: start and enable chronyd service

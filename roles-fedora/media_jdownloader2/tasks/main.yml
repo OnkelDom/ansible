@@ -5,7 +5,7 @@
     state: present
   register: java_install
   when:
-    - media_jd2_enabled|default(false)|bool == true
+    - media_j2_enabled|default(false)|bool == true
 
 - name: create directories for jd2
   file:
@@ -20,7 +20,7 @@
     - "{{ media_j2_installdir }}"
     - "{{ media_j2_installdir }}/cfg"
   when:
-    - media_jd2_enabled|default(false)|bool == true
+    - media_j2_enabled|default(false)|bool == true
     - java_install is success
 
 - name: download JDownloader.jar
@@ -32,7 +32,7 @@
     mode: 0775
   register: jdownloader_download
   when:
-    - media_jd2_enabled|default(false)|bool == true
+    - media_j2_enabled|default(false)|bool == true
     - java_install is success
 
 - name: configure jd2 for first run
@@ -51,7 +51,7 @@
     - dest: "{{ media_j2_installdir }}/cfg/org.jdownloader.extensions.extraction.ExtractionExtension.json"
       src: extraction.j2
   when:
-    - media_jd2_enabled|default(false)|bool == true
+    - media_j2_enabled|default(false)|bool == true
     - java_install is success
     - jdownloader_download is success
   notify:
@@ -65,7 +65,7 @@
     group: root
     mode: 0644
   when:
-    - media_jd2_enabled|default(false)|bool == true
+    - media_j2_enabled|default(false)|bool == true
     - java_install is success
     - jdownloader_download is success
 
@@ -75,6 +75,6 @@
     state: started
     enabled: yes
   when:
-    - media_jd2_enabled|default(false)|bool == true
+    - media_j2_enabled|default(false)|bool == true
     - java_install is success
     - jdownloader_download is success

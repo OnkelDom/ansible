@@ -14,7 +14,7 @@
     shell: /bin/bash
     create_home: true
     state: "{{ item.state }}"
-  with_item: "{{ managed_admin_users }}"
+  with_items: "{{ managed_admin_users }}"
   when:
     - managed_admin_enabled|default(false)|bool == true
     - managed_admin_users is defined
@@ -23,37 +23,37 @@
   authorized_key:
     user: "{{ item.user }}"
     state: "{{ item.state }}"
-    key: '{{ item.key }}'
-  with_item: "{{ managed_admin_users }}"
+    key: "{{ item.key }}"
+  with_items: "{{ managed_admin_users }}"
   when:
     - managed_admin_enabled|default(false)|bool == true
     - managed_admin_users is defined
+    - item.state == 'present'
 
 - name: install pip3 powerline_gitstatus
   command: "pip3 install --user powerline_gitstatus"
   become: true
   become_user: "{{ item.user }}"
-  with_item: "{{ managed_admin_users }}"
+  with_items: "{{ managed_admin_users }}"
   when:
     - managed_admin_enabled|default(false)|bool == true
     - managed_admin_users is defined
-
-- name: pip install powerline_gitstatus
-  pip:
-    name: powerline_gitstatus
-    executable: pip3
+    - item.repo is defined
+    - item.state == 'present'
 
 - name: clone github.com/onkeldom/.dot
   git:
-    repo: 'https://github.com/onkeldom/.dot.git'
+    repo: "{{ item.repo }}"
     dest: /home/{{ item.user }}/.dot
     update: no
   become: true
   become_user: "{{ item.user }}"
-  with_item: "{{ managed_admin_users }}"
+  with_items: "{{ managed_admin_users }}"
   when:
     - managed_admin_enabled|default(false)|bool == true
     - managed_admin_users is defined
+    - item.repo is defined
+    - item.state == 'present'
 
 - name: create .config folder for all admins
   file:
@@ -62,44 +62,101 @@
     group: "{{ item.user }}"
     state: directory
     mode: 0755
-  with_item: "{{ managed_admin_users }}"
+  with_items: "{{ managed_admin_users }}"
   when:
     - managed_admin_enabled|default(false)|bool == true
     - managed_admin_users is defined
+    - item.state == 'present'
 
-- name: remove .bashrc
+- name: set symlinks for ~/.gitconfig
   file:
-    path: '/home/{{ item.user }}/.bashrc'
-    state: absent
-  with_item: "{{ managed_admin_users }}"
-  when:
-    - managed_admin_enabled|default(false)|bool == true
-    - managed_admin_users is defined
-
-- name: set symlinks for .dot
-  file:
-    src: '/home/{{ item.user }}/.dot/{{ item }}'
-    dest: '/home/{{ item.user }}/{{ item }}'
+    src: '/home/{{ item.user }}/.dot/.gitconfig'
+    dest: '/home/{{ item.user }}/.gitconfig'
     state: link
-  with_items:
-    - .gitconfig
-    - .vimrc
-    - .vim
-    - .bashrc
-    - .tmux.conf
   become: true
   become_user: "{{ item.user }}"
-  with_item: "{{ managed_admin_users }}"
+  with_items: "{{ managed_admin_users }}"
   when:
     - managed_admin_enabled|default(false)|bool == true
     - managed_admin_users is defined
+    - item.repo is defined
+    - item.state == 'present'
+
+- name: set symlinks for ~/.vimrc
+  file:
+    src: '/home/{{ item.user }}/.dot/.vimrc'
+    dest: '/home/{{ item.user }}/.vimrc'
+    state: link
+  become: true
+  become_user: "{{ item.user }}"
+  with_items: "{{ managed_admin_users }}"
+  when:
+    - managed_admin_enabled|default(false)|bool == true
+    - managed_admin_users is defined
+    - item.repo is defined
+    - item.state == 'present'
+
+- name: set symlinks for ~/.vim
+  file:
+    src: '/home/{{ item.user }}/.dot/.vim'
+    dest: '/home/{{ item.user }}/.vim'
+    state: link
+  become: true
+  become_user: "{{ item.user }}"
+  with_items: "{{ managed_admin_users }}"
+  when:
+    - managed_admin_enabled|default(false)|bool == true
+    - managed_admin_users is defined
+    - item.repo is defined
+    - item.state == 'present'
+
+- name: set symlinks for ~/.bashrc
+  file:
+    src: '/home/{{ item.user }}/.dot/.bashrc'
+    dest: '/home/{{ item.user }}/.bashrc'
+    state: link
+    force: true
+  become: true
+  become_user: "{{ item.user }}"
+  with_items: "{{ managed_admin_users }}"
+  when:
+    - managed_admin_enabled|default(false)|bool == true
+    - managed_admin_users is defined
+    - item.repo is defined
+    - item.state == 'present'
+
+- name: set symlinks for ~/.tmux.conf
+  file:
+    src: '/home/{{ item.user }}/.dot/.tmux.conf'
+    dest: '/home/{{ item.user }}/.tmux.conf'
+    state: link
+  become: true
+  become_user: "{{ item.user }}"
+  with_items: "{{ managed_admin_users }}"
+  when:
+    - managed_admin_enabled|default(false)|bool == true
+    - managed_admin_users is defined
+    - item.repo is defined
+    - item.state == 'present'
 
 - name: set symlinks for powerline_gitstatus
   file:
     src: '/home/{{ item.user }}/.dot/powerline'
     dest: '/home/{{ item.user }}/.config/powerline'
     state: link
-  with_item: "{{ managed_admin_users }}"
+  with_items: "{{ managed_admin_users }}"
   when:
     - managed_admin_enabled|default(false)|bool == true
     - managed_admin_users is defined
+    - item.repo is defined
+    - item.state == 'present'
+
+- name: remove old homes
+  file:
+    path: '/home/{{ item.user }}'
+    state: absent
+  with_items: "{{ managed_admin_users }}"
+  when:
+    - managed_admin_enabled|default(false)|bool == true
+    - managed_admin_users is defined
+    - item.state == 'absent'

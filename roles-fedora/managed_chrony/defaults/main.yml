@@ -10,6 +10,7 @@ managed_chrony_client:
   - 1.centos.pool.ntp.org iburst
   - 2.centos.pool.ntp.org iburst
   - 3.centos.pool.ntp.org iburst
+managed_chrony_server_enabled: false
 managed_chrony_server:
   allow: []
 managed_chrony_sysconfig: ''

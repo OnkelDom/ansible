@@ -1,13 +1,25 @@
 # {{ ansible_managed }}
 
-{% for key, value in web_caddy_baseconfig.items()|sort %}
-{%   if value is sameas true %}
-{{ key }}
-{%   elif value is string or value is number %}
-{{ key }} {{ value }}
-{%   else %}
-{%     for v in value %}
-{{ key }} {{ v }}
-{%     endfor %}
-{%   endif %}
-{% endfor %}
+{% if web_caddy_root is defined %}
+{{ web_caddy_domain }}{{ web_caddy_port }} {
+  {{ web_caddy_root }}
+{% if web_caddy_proxy_sonarr is defined %}
+    {{ web_caddy_proxy_sonarr }}
+{% endif %}
+{% if web_caddy_proxy_tautulli is defined %}
+    {{ web_caddy_proxy_tautulli }}
+{% endif %}
+{% if web_caddy_proxy_gdrive is defined %}
+    {{ web_caddy_proxy_gdrive }}
+{% endif %}
+{% if web_caddy_proxy_plex is defined %}
+    {{ web_caddy_proxy_plex }}
+{% endif %}
+}
+{% endif %}
+
+{% if web_caddy_plex is defined %}
+{{ web_caddy_plex_domain }}{{ web_caddy_port }} {
+  {{ web_caddy_plex }}
+}
+{% endif %}

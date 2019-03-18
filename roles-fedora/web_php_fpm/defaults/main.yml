@@ -1,6 +1,6 @@
 ---
 web_php_fpm_enabled: true
-web_php_fpm_config:
+web_php_fpm_config_www:
   listen: 127.0.0.1:9000
   listen.allowed_clients: 127.0.0.1
   user: caddy
@@ -12,3 +12,14 @@ web_php_fpm_config:
   pm.max_spare_servers: 35
   pm.max_requests: 500
   pm.status_path: /status
+web_php_fpm_config_global:
+  pid: /run/php-fpm/php-fpm.pid
+  error_log: /var/log/php-fpm/error.log
+  emergency_restart_threshold: 0
+  process_control_timeout: 0
+  process.max: 128
+  syslog.ident: php-fpm
+  syslog.facility: daemon
+  systemd_interval: 10
+  daemonize: "yes"
+  log_level: notice

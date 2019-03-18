@@ -4,3 +4,4 @@ hosts
 ansible.log
 *.retry
 group_vars
+codesnippets

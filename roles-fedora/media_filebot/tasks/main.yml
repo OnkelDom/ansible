@@ -18,8 +18,8 @@
   file:
     path: "{{ item }}"
     state: directory
-    owner: "{{ media_filebot_user }}"
-    group: "{{ media_filebot_group }}"
+    owner: "{{ media_filebot_service_user }}"
+    group: root
   with_items:
     - "{{ media_filebot_installdir }}"
     - "{{ media_filebot_installdir }}/data"
@@ -27,49 +27,40 @@
     - media_filebot_enabled|default(false)|bool == true
     - filebot_install is success
 
-#- name: copy filebot tar
-#  copy:
-#    src: "{{ role_path }}/files/{{ media_filebot_filename }}"
-#    dest: "/tmp/{{ media_filebot_filename }}"
-#    owner: root
-#    group: root
-#  when:
-#    - media_filebot_enabled|default(false)|bool == true and not filebot_bin.stat.exists
-#    - filebot_install is success
-
-#- name: "ensure the binaries are arextracted"
-#  unarchive:
-#    copy: "no"
-#    src: "/tmp/{{ media_filebot_filename }}"
-#    dest: "{{ media_filebot_installdir }}/"
-#  when:
-#    - media_filebot_enabled|default(false)|bool == true and not filebot_bin.stat.exists
-#    - filebot_install is success
-
-#- name: remove installer from tmp
-#  file:
-#    path: "/tmp/{{ media_filebot_filename }}"
-#    state: absent
-#  when:
-#    - media_filebot_enabled|default(false)|bool == true
-#    - filebot_install is success
+- name: copy filebot tar
+  copy:
+    src: "{{ role_path }}/files/{{ media_filebot_filename }}"
+    dest: "{{ media_filebot_installdir }}/{{ media_filebot_filename }}"
+    owner: root
+    group: root
+  when:
+    - media_filebot_enabled|default(false)|bool == true and not filebot_bin.stat.exists
+    - filebot_install is success
+    - not filebot_bin.stat.exists
 
 - name: extract filebot
   unarchive:
-    src: "{{ role_path }}/files/{{ media_filebot_filename }}"
+    src: "{{ media_filebot_installdir }}/{{ media_filebot_filename }}"
     dest: "{{ media_filebot_installdir }}"
     owner: "{{ media_filebot_service_user }}"
-    group: "{{ media_filebot_service_group }}"
-    remote_src: true
-    extra_opts: "--strip-components=1"
+    group: root
+    remote_src: yes
   when:
     - media_filebot_enabled|default(false)|bool == true
     - filebot_install is success
     - not filebot_bin.stat.exists
 
+- name: remove installer file
+  file:
+    path: "{{ media_filebot_installdir }}/{{ media_filebot_filename }}"
+    state: absent
+  when:
+    - media_filebot_enabled|default(false)|bool == true
+    - filebot_install is success
+
 - name: create link on path to filebot bin
   file:
-    src: "{{ media_filebot_install }}/filebot.sh"
+    src: "{{ media_filebot_installdir }}/filebot.sh"
     dest: "{{ media_filebot_bin }}"
     state: link
   when:
@@ -80,7 +71,7 @@
   file:
     path: "{{ media_filebot_installdir }}"
     owner: "{{ media_filebot_service_user }}"
-    group: "{{ media_filebot_service_group }}"
+    group: root
     recurse: yes
   when:
     - media_filebot_enabled|default(false)|bool == true
@@ -88,11 +79,12 @@
 
 - name: copy config for opensubtitles
   template:
-    src: prefs.properties.j2
+    src: prefs_properties.j2
     dest: "{{ media_filebot_installdir }}/data/prefs.properties"
     owner: "{{ media_filebot_service_user }}"
-    group: "{{ media_filebot_service_group }}"
+    group: root
     mode: 0640
+    force: no
   when:
     - media_filebot_enabled|default(false)|bool == true
     - filebot_install is success

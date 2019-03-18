@@ -1,5 +1,5 @@
 [Unit]
-Description=rClone Crypt Cache for Google Drive
+Description=rClone Crypt for Google Drive
 Documentation=http://rclone.org/docs
 After=network-online.target
 
@@ -7,8 +7,8 @@ After=network-online.target
 Type=idle
 User={{ media_rclone_service_user }}
 Group={{ media_rclone_service_group }}
-ExecStart={{ media_rclone_installdir }}/rclone mount gdrive-crypt: /mnt/{{ media_rclone_basefolder }}/{{ media_rclone_mountfolder }} --config /home/{{ media_rclone_service_user }}/.config/rclone/rclone.conf {{ media_rclone_startparams }}
-ExecStop=/usr/bin/sudo /bin/fusermount -u -z /mnt/{{ media_rclone_basefolder }}/{{ media_rclone_mountfolder }}
+ExecStart=/usr/bin/rclone mount gdrive-crypt: {{ media_rclone_mountfolder }} --config /home/{{ media_rclone_service_user }}/.config/rclone/rclone.conf {{ media_rclone_startparams }}
+ExecStop=/usr/bin/sudo /bin/fusermount -u -z {{ media_rclone_mountfolder }}
 Restart=always
 
 [Install]

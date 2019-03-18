@@ -1,7 +1,5 @@
 ---
 - name: configure /etc/hostname
-  tags: hostname
-  become: true
   hostname:
     name: "{{ managed_hostname_fqdn }}"
   when:

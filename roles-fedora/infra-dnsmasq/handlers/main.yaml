@@ -1,0 +1,8 @@
+---
+- name: restart dnsmasq
+  service:
+    name: dnsmasq
+    state: restarted
+
+- name: reload ufw
+  command: /usr/sbin/ufw reload

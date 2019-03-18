@@ -1,12 +1,9 @@
 ---
 media_pms_enabled: true
-media_pms_port: {{ media_plex_port }}
+media_pms_port: "{{ media_plex_port }}"
 media_pms_service_user: "{{ media_user }}"
 media_pms_service_group: "{{ media_group }}"
-media_pms_use_reverse_proxy: true
 media_pms_ip: "{{ media_plex_ip }}"
-media_pms_reverse_proxy_path: "web"
-media_pms_reverse_proxy_domain: "{{ media_domain }}"
 media_pms_use_firewall: true
 media_pms_username: "{{ media_plex_username }}"
 media_pms_token: "{{ media_plex_token }}"

@@ -1,7 +1,7 @@
 ---
 - name: install NetworkManager
   package:
-    name: ['NetworkManager', 'python-netaddr', 'python3-netaddr', 'NetworkManager-glib', 'libnm-qt-devel.x86_64', 'nm-connection-editor.x86_64', 'libsemanage-python', 'policycoreutils-python', 'NetworkManager-libnm-devel', 'python3-networkmanager', 'NetworkManager-libnm']
+    name: ['NetworkManager', 'NetworkManager-libnm', 'python3-netaddr', 'python3-dbus', 'python-dbus', 'python3-networkmanager']
     state: present
   register: nm_install
   when:
@@ -24,10 +24,10 @@
     mac: "{{ ansible_default_ipv4.macaddress }}"
     ip4: "{{ ansible_default_ipv4.address }}/{{ (ansible_default_ipv4.address + '/' + ansible_default_ipv4.netmask) | ipaddr('prefix') }}"
     gw4: "{{ ansible_default_ipv4.gateway }}"
-    dns4: "{{ managed_nm_dns_v4 }}"
-    ip6: "{{ ansible_default_ipv6.address }}/{{ ansible_default_ipv6.prefix }}"
-    gw6: "{{ managed_nm_gw_v6 }}"
-    dns6: "{{ managed_nm_dns_v6 }}"
+    #dns4: "{{ managed_nm_dns_v4 }}"
+    #ip6: "{{ ansible_default_ipv6.address }}/{{ ansible_default_ipv6.prefix }}"
+    #gw6: "{{ managed_nm_gw_v6 }}"
+    #dns6: "{{ managed_nm_dns_v6 }}"
     state: present
   when:
     - managed_nm_enabled|default(false)|bool == true

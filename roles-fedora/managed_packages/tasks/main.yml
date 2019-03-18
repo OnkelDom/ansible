@@ -4,7 +4,7 @@
     name: "{{ item }}"
     state: present
   with_items:
-    - "{{ managed_packages.install }}"
+    - "{{ managed_packages_install }}"
   when:
     - managed_packages_enabled|default(false)|bool == true
 
@@ -13,6 +13,6 @@
     name: "{{ item }}"
     state: absent
   with_items:
-    - "{{ managed_packages.remove }}"
+    - "{{ managed_packages_remove }}"
   when:
     - managed_packages_enabled|default(false)|bool == true

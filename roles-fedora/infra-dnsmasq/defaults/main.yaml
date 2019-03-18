@@ -1,0 +1,54 @@
+---
+infra_dnsmasq_enabled: true
+
+dnsmasq_addn_hosts: /etc/hosts	#	Set this to specify a custom host file that should be read in addition to /etc/hosts.
+dnsmasq_authoritative: false    # When true, dnsmasq will function as an authoritative name server.
+dnsmasq_bogus_priv: true        # When true, Dnsmasq will not forward addresses in the non-routed address spaces.
+dnsmasq_dhcp_hosts	-	Array of hashes specifying IP address reservations for hosts, with keys name (optional), mac and ip for each reservation. See below.
+dnsmasq_dhcp_ranges	-	Array of hashes specifying DHCP ranges (with keys start_addr, end_addr, and lease_time) for each address pool. This also enables DHCP. See below.
+dnsmasq_domain_needed: true     # When true, local requests (i.e. without domain name) are not forwarded.
+dnsmasq_domain: "{{ ansible_domain }}" # The domain for Dnsmasq.
+dnsmasq_expand_hosts: true      # Set this (and dnsmasq_domain) if you want to have a domain automatically added to simple names in a hosts-file.
+dnsmasq_listen_address: 0.0.0.0 # The IP address of the interface that should listen to DNS/DHCP requests.
+#dnsmasq_interface: eth0         # The network interface that should listen to DNS/DHCP requests
+#dnsmasq_option_router: 192.168.178.1 # The default gateway to be sent to clients.
+#dnsmasq_port: 53                # Set this to listen on a custom port.
+#dnsmasq_resolv_file: /etc/resolv.conf # Set this to specify a custom resolv.conf file.
+#dnsmasq_upstream_servers:       # Set this to specify the IP address of upstream DNS servers directly. You can specify one ore more servers as a list.
+#dnsmasq_srv_hosts:              # Array of hashes specifying SRV records, with keys name (mandatory), target, port, priority and weight for each record. See below.
+
+dhcp-authoritative
+interface=eth1
+read-ethers
+dhcp-range=192.168.1.100,192.168.1.150,12h
+dhcp-range=2001:9b0:104:42::100,2001:9b0:104:42::1500
+dhcp-option=option6:dns-server,[::]
+enable-ra
+dnssec
+trust-anchor=.,19036,8,2,49AAC11D7B6F6446702E54A1607371607A1A41855200FD2CE1CDDE32F24E8FB5
+dnssec-check-unsigned
+
+
+infra_dnsmasq_upstream_servers:
+  - 1.0.0.1
+  - 2606:4700:4700::1001
+  - 1.1.1.1
+  - 2606:4700:4700::1111
+infra_dnsmasq_dhcp_ranges:
+  - start_addr: '192.168.179.5'
+    end_addr: '192.168.179.253'
+    lease_time: '72h'
+infra_dnsmasq_dhcp_hosts:
+  - name: 'alpha'
+    mac: '11:22:33:44:55:66'
+    ip: '192.168.6.10'
+  - name: 'bravo'
+    mac: 'aa:bb:cc:dd:ee:ff'
+    ip: '192.168.6.11'
+infra_dnsmasq_srv_hosts:
+  - name: _ldap._tcp.example.com
+    target: ldap01.example.com
+    port: 389
+  - name: _ldap._tcp.example.com
+    target: ldap02.example.com
+    port: 389

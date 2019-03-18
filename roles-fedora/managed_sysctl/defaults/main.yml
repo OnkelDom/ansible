@@ -26,6 +26,12 @@ managed_sysctl_add:
   - { name: net.ipv6.conf.lo.disable_ipv6, value: 1 }
   - { name: vm.swappiness, value: 5 }
   - { name: fs.file-max, value: 8192 }
+  #- { name: net.ipv6.conf.enp4s0.accept_ra, value: 2 }
+  #- { name: net.ipv4.ip_forward, value: 1 }
+  #- { name: net.ipv6.conf.all.forwarding, value: 1 }
+  #- { name: net.ipv6.conf.br0.forwarding, value: 1 }
+  #- { name: net.ipv6.conf.default.forwarding, value: 1 }
+
 managed_sysctl_remove:
   - { name: net.bridge.bridge-nf-call-ip6tables }
   - { name: net.bridge.bridge-nf-call-iptables }

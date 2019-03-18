@@ -58,7 +58,7 @@
     owner: "{{ media_pms_service_user }}"
     group: "{{ media_pms_service_group }}"
     mode: 0640
-    force: no
+    #force: no
   when:
     - media_pms_enabled|default(false)|bool == true
     - plex_install is success
@@ -81,8 +81,8 @@
 
 - block:
   - name: copy ufw-plexmediaserver to /etc/ufw/applications.d
-    copy:
-      src: "{{ role_path }}/files/ufw-plexmediaserver"
+    template:
+      src: ufw-plexmediaserver
       dest: /etc/ufw/applications.d/plexmediaserver
       owner: root
       group: root
@@ -91,33 +91,12 @@
     ufw:
       rule: allow
       name: plexmediaserver
-    when:
-      - media_pms_enabled|default(false)|bool == true
-      - plex_install is success
-      - media_pms_use_firewall|bool == true
     notify:
       - reload ufw
   when:
     - media_pms_enabled|default(false)|bool == true
     - plex_install is success
-    - media_pms_use_firewall|bool == true
-
-- name: include web_caddy for reverse proxy configuration
-  include_role:
-    name: web_caddy
-  vars:
-    web_caddy_vhosts:
-      - name: reverse_proxy_{{ media_pms_reverse_proxy_path }}
-        content: |
-          {{ media_pms_reverse_proxy_domain }} {
-            proxy /{{ media_pms_reverse_proxy_path }} localhost:{{ media_pms_port }} {
-              transparent
-            }
-          }
-  when:
-    - media_pms_enabled|default(false)|bool == true
-    - plex_install is success
-    - media_pms_use_firewall|bool == true
+    - media_pms_use_firewall|default(false)|bool == true
 
 - name: start and enable mediaserver services
   service:

@@ -1,2 +1,5 @@
-{{ ansible_managed }}
-{{ app_filebot.filebot_opensubtitles }}
+# {{ ansible_managed }}
+
+{% if media_filebot_opensubtitles is defined %}
+{{ media_filebot_opensubtitles }}
+{% endif %}

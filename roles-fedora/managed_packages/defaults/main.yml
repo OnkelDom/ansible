@@ -10,6 +10,7 @@ managed_packages_install:
   - vim
   - htop
   - tmux
+  - tar
   - wget
   - whois
   - bind-utils
@@ -20,7 +21,6 @@ managed_packages_install:
   - ipmitool
   - nfs-utils
   - bzip2
-  - unrar
   - cifs-utils
   - dstat
   - iotop
@@ -36,6 +36,7 @@ managed_packages_install:
   - unzip
   - tree
   - xz
+  - facter
 managed_packages_remove:
   - network-scripts
   - firewalld

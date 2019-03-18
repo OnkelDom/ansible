@@ -9,7 +9,7 @@
   with_items:
     - "{{ managed_services_disabled }}"
   when:
-    - managed_services.enabled|default(false)|bool == true
+    - managed_services_enabled|default(false)|bool == true
 
 - name: enable services
   service:

@@ -2,5 +2,7 @@
 managed_ansibleuser_enabled: true
 managed_ansibleuser_comment: Ansible User
 managed_ansibleuser_name: svc_ansible
+# Password is svc_ansible
 managed_ansibleuser_pass: $6$rqSmL0GVYyM0hYq3$po557vKRt8SSEBbJa7rUrLLtgScsZefuceMlhW5HpTHoASxXOKchhpzteQ7jbiW6nHPzz7ehrHhhGCsioaioY1
+# Create a keyfile with 'ssh-keygen -f id_rsa_ansible -b 2048 -t rsa -q'
 managed_ansibleuser_key: "{{ lookup('file', '~/.ssh/id_rsa_ansible.pub') }}"

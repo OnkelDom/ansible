@@ -20,20 +20,6 @@
   notify:
     - restart caddy
 
-- name: configure /etc/caddy/conf.d/ vhosts
-  template:
-    src: caddy_vhost.j2
-    dest: /etc/caddy/conf.d/{{ item.name }}.conf
-    owner: root
-    group: root
-    mode: 0644
-  with_items: "{{ web_caddy_vhosts }}"
-  when:
-    - web_caddy_enabled|default(false)|bool == true
-    - caddy_install is success
-  notify:
-    - restart caddy
-
 - name: configure sysctls - file descriptors and number of threads
   pam_limits:
     domain: caddy

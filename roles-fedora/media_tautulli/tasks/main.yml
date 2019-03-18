@@ -78,28 +78,6 @@
     - tautulli_clone is success
     - media_tautulli_use_firewall|default(false)|bool == true
 
-- name: include web_caddy for reverse proxy configuration
-  include_role:
-    name: web_caddy
-  vars:
-    web_caddy_vhosts:
-      - name: reverse_proxy_{{ media_tautulli_reverse_proxy_path }}
-        content: |
-          {{ media_tautulli_reverse_proxy_domain }} {
-            proxy /{{ media_tautulli_reverse_proxy_path }} localhost:{{ media_tautulli_port }} {
-              header_upstream Host {host}
-              header_upstream X-Real-IP {remote}
-              header_upstream X-Forwarded-For {remote}
-              header_upstream X-Forwarded-Proto {scheme}
-              header_upstream X-Forwarded-Host {host}
-              header_upstream X-Forwarded-Ssl {on}
-            }
-          }
-  when:
-    - media_tautulli_enabled|default(false)|bool == true
-    - tautulli_clone is success
-    - media_tautulli_use_reverse_proxy|default(false)|bool == true
-
 - name: start and enable tautulli services
   service:
     name: tautulli

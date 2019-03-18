@@ -29,11 +29,10 @@
     mode: "0750"
   - folder: "/home/{{ media_rclone_service_user }}/.config/rclone"
     mode: "0750"
-  - folder: "{{ item }}"
+  - folder: "/mnt/google"
     mode: "0755"
-    with_items:
-      - "{{ media_rclone_basefolder }}"
-      - "{{ media_rclone_mountfolder }}"
+  - folder: "{{ media_rclone_mountfolder }}"
+    mode: "0755"
   when:
     - media_rclone_enabled|default(false)|bool == true
     - package_install is success
@@ -69,8 +68,8 @@
 
 - name: copy systemd units
   template:
-    src: rclone_service.j2
-    dest: "{{ item }}"
+    src: "{{ item.src }}"
+    dest: "/etc/systemd/system/{{ item.dest }}"
     owner: root
     group: root
     mode: 0640

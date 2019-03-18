@@ -7,9 +7,11 @@ Wants=network-online.target
 User={{ media_j2_service_user }}
 Group={{ media_j2_service_user }}
 Environment={{ media_j2_installdir }}
-Type=oneshot
+Type=simple
 TimeoutStopSec=20
 ExecStart=/usr/bin/java -Djava.awt.headless=true -jar {{ media_j2_installdir }}/JDownloader.jar
+KillMode=process
+Restart=always
 RemainAfterExit=True
 
 [Install]

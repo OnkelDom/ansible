@@ -1,0 +1,61 @@
+---
+- name: install dnsmasq
+  package:
+    name: dnsmasq
+    state: present
+  register: dnsmasq_install
+  when:
+    - infra_dnsmasq_enabled|default(false)|bool == true
+
+- name: configure /etc/dnsmasq.conf
+  template:
+    src: dnsmasq_conf.j2
+    dest: /etc/dnsmasq.conf
+    owner: root
+    group: root
+    mode: 0644
+    validate: 'dnsmasq --test --conf-file=%s'
+  when:
+    - infra_dnsmasq_enabled|default(false)|bool == true
+    - chrony_install is success
+  notify:
+  - restart chronyd
+
+- name: UFW allow PXE
+  ufw:
+    rule: allow
+    name: ntp
+  when:
+    - infra_dnsmasq_enabled|default(false)|bool == true
+    - dnsmasq_install is success
+    - infra_dnsmasq_pxe_enabled|default(false)|bool == true
+  notify: reload ufw
+
+- name: UFW allow TFTP
+  ufw:
+    rule: allow
+    name: ntp
+  when:
+    - infra_dnsmasq_enabled|default(false)|bool == true
+    - dnsmasq_install is success
+    - infra_dnsmasq_pxe_enabled|default(false)|bool == true
+  notify: reload ufw
+
+- name: UFW allow DHCP
+  ufw:
+    rule: allow
+    name: ntp
+  when:
+    - infra_dnsmasq_enabled|default(false)|bool == true
+    - dnsmasq_install is success
+    - infra_dnsmasq_pxe_enabled|default(false)|bool == true
+  notify: reload ufw
+
+- name: start and enable dnsmasq service
+  service:
+    name: dnsmasq
+    state: started
+    enabled: yes
+  when:
+  - managed_chrony_enabled|default(false)|bool == true
+  - chrony_install is success

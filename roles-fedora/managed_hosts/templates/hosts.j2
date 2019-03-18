@@ -14,6 +14,6 @@
 {% if managed_hosts_entrys is defined %}
 {% for hosts in managed_hosts_entrys %}
 {% set space = 16 - hosts.ip | length %}
-{{ hosts.ip }}{% for i in range(1, space,1) %} {% endfor %}{{ hosts.hostname }}.{{ hosts.domain }} {{ hosts.hostname }}{% if hosts.alias is defined %}{% for alias in hosts.alias %} {{ alias }}{% endfor %}{% endif %} # {{ hosts.comment }}
+{{ hosts.ip }}{% for i in range(1, space,1) %} {% endfor %}{{ hosts.hostname }}.{{ hosts.domain }} {{ hosts.hostname }}{% if hosts.alias is defined %}{% for alias in hosts.alias %} {{ alias }}{% endfor %}{% endif %}{% if hosts.connebt is defined %} # {{ hosts.comment }}{% endif %} 
 {% endfor %}
 {% endif %}

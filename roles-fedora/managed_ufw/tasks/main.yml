@@ -13,7 +13,7 @@
     state: started
     enabled: yes
   when:
-    - ufw_install is success and |default(false)|bool == true
+    - managed_ufw_enabled|default(false)|bool == true
     - ufw_install is success
 
 - name: enable logging

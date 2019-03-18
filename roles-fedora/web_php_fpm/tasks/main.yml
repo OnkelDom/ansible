@@ -5,17 +5,30 @@
     state: present
   register: php_fpm_install
   when:
-    - web_php_fpm.enabled|default(false)|bool == true
+    - web_php_fpm_enabled|default(false)|bool == true
+
+- name: configure /etc/php-fpm.conf
+  template:
+    src: php_fpm_conf.j2
+    dest: /etc/php-fpm.conf
+    owner: root
+    group: root
+    mode: 0644
+  when:
+    - web_php_fpm_enabled|default(false)|bool == true
+    - php_fpm_install is success
+  notify:
+    - restart php-fpm
 
 - name: configure /etc/php-fpm.d/www.conf
   template:
-    src: php_fpm_conf.j2
+    src: php_fpm_conf_www.j2
     dest: /etc/php-fpm.d/www.conf
     owner: root
     group: root
     mode: 0644
   when:
-    - web_php_fpm.enabled|default(false)|bool == true
+    - web_php_fpm_enabled|default(false)|bool == true
     - php_fpm_install is success
   notify:
     - restart php-fpm
@@ -26,5 +39,5 @@
     state: started
     enabled: yes
   when:
-    - web_php_fpm.enabled|default(false)|bool == true
+    - web_php_fpm_enabled|default(false)|bool == true
     - php_fpm_install is success

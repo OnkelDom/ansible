@@ -1,11 +1,36 @@
 ---
 web_caddy_enabled: true
-web_caddy_baseconfig:
-  import: conf.d/*.conf
-web_caddy_vhosts:
-  - name: localhost
-    content: |
-      localhost:80 {
-        gzip
-        root /usr/share/caddy
+web_caddy_domain: "{{ ansible_domain }}"
+web_caddy_plex_domain: "plex.{{ ansible_domain }}"
+web_caddy_port: "" # :80 for non ssl
+web_caddy_root: |
+  # Set a real Site. This is for a test after the first installation
+    # Remove :80 after them to install a ssl-cert
+    gzip
+    root /usr/share/caddy
+    # Enable fastcgi when web_php_fpm ansible role is included on your playbook
+    # fastcgi / 127.0.0.1:9000 php
+    log stdout
+    errors stderr
+web_caddy_proxy_sonarr: |
+  proxy /sonarr localhost:8989 {
+      transparent
+    }
+web_caddy_proxy_tautulli: |
+  proxy /tautulli localhost:8181 {
+      header_upstream Host {host}
+      header_upstream X-Real-IP {remote}
+      header_upstream X-Forwarded-For {remote}
+      header_upstream X-Forwarded-Proto {scheme}
+      header_upstream X-Forwarded-Host {host}
+      header_upstream X-Forwarded-Ssl {on}
+    }
+web_caddy_proxy_plex: |
+  proxy /web localhost:32400 {
+      transparent
+    }
+web_caddy_plex: |
+    gzip
+      proxy / localhost:32400 {
+        transparent
       }

@@ -1,7 +1,9 @@
-# {{ ansible_managed }}
+; {{ ansible_managed }}
 
-[www]
-{% for key, value in web_php_fpm_config.items()|sort %}
+include=/etc/php-fpm.d/*.conf
+
+[global]
+{% for key, value in web_php_fpm_config_global.items()|sort %}
 {%   if value is sameas true %}
 {{ key }}
 {%   elif value is string or value is number %}

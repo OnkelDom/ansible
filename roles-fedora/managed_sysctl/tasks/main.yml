@@ -21,7 +21,7 @@
   with_items: "{{ managed_sysctl_remove }}"
   register: managed_sysctl_removed
   when:
-    - managed_sysctl.enabled|default(false)|bool == true
+    - managed_sysctl_enabled|default(false)|bool == true
     - managed_sysctl_remove is defined
 
 - name: reload sysctl
@@ -29,6 +29,6 @@
   notify:
     - reload sysctl.conf
   when:
-    - managed_sysctl.enabled|default(false)|bool == true
+    - managed_sysctl_enabled|default(false)|bool == true
     - managed_sysctl_removed.changed
     - managed_sysctl_added.changed

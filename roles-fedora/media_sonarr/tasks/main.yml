@@ -23,7 +23,7 @@
     state: directory
     owner: "{{ media_sonarr_service_user }}"
     group: "{{ media_sonarr_service_group }}"
-    mode: 0750
+    mode: "{{ item.mode }}"
   with_items:
     - folder: "/home/{{ media_sonarr_service_user }}/.config"
       mode: "0750"
@@ -112,23 +112,6 @@
     - media_sonarr_enabled|default(false)|bool == true
     - package_install is success
     - media_sonarr_use_firewall|default(false)|bool == true
-
-- name: include web_caddy for reverse proxy configuration
-  include_role:
-    name: web_caddy
-  vars:
-    web_caddy_vhosts:
-      - name: reverse_proxy_{{ media_sonarr_reverse_proxy_path }}
-        content: |
-          {{ media_sonarr_reverse_proxy_domain }} {
-            proxy /{{ media_sonarr_reverse_proxy_path }} localhost:{{ media_sonarr_port }} {
-              transparent
-            }
-          }
-  when:
-    - media_sonarr_enabled|default(false)|bool == true
-    - package_install is success
-    - media_sonarr_use_reverse_proxy|default(false)|bool == true
 
 - name: start and enable sonarr services
   service:

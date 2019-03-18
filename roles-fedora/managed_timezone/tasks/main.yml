@@ -2,5 +2,6 @@
 - name: configure timezone
   timezone:
     name: "{{ managed_timezone_timezone }}"
+    hwclock: UTC
   when:
     - managed_timezone_enabled|default(false)|bool == true

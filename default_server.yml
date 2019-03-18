@@ -3,11 +3,18 @@
   roles:
   - managed_ansibleuser
   - managed_admin
-  - managed_sshd
-  - managed_sysctl
-  - managed_services
-  - managed_timezone
-  - managed_hostname
-  - managed_hosts
   - managed_motd
   - managed_prompt
+  - managed_timezone
+  - managed_sshd
+  - managed_fail2ban
+  - managed_sysctl
+  - managed_ufw
+  - managed_chrony
+  - managed_packages
+  - managed_resolvconf
+  - managed_services
+  - managed_hostname
+  - managed_hosts
+  # Failed for fedora 29 server. waiting for ansible/nmcli update
+  # - managed_nm
