@@ -1,0 +1,189 @@
+---
+#- name: install mariadb repository
+#  yum_repository:
+#    description: Official MariaDB repository
+#    baseurl: "http://{{ mariadb_mirror }}/{{ mariadb_version }}/{{ ansible_distribution|lower|regex_replace('redhat', 'rhel')|regex_replace('oraclelinux', 'centos') }}{{ ansible_distribution_major_version }}-amd64"
+#    gpgkey: https://yum.mariadb.org/RPM-GPG-KEY-MariaDB
+#    gpgcheck: true
+#  when:
+#    - db_mariadb_enabled|default(false)|bool == true
+
+- name: install mariadb
+  package:
+    name: ['mariadb', 'mariadb-server', 'python-mysql']
+    state: present
+  register: mariadb_install
+  when:
+    - db_maria_enabled|default(false)|bool == true
+
+- name: configure mariadb
+  template:
+    src: my.conf.j2
+    dest: /etc/my.cnf
+  notify: restart mariadb
+  when:
+    - db_maria_enabled|default(false)|bool == true
+    - mariadb_install is success
+
+- name: configure swappiness
+  sysctl:
+    name: vm.swappiness
+    value: "{{ db_maria_swappiness }}"
+    state: present
+  when:
+    - db_maria_enabled|default(false)|bool == true
+    - mariadb_install is success
+    - db_maria_configure_swappiness
+
+- name: configure sysctls - file descriptors and number of threads
+  pam_limits:
+    domain: mariadb
+    limit_type: "{{item.limit_type}}"
+    limit_item: "{{item.limit_item}}"
+    value: "{{item.value}}"
+  with_items:
+  - { limit_type: '-', limit_item: 'nofile', value: 8192 }
+  - { limit_type: '-', limit_item: 'nproc', value: 8192 }
+  - { limit_type: 'soft', limit_item: 'memlock', value: unlimited }
+  - { limit_type: 'hard', limit_item: 'memlock', value: unlimited }
+  when:
+    - db_maria_enabled|default(false)|bool == true
+    - mariadb_install is success
+  notify:
+    - reload sysctl.conf
+
+- name: start and enable mariadb
+  service:
+    name: mariadb
+    state: started
+    enabled: true
+  when:
+    - db_maria_enabled|default(false)|bool == true
+    - mariadb_install is success
+
+- name: configure mariadb
+  template:
+    src: my_user.conf.j2
+    dest: /root/.my.cnf
+  when:
+    - db_maria_enabled|default(false)|bool == true
+    - mariadb_install is success
+
+- name: set mariadb root password for the first time (root@localhost)
+  mysql_user:
+    name: root
+    password: "{{ db_maria_root_password }}"
+    host: localhost
+    state: present
+  when:
+    - db_maria_enabled|default(false)|bool == true
+    - mariadb_install is success
+    #- root_pwd_check.rc == 0
+
+- name: check if root password is set
+  shell: >
+    mysqladmin -u root status
+  changed_when: false
+  failed_when: false
+  register: root_pwd_check
+
+- name: set root password for 127.0.0.1, ::1
+  mysql_user:
+    name: root
+    password: "{{ db_maria_root_password }}"
+    host: "{{ item }}"
+    login_user: root
+    login_password: "{{ db_maria_root_password }}"
+    state: present
+  with_items:
+    - '{{ db_maria_admin_hosts }}'
+  when:
+    - db_maria_enabled|default(false)|bool == true
+    - mariadb_install is success
+    - root_pwd_check.rc == 0
+
+- name: remove the test database
+  mysql_db:
+    name: test
+    login_user: root
+    login_password: "{{ db_maria_root_password }}"
+    state: absent
+  when:
+    - db_maria_enabled|default(false)|bool == true
+    - mariadb_install is success
+
+- name: remove anonymous users
+  mysql_user:
+    name: ''
+    host_all: true
+    login_user: root
+    login_password: "{{ db_maria_root_password }}"
+    state: absent
+
+- name: add administrative user
+  mysql_user:
+    user: '{{ db_maria_admin_user }}'
+    password: '{{ db_maria_admin_password | default(omit) }}'
+    host: '{{ item }}'
+    priv: '*.*:ALL,GRANT'
+    state: present
+    check_implicit_admin: true
+    login_user: root
+    login_password: "{{ db_maria_root_password }}"
+  no_log: mariadb_debug == false
+  changed_when: false
+  with_items: '{{ db_maria_admin_hosts }}'
+  when:
+    - db_maria_enabled|default(false)|bool == true
+    - mariadb_install is success
+
+- name: manage databases
+  mysql_db:
+    name: "{{ item.name }}"
+    collation: "{{ item.collation | default('utf8_general_ci') }}"
+    encoding: "{{ item.encoding | default('utf8') }}"
+    state: "{{ item.state | default('present') }}"
+    login_user: root
+    login_password: "{{ db_maria_root_password }}"
+  no_log: mariadb_debug == false
+  with_items: '{{ db_maria_databases }}'
+  when:
+    - db_maria_databases|length
+    - db_maria_enabled|default(false)|bool == true
+    - mariadb_install is success
+
+- name: manage users
+  mysql_user:
+    name: "{{ item.name }}"
+    host: "{{ item.host | default('localhost') }}"
+    password: "{{ item.password }}"
+    priv: "{{ item.priv | default('*.*:USAGE') }}"
+    state: "{{ item.state | default('present') }}"
+    append_privs: "{{ item.append_privs | default('no') }}"
+    login_user: root
+    login_password: "{{ db_maria_root_password }}"
+  no_log: mariadb_debug == false
+  with_items: '{{ db_maria_users }}'
+  when:
+    - db_maria_users|length
+    - db_maria_enabled|default(false)|bool == true
+    - mariadb_install is success
+
+- block:
+  - name: copy ufw-mariadb to /etc/ufw/applications.d
+    template:
+      src: ufw-mariadb
+      dest: /etc/ufw/applications.d/ufw-mariadb
+      owner: root
+      group: root
+      mode: 0644
+  - name: UFW allow MariaDB
+    ufw:
+      rule: allow
+      name: MariaDB
+    notify:
+      - reload ufw
+  when:
+    - db_maria_enabled|default(false)|bool == true
+    - mariadb_install is success
+    - db_maria_use_firewall|default(false)|bool == true

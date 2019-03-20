@@ -1,0 +1,4 @@
+[MariaDB]
+title=MediaDB
+description=MySQL Database Server
+ports={{ db_maria_mysqld_config.port }}/tcp

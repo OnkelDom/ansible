@@ -1,0 +1,11 @@
+---
+- name: restart mariadb
+  service:
+    name: '{{ mariadb_service }}'
+    state: restarted
+
+- name: reload sysctl.conf
+  command: /usr/sbin/sysctl -p
+
+- name: reload ufw
+  command: /usr/sbin/ufw reload

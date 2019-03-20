@@ -1,0 +1,19 @@
+# {{ ansible_managed }}
+
+[mysqld]
+{% for key, value in db_maria_mysqld_config.iteritems() %}
+{% if value is defined and value %}
+{{ key }}={{ value }}
+{% else %}
+{{ key }}
+{% endif %}
+{% endfor %}
+
+[mariadb]
+{% for key, value in db_maria_server_config.iteritems() %}
+{% if value is defined and value %}
+{{ key }}={{ value }}
+{% else %}
+{{ key }}
+{% endif %}
+{% endfor %}

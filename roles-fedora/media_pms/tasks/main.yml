@@ -83,7 +83,7 @@
   - name: copy ufw-plexmediaserver to /etc/ufw/applications.d
     template:
       src: ufw-plexmediaserver
-      dest: /etc/ufw/applications.d/plexmediaserver
+      dest: /etc/ufw/applications.d/ufw-plexmediaserver
       owner: root
       group: root
       mode: 0644
