@@ -8,12 +8,12 @@ media_j2_uploaddir: "/opt/upload"
 # org.jdownloader.api.myjdownloader.MyJDownloaderSettings.json
 media_j2_myjdownloader_email: "your@mail.com"
 media_j2_myjdownloader_password: "yourJD2pass"
-media_j2_myjdownloader_servername: "{{ ansible_fqdn }}"
+media_j2_myjdownloader_servername: "{{ ansible_hostname }}"
 # org.jdownloader.settings.GeneralSettings.json
 media_j2_defaultdownloadfolder: "<jd:packagename>"
 media_j2_downloadspeedlimit: 31457280
 media_j2_maxsimultanedownloads: 15
-media_j2_downloadspeedlimitenabled: true
+media_j2_downloadspeedlimitrememberedenabled: true
 # org.jdownloader.extensions.extraction.ExtractionExtension.json
 media_j2_exctraction_enabled: true
 media_j2_subpath: "%PACKAGENAME%"

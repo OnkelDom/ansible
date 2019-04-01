@@ -1,0 +1,2 @@
+[container]
+container ansible_connection=podman ansible_python_interpreter=/usr/bin/python3
